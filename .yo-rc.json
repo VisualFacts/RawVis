@@ -1,0 +1,39 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "gr.athenarc.imsi.visualfacts.tool"
+    },
+    "jhipsterVersion": "6.10.5",
+    "applicationType": "monolith",
+    "baseName": "VfTool",
+    "packageName": "gr.athenarc.imsi.visualfacts.tool",
+    "packageFolder": "gr/athenarc/imsi/visualfacts/tool",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "no",
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "MmFhZjY3NGIxNjI3ZDIxYzUzNGYwMTkwZWY4MWY0ODE2MGRhYmYyMTI2NmE0M2UxNDFiMWY0YjFkNTNhZDU5ZDdhZjJlMGI5Njc4NTAwNDAyZGJjZWYxYWE0ZDQ4NzM5YmZiMDE4NDc3ZTRjYmRmYjYxY2Q2Y2VjY2I0NGI5MzQ=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "react",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "creationTimestamp": 1605868717180,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "blueprints": []
+  }
+}

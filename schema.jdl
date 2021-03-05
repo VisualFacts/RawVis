@@ -1,0 +1,24 @@
+entity Dataset {
+    name String required,
+    type DatasetType
+}
+
+entity Field {
+	name String,
+	fieldIndex Integer
+}
+
+enum DatasetType {
+    CSV
+}
+
+
+relationship OneToOne {
+	Dataset{measure} to Field,
+	Dataset{lat} to Field,
+	Dataset{lon} to Field
+}
+
+relationship OneToMany {
+	Dataset{dimensions} to Field{dataset}
+}

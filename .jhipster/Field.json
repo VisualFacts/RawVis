@@ -1,0 +1,33 @@
+{
+  "name": "Field",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "fieldIndex",
+      "fieldType": "Integer"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "dataset",
+      "otherEntityRelationshipName": "dimensions",
+      "relationshipName": "dataset",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20201210191532",
+  "entityTableName": "field",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}
