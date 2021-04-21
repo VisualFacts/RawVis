@@ -32,6 +32,7 @@ export const VisPage = (props: IVisPageProps) => {
     loading,
     indexStatus,
     clusters,
+    duplicates,
     viewRect,
     series,
     rectStats,
@@ -75,7 +76,7 @@ export const VisPage = (props: IVisPageProps) => {
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
                 updateFilters={props.updateFilters} reset={props.reset}/>
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset}/>
+         updateDrawnRect={props.updateDrawnRect} dataset={dataset} duplicates={duplicates}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -113,6 +114,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   series: visualizer.series,
   rectStats: visualizer.rectStats,
   clusters: visualizer.clusters,
+  duplicates: visualizer.duplicates,
   groupByCols: visualizer.groupByCols,
   aggType: visualizer.aggType,
   measureCol: visualizer.measureCol,

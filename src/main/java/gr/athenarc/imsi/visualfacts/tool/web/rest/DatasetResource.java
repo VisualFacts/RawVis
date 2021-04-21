@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+
 
 /**
  * REST controller for managing {@link gr.athenarc.imsi.visualfacts.tool.domain.Dataset}.
@@ -137,6 +139,16 @@ public class DatasetResource {
     @GetMapping("/datasets/{id}/status")
     public IndexStatus getIndexStatus(@PathVariable Long id) {
         return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
+    }
+
+    @GetMapping("/datasets/{id}/dedup-query")
+    public ResponseEntity dedupQuery(@RequestParam String q) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/query?q=" + q;
+        ResponseEntity response
+            = restTemplate.postForEntity(url, "", String.class);
+        log.debug(response.toString());
+        return response;
     }
 }
 
