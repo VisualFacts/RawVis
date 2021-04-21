@@ -30,6 +30,9 @@ public class Dataset implements Serializable {
     @Column(name = "type")
     private DatasetType type;
 
+    @Column(name = "has_header", nullable = false)
+    private Boolean hasHeader;
+
     @NotNull
     @Column(name = "object_count", nullable = false)
     private Integer objectCount;
@@ -105,6 +108,14 @@ public class Dataset implements Serializable {
     public Dataset name(String name) {
         this.name = name;
         return this;
+    }
+
+    public boolean getHasHeader() {
+        return hasHeader;
+    }
+
+    public void setHasHeader(Boolean hasHeader) {
+        this.hasHeader = hasHeader;
     }
 
     public DatasetType getType() {

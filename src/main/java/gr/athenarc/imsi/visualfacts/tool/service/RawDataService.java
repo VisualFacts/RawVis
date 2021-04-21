@@ -56,8 +56,11 @@ public class RawDataService {
             new Rectangle(Range.open(dataset.getxMin(), dataset.getxMax()), Range.open(dataset.getyMin(), dataset.getyMax())), dataset.getObjectCount());
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field.getFieldIndex())).collect(Collectors.toList());
         schema.setCategoricalColumns(categoricalColumns);
+        schema.setHasHeader(dataset.getHasHeader());
+
+
         log.debug(schema.toString());
-        Veti veti = new Veti(schema, 100000000, "bini");
+        Veti veti = new Veti(schema, 100000000, "binn", 50);
         this.indexes.put(dataset.getId(), veti);
         return veti;
     }

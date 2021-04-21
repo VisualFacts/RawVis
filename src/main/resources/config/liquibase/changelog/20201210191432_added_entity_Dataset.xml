@@ -17,6 +17,9 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="has_header" type="boolean">
+                <constraints nullable="false"/>
+            </column>
             <column name="type" type="varchar(255)">
                 <constraints nullable="true"/>
             </column>
@@ -59,6 +62,7 @@
             <column name="query_y_max" type="float">
                 <constraints nullable="false"/>
             </column>
+
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
     </changeSet>
@@ -83,6 +87,7 @@
             tableName="dataset">
             <column name="id" type="numeric"/>
             <column name="name" type="string"/>
+            <column name="has_header" type="boolean"/>
             <column name="type" type="string"/>
             <column name="measure0_id" type="numeric"/>
             <column name="measure1_id" type="numeric"/>

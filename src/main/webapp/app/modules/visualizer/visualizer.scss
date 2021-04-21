@@ -50,6 +50,11 @@
   white-space: nowrap;
 }
 
+.marker-duplicate {
+  border-radius: 20px;
+  background-color: red;
+}
+
 .leaflet-container {
   width: 100%;
   height: 100vh;

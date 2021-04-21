@@ -10,6 +10,7 @@ import {IDataset} from "app/shared/model/dataset.model";
 export interface IMapProps {
   id: any,
   clusters: any,
+  duplicates: any,
   dataset: IDataset,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
@@ -17,7 +18,7 @@ export interface IMapProps {
 
 
 export const Map = (props: IMapProps) => {
-  const {clusters, dataset} = props;
+  const {clusters, dataset, duplicates} = props;
 
   const [map, setMap] = useState(null);
 
@@ -90,6 +91,15 @@ export const Map = (props: IMapProps) => {
       } = cluster.properties;
       return (
         <Marker key={`marker-${index}`} position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} icon={fetchIcon(totalCount)}/>
+      );
+    })}
+
+    { duplicates && duplicates.map((duplicate, index) => {
+      return (
+      <Marker key={`marker-${index}`} position={[duplicate[1], duplicate[0]]} icon={L.divIcon({
+        className: `marker-duplicate`,
+        iconSize: L.point(10, 10)
+      })}/>
       );
     })}
     <ZoomControl position="topright"/>

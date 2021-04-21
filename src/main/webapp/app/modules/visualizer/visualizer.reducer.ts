@@ -26,6 +26,7 @@ export const ACTION_TYPES = {
   UPDATE_FILTERS: 'visualizer/UPDATE_FILTERS',
   UPDATE_QUERY_INFO: 'visualizer/UPDATE_QUERY_INFO',
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
+  UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
 };
 
 const initialState = {
@@ -53,6 +54,7 @@ const initialState = {
   totalPointCount: 0,
   executionTime: 0,
   totalTime: 0,
+  duplicates: [],
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -87,6 +89,11 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         clusters: action.payload,
         totalTime: new Date().getTime() - action.meta.requestTime,
+      };
+    case SUCCESS(ACTION_TYPES.UPDATE_DUPLICATES):
+      return {
+        ...state,
+        duplicates: action.payload,
       };
     case ACTION_TYPES.UPDATE_FACETS:
       return {
@@ -209,6 +216,18 @@ const updateAnalysisResults = id => (dispatch, getState) => {
   });
 };
 
+const updateDuplicates = (id) => (dispatch, getState) => {
+  const { dataset, viewRect } = getState().visualizer;
+  const sqlQuery = `SELECT DEDUP ${dataset.lat.name}, ${dataset.lon.name} FROM all.${dataset.name.split('.')[0]} WHERE ${dataset.lat.name} BETWEEN ${viewRect.lat[0]} AND ${viewRect.lat[1]} AND ${dataset.lon.name} BETWEEN ${viewRect.lon[0]} AND ${viewRect.lon[1]}`;
+  dispatch({
+    type: ACTION_TYPES.UPDATE_DUPLICATES,
+    payload: axios.get(`api/datasets/${id}/dedup-query?q=${sqlQuery}`).then(res => {
+      return  res.data.map(d => [parseFloat(d.columns[dataset.lon.name]), parseFloat(d.columns[dataset.lat.name])]);
+    }),
+  });
+};
+
+
 export const updateClusters = id => (dispatch, getState) => {
   const { categoricalFilters, viewRect, zoom, groupByCols, measureCol, aggType, drawnRect } = getState().visualizer;
   const requestTime = new Date().getTime();
@@ -316,6 +335,7 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number) => dispa
     payload: { zoom, viewRect },
   });
   dispatch(updateClusters(id));
+  dispatch(updateDuplicates(id));
 };
 
 export const reset = id => async dispatch => {
