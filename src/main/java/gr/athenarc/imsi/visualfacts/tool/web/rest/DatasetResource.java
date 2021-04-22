@@ -144,7 +144,7 @@ public class DatasetResource {
     @GetMapping("/datasets/{id}/dedup-query")
     public ResponseEntity dedupQuery(@RequestParam String q) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/query?q=" + q;
+        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/query-rv?q=" + q;
         ResponseEntity response
             = restTemplate.postForEntity(url, "", String.class);
         log.debug(response.toString());
