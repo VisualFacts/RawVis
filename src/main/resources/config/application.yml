@@ -152,4 +152,4 @@ jhipster:
 # ===================================================================
 
 application:
-  dataPath: /data/
+  dataPath: /home/bstam/erVis/queryER/all/network_data_original_subset_with_dups.csv
