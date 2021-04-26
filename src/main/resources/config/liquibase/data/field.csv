@@ -16,12 +16,11 @@ id;name;field_index;dataset_id
 22;Roaming;65;2
 23;Latency;138;
 24;Location Altitude;11;
-32;Start_LocationLatitude;3;
-33;Start_LocationLongitude;4;
-34;Start_RadioOperatorName;15;4
-35;Start_RadioNetworkType;10;4
-36;DeviceManufacturer;17;4
-37;Start_RadioIsRoaming;16;4
-38;AverageValue;24;
-39;Start_LocationAltitude;5;
-
+32;Start_LocationLatitude;2;
+33;Start_LocationLongitude;3;
+34;Start_RadioOperatorName;12;4
+35;Start_RadioNetworkType;7;4
+36;DeviceManufacturer;14;4
+37;Start_RadioIsRoaming;13;4
+38;AverageValue;18;
+39;Start_LocationAltitude;4;

@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
-import {Button, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
-import {reset, updateFilters} from "app/modules/visualizer/visualizer.reducer";
+import {Button, Checkbox, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
+import {reset, toggleDuplicates, updateFilters, updateMapBounds} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
 
 
@@ -11,6 +11,7 @@ export interface IVisControlProps {
   groupByCols: number[],
   categoricalFilters: any,
   updateFilters: typeof updateFilters,
+  toggleDuplicates: typeof toggleDuplicates,
   reset: typeof reset,
 }
 
@@ -24,6 +25,9 @@ export const VisControl = (props: IVisControlProps) => {
     props.updateFilters(dataset.id, filters);
   };
 
+  const handleDuplicateToggleChange = (dimIndex) => {
+    props.toggleDuplicates();
+  };
 
   const filterDropdowns = facets &&
     <div>
@@ -67,6 +71,11 @@ export const VisControl = (props: IVisControlProps) => {
     <Label size='medium' color='blue'>
       {dataset.lon.name}
     </Label>
+    <Header as='h5'>Deduplicate</Header>
+    <Checkbox className="toggle"
+       onChange={handleDuplicateToggleChange}
+    />
+
     <br/>
     {
       filterDropdowns

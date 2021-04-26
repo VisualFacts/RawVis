@@ -14,6 +14,8 @@ import {
   updateGroupBy,
   updateMapBounds,
   updateMeasure,
+  toggleDuplicates,
+  updateMap
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -41,7 +43,7 @@ export const VisPage = (props: IVisPageProps) => {
     measureCol,
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
-    totalPointCount, totalTileCount, totalTime, executionTime,
+    totalPointCount, zoom, totalTileCount, totalTime, executionTime, showDuplicates,
   } = props;
 
   useEffect(() => {
@@ -71,12 +73,11 @@ export const VisPage = (props: IVisPageProps) => {
       </Grid.Column>
     </Grid>;*/
 
-
   return !loading && <div>
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
-                updateFilters={props.updateFilters} reset={props.reset}/>
-    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset} duplicates={duplicates}/>
+                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates}/>
+    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates} 
+         updateDrawnRect={props.updateDrawnRect} dataset={dataset} duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -130,6 +131,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   totalPointCount: visualizer.totalPointCount,
   totalTime: visualizer.totalTime,
   executionTime: visualizer.executionTime,
+  showDuplicates: visualizer.showDuplicates,
 });
 
 const mapDispatchToProps = {
@@ -143,6 +145,8 @@ const mapDispatchToProps = {
   reset,
   getIndexStatus,
   updateClusters,
+  toggleDuplicates,
+  updateMap,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

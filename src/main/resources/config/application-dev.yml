@@ -113,4 +113,5 @@ jhipster:
 # ===================================================================
 
 application:
-  dataPath: /home/bstam/erVis/queryER/all/
+  # dataPath: /home/bstam/erVis/queryER/all/
+  dataPath: /Users/vasilisstamatopoulos/Documents/Works/ATHENA/Projects/ER/Code/queryER/all/

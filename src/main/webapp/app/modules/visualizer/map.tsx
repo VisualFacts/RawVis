@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
 import {MapContainer, Marker, TileLayer, ZoomControl} from "react-leaflet";
-import {updateDrawnRect, updateMapBounds} from "app/modules/visualizer/visualizer.reducer";
+import {updateDrawnRect, updateMapBounds, updateMap} from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
@@ -12,16 +12,34 @@ export interface IMapProps {
   clusters: any,
   duplicates: any,
   dataset: IDataset,
+  showDuplicates: any,
+  zoom:any,
+  viewRect:any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
+  updateMap: typeof updateMap,
 }
 
 
+
 export const Map = (props: IMapProps) => {
+
   const {clusters, dataset, duplicates} = props;
 
-  const [map, setMap] = useState(null);
+  useEffect(()=> {
+    return () => {
+      if(props.viewRect != null){
+        if (props.showDuplicates ) {
+          props.updateMap(props.id, props.viewRect, props.zoom, false);
+        }
+        else  props.updateMap(props.id, props.viewRect, props.zoom, true);
+      }
+    };
+  }, [props.showDuplicates]);
 
+  const [map, setMap] = useState(null);
+  const showDuplicatesRef = React.useRef();
+  showDuplicatesRef.current = props.showDuplicates;
   useEffect(() => {
     if (!map) return;
 
@@ -60,7 +78,7 @@ export const Map = (props: IMapProps) => {
     });
 
     map.on('moveend', (e) => {
-      props.updateMapBounds(props.id, e.target.getBounds(), e.target.getZoom());
+      props.updateMapBounds(props.id, e.target.getBounds(), e.target.getZoom(), showDuplicatesRef.current);
     });
     map.fitBounds([[dataset.queryYMin, dataset.queryXMin], [dataset.queryYMax, dataset.queryXMax]]);
   }, [map])
@@ -78,6 +96,18 @@ export const Map = (props: IMapProps) => {
     });
   };
 
+  const fetchDedupIcon = count => {
+    const size =
+    count < 100 ? 'small' :
+      count < 1000 ? 'medium' : 'large';
+
+    return L.divIcon({
+      html: `<div><span>${count}</span></div>`,
+      className: `marker-duplicate marker-cluster-${size}`,
+      iconSize: L.point(40, 40)
+    });
+  };
+
   return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false}>
     <TileLayer
       attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -90,16 +120,17 @@ export const Map = (props: IMapProps) => {
         totalCount
       } = cluster.properties;
       return (
-        <Marker key={`marker-${index}`} position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} icon={fetchIcon(totalCount)}/>
+        <Marker key={`marker-${index}`} 
+          position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} 
+          icon={fetchIcon(totalCount)}/>
       );
     })}
 
     { duplicates && duplicates.map((duplicate, index) => {
       return (
-      <Marker key={`marker-${index}`} position={[duplicate[1], duplicate[0]]} icon={L.divIcon({
-        className: `marker-duplicate`,
-        iconSize: L.point(10, 10)
-      })}/>
+      <Marker key={`marker-${index}`}
+      position={[duplicate[1], duplicate[0]]} 
+      icon={fetchDedupIcon(duplicate[2])}/>
       );
     })}
     <ZoomControl position="topright"/>
