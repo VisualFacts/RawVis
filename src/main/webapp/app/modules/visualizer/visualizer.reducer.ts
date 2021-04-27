@@ -359,8 +359,6 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDupl
 };
 
 export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean) => dispatch => {
-  console.log(showDuplicates);
-
   dispatch({
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
     payload: { zoom, viewRect },
