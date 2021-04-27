@@ -857,7 +857,7 @@
                     <artifactId>h2</artifactId>
                 </dependency>
             </dependencies>
-            <!-- <build>
+            <build>
                 <plugins>
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
@@ -896,7 +896,7 @@
                         </executions>
                     </plugin>
                 </plugins>
-            </build> -->
+            </build>
             <properties>
                 <!-- default Spring profiles -->
                 <spring.profiles.active>dev${profile.no-liquibase}</spring.profiles.active>
