@@ -11,6 +11,7 @@ import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import _, { initial } from 'lodash';
 import StatsPanel from './stats-panel';
+import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
@@ -180,6 +181,7 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
       return {
         ...state,
         showDuplicates: !state.showDuplicates,
+        clusters: [],
       };
     case ACTION_TYPES.REMOVE_DUPLICATES:
       return {
@@ -354,7 +356,7 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDupl
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
     payload: { zoom, viewRect },
   });
-  dispatch(updateClusters(id));
+  if (!showDuplicates) dispatch(updateClusters(id));
   dispatch(updateDuplicates(id, showDuplicates));
 };
 
@@ -363,7 +365,7 @@ export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean) =
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
     payload: { zoom, viewRect },
   });
-  dispatch(updateClusters(id));
+  if (!showDuplicates) dispatch(updateClusters(id));
   dispatch(updateDuplicates(id, showDuplicates));
 };
 

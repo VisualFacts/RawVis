@@ -35,7 +35,8 @@ export const VisControl = (props: IVisControlProps) => {
         <Header as='h4'>
           <Icon name='filter'/>
           Filtering
-        </Header></Divider>
+        </Header>
+      </Divider>
       {dataset.dimensions.map(dim => facets[dim.fieldIndex] &&
         <>
           <h5>
@@ -71,7 +72,7 @@ export const VisControl = (props: IVisControlProps) => {
     <Label size='medium' color='blue'>
       {dataset.lon.name}
     </Label>
-    <Header as='h5'>Deduplicate</Header>
+    <Header as='h5'>Show Duplicates</Header>
     <Checkbox className="toggle"
        onChange={handleDuplicateToggleChange}
     />

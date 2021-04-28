@@ -103,7 +103,7 @@ export const Map = (props: IMapProps) => {
 
     return L.divIcon({
       html: `<div><span>${count}</span></div>`,
-      className: `marker-duplicate marker-cluster-${size}`,
+      className: `marker-cluster marker-cluster-${size}`,
       iconSize: L.point(40, 40)
     });
   };
