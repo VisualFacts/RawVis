@@ -31,6 +31,7 @@ export const ACTION_TYPES = {
   UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
   TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
   REMOVE_DUPLICATES: 'visualizer/REMOVE_DUPLICATES',
+  REMOVE_CLUSTERS: 'visualizer/REMOVE_CLUSTERS',
 };
 
 const initialState = {
@@ -181,12 +182,16 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
       return {
         ...state,
         showDuplicates: !state.showDuplicates,
-        clusters: [],
       };
     case ACTION_TYPES.REMOVE_DUPLICATES:
       return {
         ...state,
         duplicates: [],
+      };
+    case ACTION_TYPES.REMOVE_CLUSTERS:
+      return {
+        ...state,
+        clusters: [],
       };
     default:
       return state;
@@ -238,17 +243,21 @@ export const updateDuplicates = (id, showDuplicates) => (dispatch, getState) => 
   const sqlQuery = `SELECT DEDUP ${dataset.lat.name}, ${dataset.lon.name} FROM all.${dataset.name.split('.')[0]} WHERE ${
     dataset.lat.name
   } BETWEEN ${viewRect.lat[0]} AND ${viewRect.lat[1]} AND ${dataset.lon.name} BETWEEN ${viewRect.lon[0]} AND ${viewRect.lon[1]}`;
-  if (showDuplicates)
+  if (showDuplicates) {
+    dispatch({
+      type: ACTION_TYPES.REMOVE_CLUSTERS,
+    });
     dispatch({
       type: ACTION_TYPES.UPDATE_DUPLICATES,
       payload: axios.get(`api/datasets/${id}/dedup-query?q=${sqlQuery}`).then(res => {
         return res.data.map(d => [parseFloat(d[0].columns[dataset.lon.name]), parseFloat(d[0].columns[dataset.lat.name]), d.length]);
       }),
     });
-  else
+  } else {
     dispatch({
       type: ACTION_TYPES.REMOVE_DUPLICATES,
     });
+  }
 };
 
 export const updateClusters = id => (dispatch, getState) => {
