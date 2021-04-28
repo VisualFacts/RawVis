@@ -98,8 +98,8 @@ export const Map = (props: IMapProps) => {
 
   const fetchDedupIcon = count => {
     const size =
-    count < 100 ? 'small' :
-      count < 1000 ? 'medium' : 'large';
+    count < 10 ? 'small' :
+      count < 100 ? 'medium' : 'large';
 
     return L.divIcon({
       html: `<div><span>${count}</span></div>`,
