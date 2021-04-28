@@ -245,6 +245,9 @@ export const updateDuplicates = (id, showDuplicates) => (dispatch, getState) => 
   } BETWEEN ${viewRect.lat[0]} AND ${viewRect.lat[1]} AND ${dataset.lon.name} BETWEEN ${viewRect.lon[0]} AND ${viewRect.lon[1]}`;
   if (showDuplicates) {
     dispatch({
+      type: ACTION_TYPES.REMOVE_CLUSTERS,
+    });
+    dispatch({
       type: ACTION_TYPES.UPDATE_DUPLICATES,
       payload: axios.get(`api/datasets/${id}/dedup-query?q=${sqlQuery}`).then(res => {
         return res.data.map(d => [parseFloat(d[0].columns[dataset.lon.name]), parseFloat(d[0].columns[dataset.lat.name]), d.length]);
@@ -363,12 +366,7 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDupl
     payload: { zoom, viewRect },
   });
   if (!showDuplicates) dispatch(updateClusters(id));
-  else {
-    dispatch({
-      type: ACTION_TYPES.REMOVE_CLUSTERS,
-    });
-    dispatch(updateDuplicates(id, showDuplicates));
-  }
+  dispatch(updateDuplicates(id, showDuplicates));
 };
 
 export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean) => dispatch => {
@@ -377,12 +375,7 @@ export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean) =
     payload: { zoom, viewRect },
   });
   if (!showDuplicates) dispatch(updateClusters(id));
-  else {
-    dispatch({
-      type: ACTION_TYPES.REMOVE_CLUSTERS,
-    });
-    dispatch(updateDuplicates(id, showDuplicates));
-  }
+  dispatch(updateDuplicates(id, showDuplicates));
 };
 
 export const reset = id => async dispatch => {
