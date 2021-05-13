@@ -143,7 +143,7 @@ export const Map = (props: IMapProps) => {
                 return(
                     <div>
                       <span key = {`dup-item-${index}-${colId}`}>
-                        <b>{col}:</b>{duplicate[3][colId]}
+                        <b>{col}:</b>{duplicate[3][colId - 1]}
                         </span>
                         <br></br>
                     </div>
