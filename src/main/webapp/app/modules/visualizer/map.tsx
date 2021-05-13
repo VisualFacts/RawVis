@@ -139,11 +139,10 @@ export const Map = (props: IMapProps) => {
       >
           <Popup className="request-popup">
            {props.columns && props.columns.map((col, colId) => {
-              if(colId !== 0)
                 return(
                     <div>
                       <span key = {`dup-item-${index}-${colId}`}>
-                        <b>{col}:</b>{duplicate[3][colId - 1]}
+                        <b>{col}:</b>{duplicate[3][colId]}
                         </span>
                         <br></br>
                     </div>
