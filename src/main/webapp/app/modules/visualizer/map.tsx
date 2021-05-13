@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
-import {MapContainer, Marker, TileLayer, ZoomControl} from "react-leaflet";
+import {MapContainer, Marker, TileLayer, ZoomControl, Popup} from "react-leaflet";
 import {updateDrawnRect, updateMapBounds, updateMap} from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
+import { faColumns } from '@fortawesome/free-solid-svg-icons';
 
 
 export interface IMapProps {
@@ -15,6 +16,8 @@ export interface IMapProps {
   showDuplicates: any,
   zoom:any,
   viewRect:any,
+  showAll: any,
+  columns: any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
   updateMap: typeof updateMap,
@@ -29,17 +32,20 @@ export const Map = (props: IMapProps) => {
   useEffect(()=> {
     return () => {
       if(props.viewRect != null){
-        if (props.showDuplicates ) {
-          props.updateMap(props.id, props.viewRect, props.zoom, false);
+        if (props.showDuplicates || props.showAll ) {
+          props.updateMap(props.id, props.viewRect, props.zoom, false, props.showAll);
         }
-        else  props.updateMap(props.id, props.viewRect, props.zoom, true);
+        else  props.updateMap(props.id, props.viewRect, props.zoom, true, props.showAll);
       }
     };
-  }, [props.showDuplicates]);
+  }, [props.showDuplicates, props.showAll]);
+
 
   const [map, setMap] = useState(null);
   const showDuplicatesRef = React.useRef();
+  const showAllRef = React.useRef();
   showDuplicatesRef.current = props.showDuplicates;
+  showAllRef.current = props.showAll;
   useEffect(() => {
     if (!map) return;
 
@@ -78,7 +84,7 @@ export const Map = (props: IMapProps) => {
     });
 
     map.on('moveend', (e) => {
-      props.updateMapBounds(props.id, e.target.getBounds(), e.target.getZoom(), showDuplicatesRef.current);
+      props.updateMapBounds(props.id, e.target.getBounds(), e.target.getZoom(), showDuplicatesRef.current, showAllRef.current);
     });
     map.fitBounds([[dataset.queryYMin, dataset.queryXMin], [dataset.queryYMax, dataset.queryXMax]]);
   }, [map])
@@ -125,12 +131,25 @@ export const Map = (props: IMapProps) => {
           icon={fetchIcon(totalCount)}/>
       );
     })}
-
     { duplicates && duplicates.map((duplicate, index) => {
       return (
       <Marker key={`marker-${index}`}
       position={[duplicate[1], duplicate[0]]} 
-      icon={fetchDedupIcon(duplicate[2])}/>
+      icon={fetchDedupIcon(duplicate[2])}
+      >
+          <Popup className="request-popup">
+           {props.columns && props.columns.map((col, colId) => {
+              if(colId !== 0)
+                return(
+                    <div>
+                      <span key = {`dup-item-${index}-${colId}`}>
+                        <b>{col}:</b>{duplicate[3][colId]}
+                        </span>
+                        <br></br>
+                    </div>
+                )})}
+          </Popup>
+      </Marker>
       );
     })}
     <ZoomControl position="topright"/>

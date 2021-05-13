@@ -15,12 +15,16 @@ import {
   updateMapBounds,
   updateMeasure,
   toggleDuplicates,
-  updateMap
+  toggleAll,
+  updateMap,
+  getColumns,
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
+import DedupStatsPanel from "app/modules/visualizer/dedup-stats-panel";
 import StatsPanel from "app/modules/visualizer/stats-panel";
 import Chart from "app/modules/visualizer/chart";
+import DedupChart from "app/modules/visualizer/dedup-chart";
 import VisControl from "app/modules/visualizer/vis-control";
 import {Header, Modal, Progress} from "semantic-ui-react";
 import QueryInfoPanel from "app/modules/visualizer/query-info-panel";
@@ -38,12 +42,13 @@ export const VisPage = (props: IVisPageProps) => {
     viewRect,
     series,
     rectStats,
+    dedupStats,
     groupByCols,
     aggType,
     measureCol,
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
-    totalPointCount, zoom, totalTileCount, totalTime, executionTime, showDuplicates,
+    totalPointCount, zoom, totalTileCount, totalTime, executionTime, showDuplicates, showAll, columns, 
   } = props;
 
   useEffect(() => {
@@ -61,6 +66,10 @@ export const VisPage = (props: IVisPageProps) => {
     }
   }, [indexStatus]);
 
+  useEffect(() => {
+    if(dataset != null)
+      props.getColumns(props.match.params.id, dataset);
+  }, [dataset]);
 
   /*  return !loading && <Grid>
       <Grid.Column width={4}>
@@ -75,9 +84,10 @@ export const VisPage = (props: IVisPageProps) => {
 
   return !loading && <div>
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
-                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates}/>
-    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates} 
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset} duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}/>
+                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates} toggleAll = {props.toggleAll}
+                showAll = {showAll} showDuplicates = {showDuplicates} />
+    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates} showAll = {showAll}
+         updateDrawnRect={props.updateDrawnRect} dataset={dataset} columns = {columns} duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -87,10 +97,14 @@ export const VisPage = (props: IVisPageProps) => {
     </div>
     <div className='right-panel-group'>
       {rectStats && <>
-        {dataset.measure0 != null && <StatsPanel dataset={dataset} rectStats={rectStats}/>}
-        <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+        {(dataset.measure0 != null && showDuplicates === false) && <StatsPanel dataset={dataset} rectStats={rectStats}/>}
+        {showDuplicates === false && <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure}/>
+               updateMeasure={props.updateMeasure}/>}
+      </>}
+      {rectStats && <>
+        {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>}
+        {showDuplicates && <DedupChart dedupStats={dedupStats}/>}
       </>}
     </div>
     <Modal
@@ -114,6 +128,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   drawnRect: visualizer.drawnRect,
   series: visualizer.series,
   rectStats: visualizer.rectStats,
+  dedupStats: visualizer.dedupStats,
   clusters: visualizer.clusters,
   duplicates: visualizer.duplicates,
   groupByCols: visualizer.groupByCols,
@@ -132,6 +147,8 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   totalTime: visualizer.totalTime,
   executionTime: visualizer.executionTime,
   showDuplicates: visualizer.showDuplicates,
+  showAll: visualizer.showAll,
+  columns: visualizer.columns,
 });
 
 const mapDispatchToProps = {
@@ -146,7 +163,9 @@ const mapDispatchToProps = {
   getIndexStatus,
   updateClusters,
   toggleDuplicates,
+  toggleAll,
   updateMap,
+  getColumns,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

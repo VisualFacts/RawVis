@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
 import {Button, Checkbox, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
-import {reset, toggleDuplicates, updateFilters, updateMapBounds} from "app/modules/visualizer/visualizer.reducer";
+import {reset, toggleDuplicates, updateFilters, toggleAll} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
 
 
@@ -10,8 +10,11 @@ export interface IVisControlProps {
   facets: any,
   groupByCols: number[],
   categoricalFilters: any,
+  showDuplicates: any,
+  showAll: any,
   updateFilters: typeof updateFilters,
   toggleDuplicates: typeof toggleDuplicates,
+  toggleAll: typeof toggleAll,
   reset: typeof reset,
 }
 
@@ -25,7 +28,11 @@ export const VisControl = (props: IVisControlProps) => {
     props.updateFilters(dataset.id, filters);
   };
 
-  const handleDuplicateToggleChange = (dimIndex) => {
+  const handleShowAllToggleChange = (e) => {
+    props.toggleAll();
+  };
+
+  const handleDuplicateToggleChange = (e) => {
     props.toggleDuplicates();
   };
 
@@ -72,8 +79,14 @@ export const VisControl = (props: IVisControlProps) => {
     <Label size='medium' color='blue'>
       {dataset.lon.name}
     </Label>
-    <Header as='h5'>Show Duplicates</Header>
+    {/* <Header as='h5'>Show All</Header>
     <Checkbox className="toggle"
+       checked = {props.showAll}
+       onChange={handleShowAllToggleChange}
+    /> */}
+    <Header as='h5'>Show Only Duplicates</Header>
+    <Checkbox className="toggle"
+       checked = {props.showDuplicates}
        onChange={handleDuplicateToggleChange}
     />
 

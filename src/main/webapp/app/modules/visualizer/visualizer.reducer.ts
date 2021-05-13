@@ -7,6 +7,7 @@ import Supercluster from 'supercluster';
 import { IRectangle } from 'app/shared/model/rectangle.model';
 import { AggregateFunctionType } from 'app/shared/model/enumerations/aggregate-function-type.model';
 import { IRectStats } from 'app/shared/model/rect-stats.model';
+import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import _, { initial } from 'lodash';
@@ -32,6 +33,8 @@ export const ACTION_TYPES = {
   TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
   REMOVE_DUPLICATES: 'visualizer/REMOVE_DUPLICATES',
   REMOVE_CLUSTERS: 'visualizer/REMOVE_CLUSTERS',
+  GET_COLUMNS: 'visualizer/GET_COLUMNS',
+  TOGGLE_ALL: 'visualizer/TOGGLE_ALL',
 };
 
 const initialState = {
@@ -50,6 +53,7 @@ const initialState = {
   series: [] as IGroupedStats[],
   facets: {},
   rectStats: null as IRectStats,
+  dedupStats: null as IDedupStats,
   clusters: [],
   fullyContainedTileCount: 0,
   tileCount: 0,
@@ -62,6 +66,8 @@ const initialState = {
   duplicates: [],
   bounds: null,
   showDuplicates: false,
+  showAll: false,
+  columns: [],
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -100,7 +106,9 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
     case SUCCESS(ACTION_TYPES.UPDATE_DUPLICATES):
       return {
         ...state,
-        duplicates: action.payload,
+        loading: false,
+        dedupStats: action.payload.dedupStats,
+        duplicates: action.payload.duplicates,
       };
     case ACTION_TYPES.UPDATE_FACETS:
       return {
@@ -181,7 +189,14 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
     case ACTION_TYPES.TOGGLE_DUPLICATES:
       return {
         ...state,
+        showAll: false,
         showDuplicates: !state.showDuplicates,
+      };
+    case ACTION_TYPES.TOGGLE_ALL:
+      return {
+        ...state,
+        showAll: !state.showAll,
+        showDuplicates: false,
       };
     case ACTION_TYPES.REMOVE_DUPLICATES:
       return {
@@ -192,6 +207,11 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
       return {
         ...state,
         clusters: [],
+      };
+    case SUCCESS(ACTION_TYPES.GET_COLUMNS):
+      return {
+        ...state,
+        columns: action.payload,
       };
     default:
       return state;
@@ -238,26 +258,35 @@ const updateAnalysisResults = id => (dispatch, getState) => {
   });
 };
 
-export const updateDuplicates = (id, showDuplicates) => (dispatch, getState) => {
-  const { dataset, viewRect } = getState().visualizer;
-  const sqlQuery = `SELECT DEDUP ${dataset.lat.name}, ${dataset.lon.name} FROM all.${dataset.name.split('.')[0]} WHERE ${
-    dataset.lat.name
-  } BETWEEN ${viewRect.lat[0]} AND ${viewRect.lat[1]} AND ${dataset.lon.name} BETWEEN ${viewRect.lon[0]} AND ${viewRect.lon[1]}`;
-  if (showDuplicates) {
-    dispatch({
-      type: ACTION_TYPES.REMOVE_CLUSTERS,
-    });
-    dispatch({
-      type: ACTION_TYPES.UPDATE_DUPLICATES,
-      payload: axios.get(`api/datasets/${id}/dedup-query?q=${sqlQuery}`).then(res => {
-        return res.data.map(d => [parseFloat(d[0].columns[dataset.lon.name]), parseFloat(d[0].columns[dataset.lat.name]), d.length]);
-      }),
-    });
-  } else {
-    dispatch({
-      type: ACTION_TYPES.REMOVE_DUPLICATES,
-    });
+const getDuplicateData = (data, dataset) => {
+  console.log(data.bigVizClusters[0].bigVizData[0]);
+  const duplicateData = {
+    dedupStats: { percentOfDups: data.percentOfDups },
+    duplicates: data.bigVizClusters.map(d => [
+      parseFloat(d.bigVizData[0].columns[dataset.lon.name]),
+      parseFloat(d.bigVizData[0].columns[dataset.lat.name]),
+      d.bigVizData.length,
+      d.groupedObj,
+    ]),
+  };
+  return duplicateData;
+};
+
+export const updateDuplicates = id => (dispatch, getState) => {
+  const { dataset, viewRect, columns } = getState().visualizer;
+  let colString = columns[1];
+  for (let i = 2; i < columns.length; i++) {
+    colString += ', ' + columns[i];
   }
+  const sqlQuery = `SELECT DEDUP ${colString} FROM all.${dataset.name.split('.')[0]} WHERE ${dataset.lat.name} BETWEEN ${
+    viewRect.lat[0]
+  } AND ${viewRect.lat[1]} AND ${dataset.lon.name} BETWEEN ${viewRect.lon[0]} AND ${viewRect.lon[1]}`;
+  dispatch({
+    type: ACTION_TYPES.UPDATE_DUPLICATES,
+    payload: axios.get(`api/datasets/${id}/dedup-query?q=${sqlQuery}`).then(res => {
+      return getDuplicateData(res.data, dataset);
+    }),
+  });
 };
 
 export const updateClusters = id => (dispatch, getState) => {
@@ -356,7 +385,7 @@ export const updateDrawnRect = (id, drawnRectBounds: LatLngBounds) => dispatch =
   dispatch(updateAnalysisResults(id));
 };
 
-export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDuplicates: boolean) => dispatch => {
+export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDuplicates: boolean, showAll: boolean) => dispatch => {
   const viewRect = {
     lat: [bounds.getSouth(), bounds.getNorth()],
     lon: [bounds.getWest(), bounds.getEast()],
@@ -365,17 +394,35 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDupl
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
     payload: { zoom, viewRect },
   });
-  if (!showDuplicates) dispatch(updateClusters(id));
-  dispatch(updateDuplicates(id, showDuplicates));
+  if (showAll) {
+    dispatch(updateClusters(id));
+    dispatch(updateDuplicates(id));
+  } else {
+    if (showDuplicates) {
+      dispatch(updateDuplicates(id));
+      dispatch({ type: ACTION_TYPES.REMOVE_CLUSTERS });
+    } else {
+      dispatch(updateClusters(id));
+      dispatch({ type: ACTION_TYPES.REMOVE_DUPLICATES });
+    }
+  }
 };
 
-export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean) => dispatch => {
+export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean, showAll: boolean) => dispatch => {
   dispatch({
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
     payload: { zoom, viewRect },
   });
-  if (!showDuplicates) dispatch(updateClusters(id));
-  dispatch(updateDuplicates(id, showDuplicates));
+  if (showAll) {
+    dispatch(updateClusters(id));
+    dispatch(updateDuplicates(id));
+  } else {
+    dispatch(updateClusters(id));
+    if (showDuplicates) {
+      dispatch({ type: ACTION_TYPES.REMOVE_CLUSTERS });
+      dispatch(updateDuplicates(id));
+    } else dispatch({ type: ACTION_TYPES.REMOVE_DUPLICATES });
+  }
 };
 
 export const reset = id => async dispatch => {
@@ -393,10 +440,26 @@ export const toggleDuplicates = () => dispatch => {
   });
 };
 
+export const toggleAll = () => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.TOGGLE_ALL,
+  });
+};
+
 export const getIndexStatus = id => {
   const requestUrl = `api/datasets/${id}/status`;
   return {
     type: ACTION_TYPES.FETCH_INDEX_STATUS,
     payload: axios.get<IIndexStatus>(requestUrl),
   };
+};
+
+export const getColumns = (id, dataset) => dispatch => {
+  const name = 'all.' + dataset.name.split('.')[0];
+  dispatch({
+    type: ACTION_TYPES.GET_COLUMNS,
+    payload: axios.get(`api/datasets/${id}/columns?d=${name}`).then(res => {
+      return res.data;
+    }),
+  });
 };

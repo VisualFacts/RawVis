@@ -150,6 +150,16 @@ public class DatasetResource {
         log.debug(response.toString());
         return response;
     }
+    
+    @GetMapping("/datasets/{id}/columns")
+    public ResponseEntity columns(@RequestParam String d) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/columns?d=" + d;
+        ResponseEntity response
+            = restTemplate.postForEntity(url, "", String.class);
+        log.debug(response.toString());
+        return response;
+    }
 }
 
 class IndexStatus {
