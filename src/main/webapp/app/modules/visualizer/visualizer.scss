@@ -165,3 +165,11 @@
     font-size: 0.85rem;
   }
 }
+
+.dup-item {
+  color: green;
+}
+
+.dup-item.active {
+  color: red;
+}

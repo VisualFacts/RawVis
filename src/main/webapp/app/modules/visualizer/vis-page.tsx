@@ -103,8 +103,8 @@ export const VisPage = (props: IVisPageProps) => {
                updateMeasure={props.updateMeasure}/>}
       </>}
       {rectStats && <>
-        {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>}
-        {showDuplicates && <DedupChart dedupStats={dedupStats}/>}
+        {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
+        {showDuplicates && <DedupChart dedupStats={dedupStats} columns = {columns}/>}
       </>}
     </div>
     <Modal

@@ -1,72 +1,45 @@
 import React, {useState} from 'react';
 import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official';
-import Heatmap from 'highcharts/modules/heatmap.js';
+import Piechart from 'highcharts/modules/heatmap.js';
 import {Button, Dropdown, Label, Segment} from "semantic-ui-react";
-import {AggregateFunctionType} from "app/shared/model/enumerations/aggregate-function-type.model";
 import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
 import _ from 'lodash';
+import DedupChartPercentage from './dedup-chart-percentage';
+import DedupChartSimilarities from './dedup-chart-similarities';
 
-Heatmap(Highcharts);
+Piechart(Highcharts);
 
 export interface IDedupChartProps {
-  dedupStats: IDedupStats
+  dedupStats: IDedupStats,
+  columns: any,
 }
 
 
 export const DedupChart = (props: IDedupChartProps) => {
-  const {dedupStats} = props;
+  const {dedupStats, columns} = props;
   let percentOfDups = 0;
   if(dedupStats != null) percentOfDups =  dedupStats.percentOfDups;
-  const [chartType, setChartType] = useState('column');
 
-  const options = {
-    chart: {
-      type: 'bar',
-      height: '250px',
-      marginTop: 10,
-      paddingTop: 0,
-      marginBottom: 50,
-      plotBorderWidth: 1
-    },
-    xAxis: {
-      title: {
-        text: "Category"
-      },
-      categories: ["Duplicates", "Non-Duplicates"]
-    },
-    yAxis: {
-      title: {
-        text: "Duplicates (%)"
-      },
-      reversed: false,
-      max: 100
-    },
-    colorAxis: {
-      min: 0,
-      minColor: '#FFFFFF',
-      maxColor: '#2185d0'
-    },
-    legend: {
-      enabled: false
-    },
-    title: null,
-    series: [{
-      data: [
-        {y: percentOfDups* 100},
-        {y: (1 - percentOfDups) * 100}
-      ]
-    }]
+  const [chart, setChart] = useState('dedup');
 
-  };
+
+  const handleChartChange = (chartClicked) => () => {
+    if(chartClicked === "dedup"){
+        setChart("dedup");
+    }
+    else if(chartClicked === "similarities"){
+      setChart("similarities");
+    }
+  }
 
   return <Segment id='chart-container' raised textAlign='center'>
-    <HighchartsReact
-      highcharts={Highcharts}
-      allowChartUpdate={true}
-      immutable={true}
-      options = {options}
-    />
+    <Button.Group basic>
+      <Button onClick={handleChartChange('dedup')} active={chart === 'dedup'}>Duplicate Percentage</Button>
+      <Button onClick={handleChartChange('similarities')} active={chart === 'similarities'}>Similarity Measures</Button>
+    </Button.Group>
+    <br/><br/><br/>
+    {chart==="dedup" && <DedupChartPercentage dedupStats = {dedupStats}/>}
+    {chart==="similarities" && <DedupChartSimilarities columns = {columns} dedupStats = {dedupStats}/> }
   </Segment>
 };
 

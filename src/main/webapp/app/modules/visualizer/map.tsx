@@ -139,14 +139,18 @@ export const Map = (props: IMapProps) => {
       >
           <Popup className="request-popup">
            {props.columns && props.columns.map((col, colId) => {
+                let val = duplicate[3][colId - 1];
+                if(val == null) val = "";
                 return(
-                    <div>
-                      <span key = {`dup-item-${index}-${colId}`}>
-                        <b>{col}:</b>{duplicate[3][colId]}
-                        </span>
-                        <br></br>
-                    </div>
-                )})}
+                  <div  className = {`dup-item ${val.includes("|") ? "active" : ""}`} 
+                    key = {`dup-item-${index}-${colId} ${val.includes("|") ? "active" : ""}`}>
+                    <span>
+                    <b>{col}: </b>{val}
+                    </span>
+                    <br></br>
+                  </div>
+                ) 
+                })}
           </Popup>
       </Marker>
       );

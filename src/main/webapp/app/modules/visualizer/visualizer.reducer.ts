@@ -259,10 +259,10 @@ const updateAnalysisResults = id => (dispatch, getState) => {
 };
 
 const getDuplicateData = (data, dataset) => {
-  console.log(data.bigVizClusters[0].bigVizData[0]);
+  // console.log(data.bigVizClusters[0].bigVizData[0]);
   const duplicateData = {
-    dedupStats: { percentOfDups: data.percentOfDups },
-    duplicates: data.bigVizClusters.map(d => [
+    dedupStats: { percentOfDups: data.bigVizStatistic.percentOfDups, similarityMeasures: data.bigVizStatistic.similarityMeasures },
+    duplicates: data.bigVizDataset.map(d => [
       parseFloat(d.bigVizData[0].columns[dataset.lon.name]),
       parseFloat(d.bigVizData[0].columns[dataset.lat.name]),
       d.bigVizData.length,
@@ -459,7 +459,7 @@ export const getColumns = (id, dataset) => dispatch => {
   dispatch({
     type: ACTION_TYPES.GET_COLUMNS,
     payload: axios.get(`api/datasets/${id}/columns?d=${name}`).then(res => {
-      return res.data;
+      return res.data.slice(1);
     }),
   });
 };
