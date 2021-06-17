@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
 import {MapContainer, Marker, TileLayer, ZoomControl, Popup} from "react-leaflet";
-import {updateDrawnRect, updateMapBounds, updateMap} from "app/modules/visualizer/visualizer.reducer";
+import {updateDrawnRect, updateMapBounds, updateMap, toggleClusterChart, closeClusterChart} from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
@@ -21,6 +21,8 @@ export interface IMapProps {
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
   updateMap: typeof updateMap,
+  toggleClusterChart: typeof toggleClusterChart,
+  closeClusterChart: typeof closeClusterChart,
 }
 
 
@@ -83,11 +85,17 @@ export const Map = (props: IMapProps) => {
       props.updateDrawnRect(props.id, null);
     });
 
+    map.on('popupclose', (e) => {
+      props.closeClusterChart();
+    });
+    
     map.on('moveend', (e) => {
       props.updateMapBounds(props.id, e.target.getBounds(), e.target.getZoom(), showDuplicatesRef.current, showAllRef.current);
     });
     map.fitBounds([[dataset.queryYMin, dataset.queryXMin], [dataset.queryYMax, dataset.queryXMax]]);
   }, [map])
+
+  
 
   const fetchIcon = count => {
     if (count === 1) return new L.Icon.Default();
@@ -109,12 +117,13 @@ export const Map = (props: IMapProps) => {
 
     return L.divIcon({
       html: `<div><span>${count}</span></div>`,
-      className: `marker-cluster marker-cluster-${size}`,
+      className: `marker-cluster marker-cluster-${size} marker-duplicate`,
       iconSize: L.point(40, 40)
     });
   };
+  
 
-  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false}>
+  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false} >
     <TileLayer
       attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -136,10 +145,17 @@ export const Map = (props: IMapProps) => {
       <Marker key={`marker-${index}`}
       position={[duplicate[1], duplicate[0]]} 
       icon={fetchDedupIcon(duplicate[2])}
+      eventHandlers={{
+        click: (e) => {
+          props.toggleClusterChart(duplicate[4], duplicate[5], index + 1);
+        },
+
+      }}
       >
           <Popup className="request-popup">
+            <div className="cluster-title">Cluster #{index + 1}</div>
            {props.columns && props.columns.map((col, colId) => {
-                let val = duplicate[3][colId - 1];
+                let val = duplicate[3][colId];
                 if(val == null) val = "";
                 return(
                   <div  className = {`dup-item ${val.includes("|") ? "active" : ""}`} 

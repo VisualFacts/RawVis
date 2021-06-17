@@ -3,12 +3,12 @@ import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official';
 import CustomEvents from "highcharts-custom-events";
 import _ from 'lodash';
-import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
-import { Button, Header, Image, Modal } from 'semantic-ui-react'
+import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
+import { Label } from 'semantic-ui-react'
 import './visualizer.scss';
 
-export interface IDedupChartSimilaritiesProps {
-  dedupStats: IDedupStats,
+export interface IDedupChartClusterProps {
+  dedupClusterStats: IDedupClusterStats,
   columns: any,
 }
 
@@ -30,18 +30,21 @@ const createColumnValueData = (columnValues) => {
   return data;
 }
 
-
-export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
-  const {dedupStats, columns} = props;
+export const DedupChartCluster = (props: IDedupChartClusterProps) => {
+  const {dedupClusterStats, columns} = props;
+  let showNormalChart = true;
   let similarityMeasures = null;
   let data = {};
   let columnData = {};
-  const [chart, setChart] = useState('similarities');
+  let clusterId;
+  const [chart, setChart] = useState('clusterSimilarities');
   const [col, setCol] = useState('');
-  if(dedupStats != null) {
-    similarityMeasures =  dedupStats.similarityMeasures;
+
+  if(dedupClusterStats != null) {
+    similarityMeasures =  dedupClusterStats.clusterColumnSimilarity;
     data = createSimilarityData(similarityMeasures, columns);
-    columnData = createColumnValueData(dedupStats.columnValues[col]);
+    columnData = createColumnValueData(dedupClusterStats.clusterColumnValues[col]);
+    clusterId = dedupClusterStats.clusterId;
   }
   
   
@@ -52,7 +55,7 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
     const start = '<span class="text-center">';
     const end = '</span>';
     col = col.replace(start, "").replace(end, "");
-    setChart("col");
+    setChart("clusterCol");
     setCol(col);
   }
 
@@ -147,16 +150,23 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
   };
 
   return <div>
-    {chart==="similarities" && < HighchartsReact
+    <Label attached='top' size='large'>Cluster #{clusterId} Statistics</Label>
+  
+    {chart==="clusterSimilarities" &&
+      <div style={{border:"solid lightgrey 2px",background:"white"}}>
+      <div className="column-value-chart-title">Distance Measures</div>
+      < HighchartsReact
       highcharts={CustomEvents(Highcharts)}
       allowChartUpdate={true}
       immutable={true}
       options = {options}
-    />}
-    {chart==="col"  &&  
-    <div style={{border:"solid lightgrey 2px"}}>
+     
+    />
+     </div>}
+    {chart==="clusterCol"  &&  
+    <div style={{border:"solid lightgrey 2px",background:"white"}}>
     <div className="column-value-chart-title">{col} value distribution</div>
-    <div onClick={() => setChart("similarities")} className="x-button">x</div>
+    <div onClick={() => setChart("clusterSimilarities")} className="x-button">x</div>
     <HighchartsReact
       highcharts={CustomEvents(Highcharts)}
       allowChartUpdate={true}
@@ -169,4 +179,4 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
 
 
 
-export default DedupChartSimilarities;
+export default DedupChartCluster;

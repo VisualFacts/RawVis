@@ -53,7 +53,7 @@
 .marker-duplicate {
   // border-radius: 20px;
   //background-clip: padding-box;
-  background-color: red;
+  cursor: pointer !important;
 }
 
 .marker-duplicate div {
@@ -172,4 +172,29 @@
 
 .dup-item.active {
   color: red;
+}
+
+.x-button {
+  float: right;
+  right: 10px;
+  cursor: pointer;
+  top: -28px;
+  position: relative;
+}
+
+.column-value-chart-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  padding-top: 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cluster-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  padding-bottom: 5px;
+  border-bottom: solid black 1px;
+  margin-bottom: 5px;
 }

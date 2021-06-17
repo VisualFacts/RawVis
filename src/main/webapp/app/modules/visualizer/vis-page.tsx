@@ -18,10 +18,13 @@ import {
   toggleAll,
   updateMap,
   getColumns,
+  toggleClusterChart,
+  closeClusterChart,
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
 import DedupStatsPanel from "app/modules/visualizer/dedup-stats-panel";
+import DedupChartCluster from "app/modules/visualizer/dedup-chart-cluster";
 import StatsPanel from "app/modules/visualizer/stats-panel";
 import Chart from "app/modules/visualizer/chart";
 import DedupChart from "app/modules/visualizer/dedup-chart";
@@ -48,7 +51,8 @@ export const VisPage = (props: IVisPageProps) => {
     measureCol,
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
-    totalPointCount, zoom, totalTileCount, totalTime, executionTime, showDuplicates, showAll, columns, 
+    totalPointCount, zoom, totalTileCount, totalTime, executionTime, 
+    showDuplicates, showAll, columns, showClusterChart, dedupClusterStats,
   } = props;
 
   useEffect(() => {
@@ -87,7 +91,9 @@ export const VisPage = (props: IVisPageProps) => {
                 updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates} toggleAll = {props.toggleAll}
                 showAll = {showAll} showDuplicates = {showDuplicates} />
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates} showAll = {showAll}
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset} columns = {columns} duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}/>
+         updateDrawnRect={props.updateDrawnRect} dataset={dataset} columns = {columns} 
+         duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}
+         toggleClusterChart = {props.toggleClusterChart} closeClusterChart = {props.closeClusterChart}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -104,7 +110,8 @@ export const VisPage = (props: IVisPageProps) => {
       </>}
       {rectStats && <>
         {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
-        {showDuplicates && <DedupChart dedupStats={dedupStats} columns = {columns}/>}
+        {showClusterChart === true && <DedupChartCluster columns = {columns} dedupClusterStats = {dedupClusterStats}/> }
+        {showDuplicates && <DedupChart dedupStats={dedupStats} columns = {columns} showClusterChart= {showClusterChart}/>}
       </>}
     </div>
     <Modal
@@ -149,6 +156,8 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   showDuplicates: visualizer.showDuplicates,
   showAll: visualizer.showAll,
   columns: visualizer.columns,
+  showClusterChart: visualizer.showClusterChart,
+  dedupClusterStats: visualizer.dedupClusterStats,
 });
 
 const mapDispatchToProps = {
@@ -166,6 +175,8 @@ const mapDispatchToProps = {
   toggleAll,
   updateMap,
   getColumns,
+  toggleClusterChart,
+  closeClusterChart,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

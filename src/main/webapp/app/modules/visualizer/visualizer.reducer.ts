@@ -8,6 +8,7 @@ import { IRectangle } from 'app/shared/model/rectangle.model';
 import { AggregateFunctionType } from 'app/shared/model/enumerations/aggregate-function-type.model';
 import { IRectStats } from 'app/shared/model/rect-stats.model';
 import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
+import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import _, { initial } from 'lodash';
@@ -35,6 +36,9 @@ export const ACTION_TYPES = {
   REMOVE_CLUSTERS: 'visualizer/REMOVE_CLUSTERS',
   GET_COLUMNS: 'visualizer/GET_COLUMNS',
   TOGGLE_ALL: 'visualizer/TOGGLE_ALL',
+  TOGGLE_CLUSTER_CHART: 'visualizer/TOGGLE_CLUSTER_CHART',
+  CLOSE_CLUSTER_CHART: 'visualizer/CLOSE_CLUSTER_CHART',
+  UPDATE_CLUSTER_STATS: 'visualizer/UPDATE_CLUSTER_STATS',
 };
 
 const initialState = {
@@ -54,6 +58,7 @@ const initialState = {
   facets: {},
   rectStats: null as IRectStats,
   dedupStats: null as IDedupStats,
+  dedupClusterStats: null as IDedupClusterStats,
   clusters: [],
   fullyContainedTileCount: 0,
   tileCount: 0,
@@ -68,6 +73,7 @@ const initialState = {
   showDuplicates: false,
   showAll: false,
   columns: [],
+  showClusterChart: false,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -213,6 +219,22 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         columns: action.payload,
       };
+    case ACTION_TYPES.TOGGLE_CLUSTER_CHART:
+      return {
+        ...state,
+        showClusterChart: true,
+        dedupClusterStats: action.payload,
+      };
+    case ACTION_TYPES.CLOSE_CLUSTER_CHART:
+      return {
+        ...state,
+        showClusterChart: false,
+      };
+    // case SUCCESS(ACTION_TYPES.UPDATE_CLUSTER_STATS):
+    //   return{
+    //     ...state,
+
+    //   }
     default:
       return state;
   }
@@ -261,12 +283,18 @@ const updateAnalysisResults = id => (dispatch, getState) => {
 const getDuplicateData = (data, dataset) => {
   // console.log(data.bigVizClusters[0].bigVizData[0]);
   const duplicateData = {
-    dedupStats: { percentOfDups: data.bigVizStatistic.percentOfDups, similarityMeasures: data.bigVizStatistic.similarityMeasures },
+    dedupStats: {
+      percentOfDups: data.bigVizStatistic.percentOfDups,
+      similarityMeasures: data.bigVizStatistic.similarityMeasures,
+      columnValues: data.bigVizStatistic.columnValues,
+    },
     duplicates: data.bigVizDataset.map(d => [
       parseFloat(d.bigVizData[0].columns[dataset.lon.name]),
       parseFloat(d.bigVizData[0].columns[dataset.lat.name]),
       d.bigVizData.length,
       d.groupedObj,
+      d.clusterColumnSimilarity,
+      d.clusterColumns,
     ]),
   };
   return duplicateData;
@@ -274,8 +302,8 @@ const getDuplicateData = (data, dataset) => {
 
 export const updateDuplicates = id => (dispatch, getState) => {
   const { dataset, viewRect, columns } = getState().visualizer;
-  let colString = columns[1];
-  for (let i = 2; i < columns.length; i++) {
+  let colString = columns[0];
+  for (let i = 1; i < columns.length; i++) {
     colString += ', ' + columns[i];
   }
   const sqlQuery = `SELECT DEDUP ${colString} FROM all.${dataset.name.split('.')[0]} WHERE ${dataset.lat.name} BETWEEN ${
@@ -432,6 +460,24 @@ export const reset = id => async dispatch => {
     payload: axios.post(requestUrl),
   });
   dispatch(updateClusters(id));
+};
+
+export const toggleClusterChart = (clusterColumnSimilarity, clusterColumnValues, clusterId) => dispatch => {
+  const dedupClusterStats = {
+    clusterColumnSimilarity,
+    clusterColumnValues,
+    clusterId,
+  };
+  dispatch({
+    type: ACTION_TYPES.TOGGLE_CLUSTER_CHART,
+    payload: dedupClusterStats,
+  });
+};
+
+export const closeClusterChart = () => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.CLOSE_CLUSTER_CHART,
+  });
 };
 
 export const toggleDuplicates = () => dispatch => {
