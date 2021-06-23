@@ -8,6 +8,8 @@ import gr.athenarc.imsi.visualfacts.tool.service.RawDataService;
 import gr.athenarc.imsi.visualfacts.tool.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+
+import org.imsi.queryERAPI.controller.QueryController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +40,7 @@ public class DatasetResource {
     private final Logger log = LoggerFactory.getLogger(DatasetResource.class);
     private final DatasetRepository datasetRepository;
     private final RawDataService rawDataService;
+    private final QueryController queryController = new QueryController();;
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
@@ -140,26 +146,51 @@ public class DatasetResource {
     public IndexStatus getIndexStatus(@PathVariable Long id) {
         return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
     }
-
+    
     @GetMapping("/datasets/{id}/dedup-query")
     public ResponseEntity dedupQuery(@RequestParam String q) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/query-rv?q=" + q;
-        ResponseEntity response
-            = restTemplate.postForEntity(url, "", String.class);
-        log.debug(response.toString());
-        return response;
+    	try {
+			return queryController.liResult(q);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return null;
     }
     
     @GetMapping("/datasets/{id}/columns")
     public ResponseEntity columns(@RequestParam String d) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/columns?d=" + d;
-        ResponseEntity response
-            = restTemplate.postForEntity(url, "", String.class);
-        log.debug(response.toString());
-        return response;
+    	try {
+			return queryController.columns(d);
+		} catch (JsonProcessingException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
     }
+
+//    @GetMapping("/datasets/{id}/dedup-query")
+//    public ResponseEntity dedupQuery(@RequestParam String q) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/query-rv?q=" + q;
+//        ResponseEntity response
+//            = restTemplate.postForEntity(url, "", String.class);
+//        log.debug(response.toString());
+//        return response;
+//    }
+//    
+//    @GetMapping("/datasets/{id}/columns")
+//    public ResponseEntity columns(@RequestParam String d) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/columns?d=" + d;
+//        ResponseEntity response
+//            = restTemplate.postForEntity(url, "", String.class);
+//        log.debug(response.toString());
+//        return response;
+//    }
 }
 
 class IndexStatus {

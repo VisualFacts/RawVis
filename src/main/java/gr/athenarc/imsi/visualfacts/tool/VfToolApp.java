@@ -6,6 +6,7 @@ import io.github.jhipster.config.DefaultProfileUtil;
 import io.github.jhipster.config.JHipsterConstants;
 
 import org.apache.commons.lang3.StringUtils;
+import org.imsi.queryEREngine.imsi.er.QueryEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -15,8 +16,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -27,6 +31,8 @@ public class VfToolApp {
     private static final Logger log = LoggerFactory.getLogger(VfToolApp.class);
 
     private final Environment env;
+
+    private final QueryEngine queryEngine = new QueryEngine();
 
     public VfToolApp(Environment env) {
         this.env = env;
@@ -50,6 +56,13 @@ public class VfToolApp {
             log.error("You have misconfigured your application! It should not " +
                 "run with both the 'dev' and 'cloud' profiles at the same time.");
         }
+        try {
+			queryEngine.initialize();
+		} catch (IOException e) {
+			log.error("QueryER IOException");
+		} catch (SQLException e) {
+			log.error("QueryER SQLException");
+		}
     }
 
     /**
