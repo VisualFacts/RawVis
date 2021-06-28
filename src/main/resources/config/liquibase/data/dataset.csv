@@ -1,4 +1,5 @@
 id;name;has_header;type;measure0_id;measure1_id;lat_id;lon_id;object_count;x_min;x_max;y_min;y_max;query_x_min;query_x_max;query_y_min;query_y_max
-1;taxi.csv;false;CSV;12;16;6;5;1000000;-75;-71;39;42;-73.998;-73.963;40.748;40.766
-2;network_data.csv;false;CSV;23;24;17;18;1516023;139.28706;140.268;35.12885;36.17055;139.7443;139.79395;35.6937;35.6630
-4;network_data_original_subset_with_dups.csv;true;CSV;38;39;32;33;201000;139.28706;140.268;35.12885;36.17055;139.7443;139.79395;35.6937;35.6630
+1;taxi.csv;FALSE;CSV;12;16;6;5;1000000;-75;-71;39;42;-73.998;-73.963;40.748;40.766
+2;network_data.csv;FALSE;CSV;23;24;17;18;1516023;13.928.706;140.268;3.512.885;3.617.055;1.397.443;13.979.395;356.937;356.630
+4;network_data_original_subset_with_dups.csv;TRUE;CSV;38;39;32;33;201000;13.928.706;140.268;3.512.885;3.617.055;1.397.443;13.979.395;356.937;356.630
+5;taxi_with_dups.csv;FALSE;CSV;12;17;6;5;200000;-75;-71;39;42;-73.998;-73.963;40.748;40.766

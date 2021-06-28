@@ -11,7 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
     String dataPath;
-
+    String modelPath;
+    
     public String getDataPath() {
         return dataPath;
     }
@@ -19,4 +20,14 @@ public class ApplicationProperties {
     public void setDataPath(String dataPath) {
         this.dataPath = dataPath;
     }
+
+	public String getModelPath() {
+		return modelPath;
+	}
+
+	public void setModelPath(String modelPath) {
+		this.modelPath = modelPath;
+	}
+    
+    
 }

@@ -40,7 +40,7 @@ public class DatasetResource {
     private final Logger log = LoggerFactory.getLogger(DatasetResource.class);
     private final DatasetRepository datasetRepository;
     private final RawDataService rawDataService;
-    private final QueryController queryController = new QueryController();;
+    private final QueryController queryController = new QueryController();
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 

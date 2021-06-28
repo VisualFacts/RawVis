@@ -160,4 +160,6 @@ jhipster:
 # ===================================================================
 
 application:
-  dataPath: /home/bstam/erVis/queryER/all/network_data_original_subset_with_dups.csv
+  #dataPath: /home/bstam/erVis/queryER/all/taxi_with_dups.csv
+  dataPath: /Users/vasilisstamatopoulos/Documents/Works/ATHENA/Projects/ER/Code/queryER/all/
+  modelPath: /Users/vasilisstamatopoulos/Documents/Works/ATHENA/Projects/ER/Code/RawVis/model.json

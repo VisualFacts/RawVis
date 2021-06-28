@@ -33,7 +33,7 @@ public class RawDataService {
     private final ApplicationProperties applicationProperties;
     private HashMap<Long, Veti> indexes = new HashMap<>();
 
-    public RawDataService(ApplicationProperties applicationProperties) {
+	public RawDataService(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
     }
 
