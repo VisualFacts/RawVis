@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface DatasetRepository extends JpaRepository<Dataset, Long> {
+public interface DatasetRepository extends JpaRepository<Dataset, String> {
 }

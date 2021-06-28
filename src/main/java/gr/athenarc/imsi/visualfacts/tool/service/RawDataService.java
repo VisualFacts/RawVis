@@ -31,7 +31,7 @@ public class RawDataService {
 
     private final Logger log = LoggerFactory.getLogger(RawDataService.class);
     private final ApplicationProperties applicationProperties;
-    private HashMap<Long, Veti> indexes = new HashMap<>();
+    private HashMap<String, Veti> indexes = new HashMap<>();
 
     public RawDataService(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
@@ -57,17 +57,17 @@ public class RawDataService {
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field.getFieldIndex())).collect(Collectors.toList());
         schema.setCategoricalColumns(categoricalColumns);
         log.debug(schema.toString());
-        Veti veti = new Veti(schema, 100000000, "bini");
+        Veti veti = new Veti(schema, 100000000, "binn", 100);
         this.indexes.put(dataset.getId(), veti);
         return veti;
     }
 
-    public Integer getObjectsIndexed(Long id) {
+    public Integer getObjectsIndexed(String id) {
         Veti index = indexes.get(id);
         return index == null ? 0 : index.getObjectsIndexed();
     }
 
-    public boolean isIndexInitialized(Long id) {
+    public boolean isIndexInitialized(String id) {
         Veti index = indexes.get(id);
         return index != null && index.isInitialized();
     }

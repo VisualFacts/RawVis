@@ -2,7 +2,7 @@ import { IField } from 'app/shared/model/field.model';
 import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 
 export interface IDataset {
-  id?: number;
+  id?: string;
   name?: string;
   type?: DatasetType;
   measure0?: IField;

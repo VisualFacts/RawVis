@@ -99,7 +99,7 @@ public class DatasetResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the dataset, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/datasets/{id}")
-    public ResponseEntity<Dataset> getDataset(@PathVariable Long id) {
+    public ResponseEntity<Dataset> getDataset(@PathVariable String id) {
         log.debug("REST request to get Dataset : {}", id);
         Optional<Dataset> dataset = datasetRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(dataset);
@@ -112,7 +112,7 @@ public class DatasetResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/datasets/{id}")
-    public ResponseEntity<Void> deleteDataset(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDataset(@PathVariable String id) {
         log.debug("REST request to delete Dataset : {}", id);
         datasetRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
@@ -122,20 +122,20 @@ public class DatasetResource {
      * POST executeQuery
      */
     @PostMapping("/datasets/{id}/query")
-    public ResponseEntity<VisQueryResults> executeQuery(@PathVariable Long id, @Valid @RequestBody VisQuery query) {
+    public ResponseEntity<VisQueryResults> executeQuery(@PathVariable String id, @Valid @RequestBody VisQuery query) {
         log.debug("REST request to execute Query: {}", query);
         Optional<VisQueryResults> queryResultsOptional = datasetRepository.findById(id).map(dataset -> rawDataService.executeQuery(dataset, query));
         return ResponseUtil.wrapOrNotFound(queryResultsOptional);
     }
 
     @PostMapping(path = "/datasets/{id}/reset-index")
-    public void resetIndex(@PathVariable Long id) {
+    public void resetIndex(@PathVariable String id) {
         log.debug("REST request to reset index for dataset: {}", id);
         datasetRepository.findById(id).ifPresent(dataset -> rawDataService.removeIndex(dataset));
     }
 
     @GetMapping("/datasets/{id}/status")
-    public IndexStatus getIndexStatus(@PathVariable Long id) {
+    public IndexStatus getIndexStatus(@PathVariable String id) {
         return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
     }
 }

@@ -11,7 +11,7 @@
     -->
     <changeSet id="20201210191432-1" author="jhipster">
         <createTable tableName="dataset">
-            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+            <column name="id" type="varchar(255)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(255)">
@@ -81,7 +81,7 @@
             file="config/liquibase/data/dataset.csv"
             separator=";"
             tableName="dataset">
-            <column name="id" type="numeric"/>
+            <column name="id" type="string"/>
             <column name="name" type="string"/>
             <column name="type" type="string"/>
             <column name="measure0_id" type="numeric"/>

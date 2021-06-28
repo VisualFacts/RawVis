@@ -49,7 +49,7 @@ export const Home = (props: IHomeProp) => {
                     <br/>
 
                    <div className="intro-nblink">
-                     <Link to="/visualize/1"><b>Taxi Use Case</b></Link>
+                     <Link to="/visualize/taxi"><b>Taxi Use Case</b></Link>
                    </div><br/>
                    <p>Objects from the <a href="https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page"
                                           target="_blank"
@@ -58,7 +58,7 @@ export const Home = (props: IHomeProp) => {
                     Geographic pick-up location (Lat, Long), Payment type, Passenger count, Tip amount, Trip distance.
                     Each visualized point/cluster corresponds to a pick-up location of a taxi ride.</p>
                   <div className="intro-nblink">
-                    <Link to="/visualize/2"><b>Telecommunication Use Case</b></Link>
+                    <Link to="/visualize/network"><b>Telecommunication Use Case</b></Link>
                   </div><br/>
                   <p>Data are from an anonymized telecommunication dataset containing latency and signal strength measurements.
                     Each visualized point/cluster refers to a network latency and signal measurement, described by several attributes,
