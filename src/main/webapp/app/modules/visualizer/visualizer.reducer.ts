@@ -288,14 +288,19 @@ const getDuplicateData = (data, dataset) => {
       similarityMeasures: data.bigVizStatistic.similarityMeasures,
       columnValues: data.bigVizStatistic.columnValues,
     },
-    duplicates: data.bigVizDataset.map(d => [
-      parseFloat(d.bigVizData[0].columns[dataset.lon.name]),
-      parseFloat(d.bigVizData[0].columns[dataset.lat.name]),
-      d.bigVizData.length,
-      d.groupedObj,
-      d.clusterColumnSimilarity,
-      d.clusterColumns,
-    ]),
+
+    duplicates: data.bigVizDataset.map(d => {
+      let lat = 0.0;
+      let lon = 0.0;
+      for (let i = 0; i < d.bigVizData.length; i++) {
+        if (d.bigVizData[i].columns[dataset.lat.name] !== null && d.bigVizData[i].columns[dataset.lon.name] !== null) {
+          lat = parseFloat(d.bigVizData[i].columns[dataset.lat.name]);
+          lon = parseFloat(d.bigVizData[i].columns[dataset.lon.name]);
+          break;
+        }
+      }
+      return [lon, lat, d.bigVizData.length, d.groupedObj, d.clusterColumnSimilarity, d.clusterColumns];
+    }),
   };
   return duplicateData;
 };
