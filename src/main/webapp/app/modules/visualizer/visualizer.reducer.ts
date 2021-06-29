@@ -44,6 +44,8 @@ export const ACTION_TYPES = {
 const initialState = {
   indexStatus: defaultValue,
   loading: true,
+  loadingDups: false,
+  firstDupLoad: true,
   errorMessage: null,
   dataset: null,
   zoom: 14,
@@ -112,9 +114,15 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
     case SUCCESS(ACTION_TYPES.UPDATE_DUPLICATES):
       return {
         ...state,
-        loading: false,
+        loadingDups: false,
+        firstDupLoad: false,
         dedupStats: action.payload.dedupStats,
         duplicates: action.payload.duplicates,
+      };
+    case REQUEST(ACTION_TYPES.UPDATE_DUPLICATES):
+      return {
+        ...state,
+        loadingDups: state.firstDupLoad ? true : false,
       };
     case ACTION_TYPES.UPDATE_FACETS:
       return {

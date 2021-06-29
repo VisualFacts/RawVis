@@ -39,6 +39,7 @@ export const VisPage = (props: IVisPageProps) => {
   const {
     dataset,
     loading,
+    loadingDups,
     indexStatus,
     clusters,
     duplicates,
@@ -125,11 +126,23 @@ export const VisPage = (props: IVisPageProps) => {
         <Progress progress='percent' value={indexStatus.objectsIndexed} total={dataset.objectCount} autoSuccess precision={2}/>
       </Modal.Content>
     </Modal>
+    <Modal
+      basic
+      open={loadingDups}
+      size='small'>
+      <Header textAlign='center'>
+        Deduplicating {dataset.name}
+      </Header>
+      {/* <Modal.Content>
+        <Progress progress='percent' value={indexStatus.objectsIndexed} total={dataset.objectCount} autoSuccess precision={2}/>
+      </Modal.Content> */}
+    </Modal>
   </div>;
 };
 
 const mapStateToProps = ({visualizer}: IRootState) => ({
   loading: visualizer.loading,
+  loadingDups: visualizer.loadingDups,
   dataset: visualizer.dataset,
   viewRect: visualizer.viewRect,
   drawnRect: visualizer.drawnRect,
