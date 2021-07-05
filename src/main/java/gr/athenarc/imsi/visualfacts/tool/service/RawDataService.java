@@ -121,9 +121,9 @@ public class RawDataService {
             visQueryResults.setPoints(points);
             visQueryResults.setFacets(schema.getCategoricalColumns().stream().collect(Collectors.toMap(CategoricalColumn::getIndex, CategoricalColumn::getNonNullValues)));
             return visQueryResults;
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new UncheckedIOException(e);
+            throw new RuntimeException(e);
         }
     }
 }
