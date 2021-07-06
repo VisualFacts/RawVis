@@ -5,7 +5,7 @@ users to perform efficient visual and analytics operations directly
 over the data files. RawVis provides real-time interaction, reporting
 low response time, over large data files, using commodity hardware.
 
-The index used by RawVis can be found [here](https://github.com/VisualFacts/rawvis-index).
+The index and query engine used by RawVis can be found [here](https://github.com/VisualFacts/rawvis-index).
 
 ## Building RawVis
 To build the RawVis JAR file run:
