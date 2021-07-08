@@ -5,7 +5,7 @@ RawVis implements novel indexing schemes and adaptive processing techniques allo
 RawVis provides real-time interaction, reporting
 low response time, over large data files (e.g., more than 50G & 100M objects), using commodity hardware.
 
-In our working scenario, the user selects a raw file to visualize and analyze, the file is parsed and indexed on-the-fly, generating a
+In RawVis, the user selects a raw file to visualize and analyze, the file is parsed and indexed on-the-fly, generating a
 “crude” initial version of our index. The user, then, performs visual operations, which are translated to queries evaluated over the index.
 Based on the user interaction, the index is adapted incrementally, adjusting its structure and updating statistics.
 
