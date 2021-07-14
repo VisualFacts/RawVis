@@ -10,17 +10,23 @@ id;name;field_index;dataset_id
 16;Tip amount;17;
 17;Measurement Latitude;9;
 18;Measurement Longitude;10;
-19;Radio Operator Name;52;2
-20;Radio Network Type;47;2
-21;Device Manufacturer;131;2
-22;Roaming;65;2
+19;Radio Operator Name;52;
+20;Radio Network Type;47;
+21;Device Manufacturer;131;
+22;Roaming;65;
 23;Latency;138;
 24;Location Altitude;11;
 32;Start_LocationLatitude;2;
 33;Start_LocationLongitude;3;
-34;Start_RadioOperatorName;12;4
-35;Start_RadioNetworkType;7;4
-36;DeviceManufacturer;14;4
-37;Start_RadioIsRoaming;13;4
+34;Start_RadioOperatorName;12;3
+35;Start_RadioNetworkType;7;3
+36;DeviceManufacturer;14;3
+37;Start_RadioIsRoaming;13;3
 38;AverageValue;18;
 39;Start_LocationAltitude;4;
+40;longitude;11;
+41;latitude;12;
+42;region;0;2
+43;fitness_facilities;5;2
+44;review_count;16;
+45;rating;32;

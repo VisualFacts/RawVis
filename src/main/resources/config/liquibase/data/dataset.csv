@@ -1,4 +1,4 @@
 id;name;has_header;type;measure0_id;measure1_id;lat_id;lon_id;object_count;x_min;x_max;y_min;y_max;query_x_min;query_x_max;query_y_min;query_y_max
 1;taxi_with_dups.csv;FALSE;CSV;12;16;6;5;200000;-75;-71;39;42;-73.998;-73.963;40.748;40.766
-2;network_data.csv;FALSE;CSV;23;24;17;18;1516023;13.928.706;140.268;3.512.885;3.617.055;1.397.443;13.979.395;356.937;356.630
-4;network_data_original_subset_with_dups.csv;TRUE;CSV;38;39;32;33;201000;13.928.706;140.268;3.512.885;3.617.055;1.397.443;13.979.395;356.937;356.630
+2;hotel_FACTUAL.csv;TRUE;CSV;44;45;41;40;31610;-157.9287779;119.819558;8.91667;61.231374;-118.293226;-118.189389;34.024589;34.081639
+3;network_data_original_subset_with_dups.csv;TRUE;CSV;38;39;32;33;201000;139.28706;140.268;35.12885;36.17055;139.7443;139.79395;35.6937;35.6630

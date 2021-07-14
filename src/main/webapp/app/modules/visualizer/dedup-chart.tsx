@@ -34,7 +34,6 @@ export const DedupChart = (props: IDedupChartProps) => {
       setChart("similarities");
     }
   }
-  console.log(showClusterChart);
   return <Segment id='chart-container' raised textAlign='center'>
     <Button.Group basic>
       <Button onClick={handleChartChange('dedup')} active={chart === 'dedup'}>Dirtiness Ratio</Button>

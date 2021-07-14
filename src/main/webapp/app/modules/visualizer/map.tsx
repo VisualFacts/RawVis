@@ -146,7 +146,7 @@ export const Map = (props: IMapProps) => {
       position={[duplicate[1], duplicate[0]]} 
       icon={fetchDedupIcon(duplicate[2])}
       eventHandlers={{
-        click: (e) => {
+        click(e)  {
           props.toggleClusterChart(duplicate[4], duplicate[5], index + 1);
         },
 

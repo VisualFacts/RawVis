@@ -24,15 +24,14 @@ const createSimilarityData = (similarityMeasures, columns) => {
 const createColumnValueData = (columnValues) => {
   const data = [];
   for(const colVal in columnValues){
-    data.push({name: colVal, y : columnValues[colVal]});
+    if(colVal in columnValues)
+      data.push({name: colVal, y : columnValues[colVal]});
   }
-  console.log(data);
   return data;
 }
 
 export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   const {dedupClusterStats, columns} = props;
-  let showNormalChart = true;
   let similarityMeasures = null;
   let data = {};
   let columnData = {};
@@ -51,12 +50,12 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   //const [columnData, setColumnData] = useState([]);
 
   
-  const changeChart = (col) => {
+  const changeChart = (column) => {
     const start = '<span class="text-center">';
     const end = '</span>';
-    col = col.replace(start, "").replace(end, "");
+    column = column.replace(start, "").replace(end, "");
     setChart("clusterCol");
-    setCol(col);
+    setCol(column);
   }
 
   const options = {
@@ -88,7 +87,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
             changeChart(this.value);
           }
         },
-        formatter: function () {
+        formatter() {
           return `<span class="text-center">${this.value}</span>`
         }
       },
