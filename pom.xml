@@ -294,7 +294,7 @@
         </dependency>
         <dependency>
             <groupId>gr.athenarc.imsi.visualfacts</groupId>
-            <artifactId>vf-index</artifactId>
+            <artifactId>rawvis-index</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
