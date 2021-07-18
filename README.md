@@ -1,4 +1,4 @@
-# RawVis Prototype Tool
+# RawVis: In-situ Visual Analytics System
 
 RawVis is an open source data visualization system for in-situ visual exploration and analytics over big raw data. 
 RawVis implements novel indexing schemes and adaptive processing techniques allowing users to perform efficient visual and analytics operations directly over the data files. 
