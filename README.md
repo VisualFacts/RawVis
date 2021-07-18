@@ -12,7 +12,7 @@ Based on the user interaction, the index is adapted incrementally, adjusting its
 
  
 
-* RawVis System Source Code (e.g., indexes, query processor): [[Link]](https://github.com/VisualFacts/rawvis-index)
+* RawVis System Backend Source Code (e.g., indexes, query processor): [[Link]](https://github.com/VisualFacts/rawvis-index)
 
  
 * Online Tool Demo: [[Link]](http://rawviz.imsi.athenarc.gr/visualize/taxi)
