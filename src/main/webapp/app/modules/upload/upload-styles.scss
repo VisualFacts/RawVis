@@ -1,0 +1,77 @@
+#root {
+  height: 100%;
+}
+table {
+  display: block;
+  height: auto;
+  overflow-x: scroll;
+}
+
+.table_over {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.35);
+  margin: auto;
+  margin-top: 20px;
+  text-align: center;
+  max-width: fit-content;
+}
+
+.app_content {
+  height: 100%;
+  margin: 30px 200px 0px 200px;
+  text-align: center;
+}
+
+.app-container {
+  height: 100%;
+}
+
+.root-div {
+  height: 100%;
+}
+
+.menu-content {
+  display: flex;
+  margin-top: 20px;
+}
+
+.menu-content .dropdowns {
+  display: grid;
+}
+
+.menu-content .dropdown {
+  width: 280px;
+}
+
+.ui.pagination.menu {
+  margin: 0;
+  margin-left: auto;
+  height: fit-content;
+}
+
+.sematic_content {
+  margin-bottom: 10px;
+}
+
+.checkbox {
+  width: 250px;
+}
+
+.ui.checkbox .box,
+.ui.checkbox label {
+  cursor: auto;
+  position: relative;
+  display: block;
+  padding-left: 1.85714em;
+  outline: 0;
+  font-size: 1.5em;
+}
+
+.ui.search.dropdown > .text {
+  cursor: text;
+  position: relative;
+  left: 1px;
+  z-index: 3;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+}
