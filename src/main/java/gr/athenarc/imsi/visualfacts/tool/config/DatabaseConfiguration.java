@@ -17,7 +17,6 @@ import java.sql.SQLException;
 
 @Configuration
 @EnableJpaRepositories("gr.athenarc.imsi.visualfacts.tool.repository")
-@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 @EnableTransactionManagement
 public class DatabaseConfiguration {
 
