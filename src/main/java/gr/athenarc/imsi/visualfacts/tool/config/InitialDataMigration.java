@@ -21,7 +21,7 @@ public class InitialDataMigration {
 
         File workspaceDirectory = new File(applicationProperties.getWorkspacePath());
         if (! workspaceDirectory.exists()){
-            workspaceDirectory.mkdir();
+            workspaceDirectory.mkdirs();
         }
         log.debug(workspaceDirectory.toPath().toString());
         for (File file : new File(initialDataPath).listFiles()){
