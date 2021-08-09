@@ -10,13 +10,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
-    String dataPath;
+    String workspacePath;
 
-    public String getDataPath() {
-        return dataPath;
+    public String getWorkspacePath() {
+        return workspacePath;
     }
 
-    public void setDataPath(String dataPath) {
-        this.dataPath = dataPath;
+    public void setWorkspacePath(String workspacePath) {
+        this.workspacePath = workspacePath;
     }
 }

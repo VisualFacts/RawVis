@@ -5,8 +5,6 @@ import io.github.jhipster.web.util.HeaderUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.BindingResult;
@@ -18,7 +16,6 @@ import org.springframework.core.env.Environment;
 import org.zalando.problem.DefaultProblem;
 import org.zalando.problem.Problem;
 import org.zalando.problem.ProblemBuilder;
-import org.zalando.problem.Status;
 import org.zalando.problem.StatusType;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.spring.web.advice.security.SecurityAdviceTrait;
@@ -27,6 +24,7 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
  * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807).
  */
 @ControllerAdvice
-public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait {
+public class ExceptionTranslator implements ProblemHandling {
 
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
     private static final String MESSAGE_KEY = "message";
@@ -113,14 +111,6 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
         return create(ex, request, HeaderUtil.createFailureAlert(applicationName, false, ex.getEntityName(), ex.getErrorKey(), ex.getMessage()));
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleConcurrencyFailure(ConcurrencyFailureException ex, NativeWebRequest request) {
-        Problem problem = Problem.builder()
-            .withStatus(Status.CONFLICT)
-            .with(MESSAGE_KEY, ErrorConstants.ERR_CONCURRENCY_FAILURE)
-            .build();
-        return create(ex, problem, request);
-    }
 
     @Override
     public ProblemBuilder prepare(final Throwable throwable, final StatusType status, final URI type) {
@@ -139,7 +129,7 @@ public class ExceptionTranslator implements ProblemHandling, SecurityAdviceTrait
                         .map(this::toProblem)
                         .orElse(null));
             }
-            if (throwable instanceof DataAccessException) {
+            if (throwable instanceof IOException) {
                 return Problem.builder()
                     .withType(type)
                     .withTitle(status.getReasonPhrase())
