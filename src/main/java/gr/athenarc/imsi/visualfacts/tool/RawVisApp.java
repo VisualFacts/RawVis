@@ -1,16 +1,14 @@
 package gr.athenarc.imsi.visualfacts.tool;
 
-import gr.athenarc.imsi.visualfacts.tool.config.ApplicationProperties;
 
+import gr.athenarc.imsi.visualfacts.tool.config.ApplicationProperties;
 import io.github.jhipster.config.DefaultProfileUtil;
 import io.github.jhipster.config.JHipsterConstants;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
 
@@ -21,14 +19,14 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @SpringBootApplication
-@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
-public class VfToolApp {
+@EnableConfigurationProperties({ApplicationProperties.class})
+public class RawVisApp {
 
-    private static final Logger log = LoggerFactory.getLogger(VfToolApp.class);
+    private static final Logger log = LoggerFactory.getLogger(RawVisApp.class);
 
     private final Environment env;
 
-    public VfToolApp(Environment env) {
+    public RawVisApp(Environment env) {
         this.env = env;
     }
 
@@ -58,7 +56,7 @@ public class VfToolApp {
      * @param args the command line arguments.
      */
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(VfToolApp.class);
+        SpringApplication app = new SpringApplication(RawVisApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);

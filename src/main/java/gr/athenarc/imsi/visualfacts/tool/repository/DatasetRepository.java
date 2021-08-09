@@ -16,7 +16,7 @@ public interface DatasetRepository {
 
     Optional<Dataset> findById(String id) throws IOException;
 
-    Dataset save(Dataset dataset);
+    Dataset save(Dataset dataset) throws IOException;
 
     void deleteById(String id);
 

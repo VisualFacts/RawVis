@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -46,8 +47,13 @@ public class DataRepositoryImpl implements DatasetRepository {
     }
 
     @Override
-    public Dataset save(Dataset dataset) {
-        throw new UnsupportedOperationException();
+    public Dataset save(Dataset dataset) throws IOException {
+        Assert.notNull(dataset, "Dataset must not be null!");
+        ObjectMapper mapper = new ObjectMapper();
+        File metadataFile = new File(applicationProperties.getWorkspacePath(), dataset.getId() + ".meta.json");
+        FileWriter writer = new FileWriter(metadataFile);
+        mapper.writeValue(writer, Dataset.class);
+        return dataset;
     }
 
     @Override

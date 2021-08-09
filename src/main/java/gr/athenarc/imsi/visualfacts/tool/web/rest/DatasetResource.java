@@ -47,7 +47,7 @@ public class DatasetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/datasets")
-    public ResponseEntity<Dataset> createDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException {
+    public ResponseEntity<Dataset> createDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException, IOException {
         log.debug("REST request to save Dataset : {}", dataset);
         if (dataset.getId() != null) {
             throw new BadRequestAlertException("A new dataset cannot already have an ID", ENTITY_NAME, "idexists");
@@ -68,7 +68,7 @@ public class DatasetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/datasets")
-    public ResponseEntity<Dataset> updateDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException {
+    public ResponseEntity<Dataset> updateDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException, IOException {
         log.debug("REST request to update Dataset : {}", dataset);
         if (dataset.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
