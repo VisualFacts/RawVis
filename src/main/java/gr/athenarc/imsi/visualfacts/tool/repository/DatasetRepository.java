@@ -2,13 +2,23 @@ package gr.athenarc.imsi.visualfacts.tool.repository;
 
 import gr.athenarc.imsi.visualfacts.tool.domain.Dataset;
 
-import org.springframework.data.jpa.repository.*;
-import org.springframework.stereotype.Repository;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * Spring Data  repository for the Dataset entity.
+ * Repository for the Dataset entity.
  */
 @SuppressWarnings("unused")
-@Repository
-public interface DatasetRepository extends JpaRepository<Dataset, String> {
+public interface DatasetRepository {
+
+    List<Dataset> findAll();
+
+    Optional<Dataset> findById(String id) throws IOException;
+
+    Dataset save(Dataset dataset) throws IOException;
+
+    void deleteById(String id);
+
+
 }
