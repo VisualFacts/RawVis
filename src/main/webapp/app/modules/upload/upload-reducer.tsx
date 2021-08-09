@@ -1,20 +1,29 @@
 import { createStore, combineReducers, applyMiddleware, Action } from 'redux';
 import thunk from 'redux-thunk';
-import { IDataset } from '../../shared/model/dataset.model';
+import { IDataset, defaultValue } from '../../shared/model/dataset.model';
 import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 import { IField } from '../../shared/model/field.model';
-
+import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
+import axios from 'axios';
 // ACTION TYPES
 
 export const ActionTypes = {
+  FETCH_DATASET_LIST: 'dataset/FETCH_DATASET_LIST',
+  FETCH_DATASET: 'dataset/FETCH_DATASET',
   SET_LAT: 'lat',
   SET_LON: 'lon',
   SET_BOOLEAN: 'setbool',
   SET_DROPBOX1: 'setdrop1',
   SET_DROPBOX2: 'setdrop2',
-  SET_NUMBER: 'setnumb',
+  SET_DROPBOX3: 'setdrop3',
+  SET_DROPMULTBOX: 'setDropMultBox',
   SET_DATA: 'setdata',
   ADD_DATA: 'addData',
+  SET_MEASURE: 'setMeasure',
+  SET_DIMENSIONS: 'setDimensions',
+  EMPTY_DIMENSIONS: 'emptyDimensions',
+  SET_OPTIONS: 'setOptions',
+  SET_ACTIVEMENU: 'setActiveMenu',
 };
 
 //  INITIALSTATE
@@ -43,9 +52,21 @@ const uploadPageInitial = {
   checkbox: false,
   dropdown1: '',
   dropdown2: '',
-  pageState: 1,
+  dropdown3: '',
+  activeMenu: 'New Dataset',
+  dropMultBox: [],
+  optionsState: [],
   trimData: [],
   data: [],
+};
+
+const initialStato = {
+  loading: false,
+  errorMessage: null,
+  entities: [] as ReadonlyArray<IDataset>,
+  entity: defaultValue,
+  updating: false,
+  updateSuccess: false,
 };
 
 //  REDUCERS
@@ -58,12 +79,18 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
       return { ...state, dropdown1: action.payload };
     case ActionTypes.SET_DROPBOX2:
       return { ...state, dropdown2: action.payload };
-    case ActionTypes.SET_NUMBER:
-      return { ...state, pageState: action.payload };
+    case ActionTypes.SET_DROPBOX3:
+      return { ...state, dropdown3: action.payload };
+    case ActionTypes.SET_DROPMULTBOX:
+      return { ...state, dropMultBox: action.payload };
     case ActionTypes.SET_DATA:
       return { ...state, trimData: action.payload };
     case ActionTypes.ADD_DATA:
       return { ...state, data: action.payload };
+    case ActionTypes.SET_OPTIONS:
+      return { ...state, optionsState: action.payload };
+    case ActionTypes.SET_ACTIVEMENU:
+      return { ...state, activeMenu: action.payload };
     default:
       return state;
   }
@@ -75,12 +102,48 @@ const displayReducer = (state: IDataset = initialState, action) => {
       return { ...state, lat: { ...state.lat, name: action.payload.latName, fieldIndex: action.payload.latIndex } };
     case ActionTypes.SET_LON:
       return { ...state, lon: { ...state.lon, name: action.payload.latName, fieldIndex: action.payload.latIndex } };
+    case ActionTypes.SET_MEASURE:
+      return { ...state, measure0: { ...state.measure0, name: action.payload.measureName, fieldIndex: action.payload.measureIndex } };
+    case ActionTypes.SET_DIMENSIONS:
+      return {
+        ...state,
+        dimensions: [...state.dimensions, [action.payload.dimensionName, action.payload.dimensionIndex]],
+      };
+    case ActionTypes.EMPTY_DIMENSIONS:
+      return { ...state, dimensions: [] };
     default:
       return state;
   }
 };
 
+export type DatasetState = Readonly<typeof initialStato>;
+
+const datasetStato = (state: DatasetState = initialStato, action) => {
+  switch (action.type) {
+    case SUCCESS(ActionTypes.FETCH_DATASET):
+      return {
+        ...state,
+        loading: false,
+        entity: action.payload.data,
+      };
+    case SUCCESS(ActionTypes.FETCH_DATASET_LIST):
+      return {
+        ...state,
+        loading: false,
+        entities: action.payload.data,
+      };
+    default:
+      return state;
+  }
+};
 //  ACTIONS
+const apiUrl = 'api/datasets';
+
+export const getEntities = (page, size, sort) => ({
+  type: ActionTypes.FETCH_DATASET_LIST,
+  payload: axios.get<IDataset>(`${apiUrl}`),
+});
+
 export const addData = data => {
   return {
     type: ActionTypes.ADD_DATA,
@@ -95,9 +158,9 @@ export const setData = data => {
   };
 };
 
-export const setNumber = data => {
+export const setMenuItem = data => {
   return {
-    type: ActionTypes.SET_NUMBER,
+    type: ActionTypes.SET_ACTIVEMENU,
     payload: data,
   };
 };
@@ -122,6 +185,19 @@ export const setDropbox2 = value => {
   };
 };
 
+export const setDropbox3 = value => {
+  return {
+    type: ActionTypes.SET_DROPBOX3,
+    payload: value,
+  };
+};
+export const setDropMultBox = value => {
+  return {
+    type: ActionTypes.SET_DROPMULTBOX,
+    payload: value,
+  };
+};
+
 export const setLat = (latName, latIndex) => {
   return {
     type: ActionTypes.SET_LAT,
@@ -136,10 +212,38 @@ export const setLon = (latName, latIndex) => {
   };
 };
 
+export const setOptionsState = value => {
+  return {
+    type: ActionTypes.SET_OPTIONS,
+    payload: value,
+  };
+};
+
+export const setMeasure = (measureName, measureIndex) => {
+  return {
+    type: ActionTypes.SET_MEASURE,
+    payload: { measureName, measureIndex },
+  };
+};
+
+export const setDimensions = (dimensionName, dimensionIndex) => {
+  return {
+    type: ActionTypes.SET_DIMENSIONS,
+    payload: { dimensionName, dimensionIndex },
+  };
+};
+
+export const emptyDimensions = () => {
+  return {
+    type: ActionTypes.EMPTY_DIMENSIONS,
+  };
+};
+
 //  COMBINE REDUCERS
 const reducers = combineReducers({
   uploadState: uploadPageReducer,
   displayInfo: displayReducer,
+  dataSet: datasetStato,
 });
 
 export type RootState = ReturnType<typeof reducers>;

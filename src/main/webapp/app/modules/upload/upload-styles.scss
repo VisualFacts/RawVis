@@ -4,20 +4,19 @@
 table {
   display: block;
   height: auto;
-  overflow-x: scroll;
 }
 
 .table_over {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.35);
   margin: auto;
-  margin-top: 20px;
   text-align: center;
-  max-width: fit-content;
+  max-height: 35rem;
+  overflow-x: scroll;
+  overflow-y: scroll;
 }
 
 .app_content {
   height: 100%;
-  margin: 30px 200px 0px 200px;
+  width: 90%;
   text-align: center;
 }
 
@@ -29,13 +28,8 @@ table {
   height: 100%;
 }
 
-.menu-content {
-  display: flex;
-  margin-top: 20px;
-}
-
 .menu-content .dropdowns {
-  display: grid;
+  display: flex;
 }
 
 .menu-content .dropdown {
@@ -46,10 +40,6 @@ table {
   margin: 0;
   margin-left: auto;
   height: fit-content;
-}
-
-.sematic_content {
-  margin-bottom: 10px;
 }
 
 .checkbox {
