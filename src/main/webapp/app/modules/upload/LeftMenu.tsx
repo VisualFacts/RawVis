@@ -9,7 +9,7 @@ const LeftMenu = () => {
 
   return (
     <div>
-      <Menu fluid vertical tabular>
+      <Menu vertical fluid>
         <Menu.Item
           name="New Dataset"
           active={activeItem === 'New Dataset'}

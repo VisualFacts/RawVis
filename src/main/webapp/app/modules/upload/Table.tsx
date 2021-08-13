@@ -1,9 +1,11 @@
 import React from 'react';
 import HeadersCreator from './HeadersCreator';
-import { Menu, Table, Checkbox, Dropdown, Form, Segment } from 'semantic-ui-react';
+import { Table, Checkbox, Dropdown, Form, Segment, Button, Container } from 'semantic-ui-react';
 import TableCellRowCreator from './TableCellRowCreator';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';
+import axios from 'axios';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 export const TablePagination = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
@@ -11,18 +13,12 @@ export const TablePagination = () => {
   const dataSet = useSelector((state: Actions.RootState) => state.dataSet);
   const dispatch = useDispatch();
 
-  let options = !uploadState.checkbox
+  const options = !uploadState.checkbox
     ? uploadState.data[0].map((header, index) => ({ key: index, value: header, text: header }))
     : uploadState.data[0].map((header, index) => ({ key: index, value: `col(${index})`, text: `col(${index})` }));
 
-  let multOption;
-
-  if (multOption === undefined) {
-    multOption = options;
-  }
-
   const filterOptions = () => {
-    options = options.reduce((filtered, option) => {
+    const optionFil = options.reduce((filtered, option) => {
       if (
         option.value !== uploadState.dropdown1 &&
         option.value !== uploadState.dropdown2 &&
@@ -33,7 +29,7 @@ export const TablePagination = () => {
       }
       return filtered;
     }, []);
-    return options;
+    return optionFil;
   };
 
   const handleChange = () => {
@@ -41,8 +37,8 @@ export const TablePagination = () => {
   };
 
   const dropdownLatChange = (name, choice) => {
-    const helpFind = () => {
-      return options.value === name;
+    const helpFind = element => {
+      return element.value === name;
     };
     if (choice) {
       const found = options.find(helpFind);
@@ -54,8 +50,8 @@ export const TablePagination = () => {
   };
 
   const dropdownMeasureChange = name => {
-    const helpFind = () => {
-      return options.value === name;
+    const helpFind = element => {
+      return element.value === name;
     };
 
     const found = options.find(helpFind);
@@ -65,20 +61,29 @@ export const TablePagination = () => {
   const multDropboxChange = name => {
     dispatch(Actions.emptyDimensions());
     name.map((nam, index) => {
-      const helpFind = () => {
-        return multOption.value === nam;
+      const helpFind = element => {
+        return element.value === nam;
       };
 
-      const found = multOption.find(helpFind);
+      const found = options.find(helpFind);
       dispatch(Actions.setDimensions(name, found.key));
     });
   };
 
   return (
     <div>
+      <Container fluid textAlign="left">
+        <Button
+          onClick={() => {
+            dispatch(Actions.addData(''));
+          }}
+        >
+          Back
+        </Button>
+      </Container>
       <Segment vertical>
         <div className="table_over">
-          <Table celled columns={uploadState.data[0].length}>
+          <Table celled>
             <Table.Header>
               <Table.Row>
                 {uploadState.checkbox === false
@@ -108,6 +113,7 @@ export const TablePagination = () => {
                   className="dropdown"
                   placeholder={uploadState.dropdown1}
                   search
+                  clearable
                   selection
                   options={filterOptions()}
                   value={uploadState.dropdown1}
@@ -123,6 +129,7 @@ export const TablePagination = () => {
                   className="dropdown"
                   placeholder={uploadState.dropdown2}
                   search
+                  clearable
                   selection
                   options={filterOptions()}
                   value={uploadState.dropdown2}
@@ -138,6 +145,7 @@ export const TablePagination = () => {
                   className="dropdown"
                   placeholder={uploadState.dropdown3}
                   search
+                  clearable
                   selection
                   options={filterOptions()}
                   value={uploadState.dropdown3}
@@ -154,7 +162,7 @@ export const TablePagination = () => {
                   multiple
                   search
                   selection
-                  options={multOption}
+                  options={options}
                   value={uploadState.dropMultBox}
                   onChange={(e, data) => {
                     dispatch(Actions.setDropMultBox(data.value));
@@ -164,14 +172,6 @@ export const TablePagination = () => {
               </Form.Field>
             </Form>
           </div>
-          {/* <Button
-          size="tiny"
-          onClick={() => {
-            dispatch(Actions.getEntities(null, null, null));
-          }}
-        >
-          yooo
-        </Button> */}
         </div>
       </Segment>
     </div>

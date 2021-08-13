@@ -139,9 +139,9 @@ const datasetStato = (state: DatasetState = initialStato, action) => {
 //  ACTIONS
 const apiUrl = 'api/datasets';
 
-export const getEntities = (page, size, sort) => ({
+export const getEntities = () => ({
   type: ActionTypes.FETCH_DATASET_LIST,
-  payload: axios.get<IDataset>(`${apiUrl}`),
+  payload: axios.post(apiUrl, displayReducer),
 });
 
 export const addData = data => {
