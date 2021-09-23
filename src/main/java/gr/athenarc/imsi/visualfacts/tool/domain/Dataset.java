@@ -23,7 +23,6 @@ public class Dataset implements Serializable {
 
     private DatasetType type;
 
-    @Column(name = "has_header", nullable = false)
     private Boolean hasHeader;
 
     @NotNull
