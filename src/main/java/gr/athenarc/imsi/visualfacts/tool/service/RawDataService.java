@@ -31,9 +31,9 @@ public class RawDataService {
 
     private final Logger log = LoggerFactory.getLogger(RawDataService.class);
     private final ApplicationProperties applicationProperties;
-    private HashMap<Long, Veti> indexes = new HashMap<>();
+    private HashMap<String, Veti> indexes = new HashMap<>();
 
-	public RawDataService(ApplicationProperties applicationProperties) {
+    public RawDataService(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
     }
 
@@ -51,26 +51,23 @@ public class RawDataService {
         if (dataset.getMeasure1() != null) {
             measureCol1 = dataset.getMeasure1().getFieldIndex();
         }
-        Schema schema = new Schema(applicationProperties.getDataPath() + dataset.getName(), DELIMITER,
+        Schema schema = new Schema(applicationProperties.getWorkspacePath() + dataset.getName(), DELIMITER,
             dataset.getLon().getFieldIndex(), dataset.getLat().getFieldIndex(), measureCol0, measureCol1,
             new Rectangle(Range.open(dataset.getxMin(), dataset.getxMax()), Range.open(dataset.getyMin(), dataset.getyMax())), dataset.getObjectCount());
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field.getFieldIndex())).collect(Collectors.toList());
         schema.setCategoricalColumns(categoricalColumns);
-        schema.setHasHeader(dataset.getHasHeader());
-
-
         log.debug(schema.toString());
-        Veti veti = new Veti(schema, 100000000, "binn", 50);
+        Veti veti = new Veti(schema, 100000000, "binn", 100);
         this.indexes.put(dataset.getId(), veti);
         return veti;
     }
 
-    public Integer getObjectsIndexed(Long id) {
+    public Integer getObjectsIndexed(String id) {
         Veti index = indexes.get(id);
         return index == null ? 0 : index.getObjectsIndexed();
     }
 
-    public boolean isIndexInitialized(Long id) {
+    public boolean isIndexInitialized(String id) {
         Veti index = indexes.get(id);
         return index != null && index.isInitialized();
     }

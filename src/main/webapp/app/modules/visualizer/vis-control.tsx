@@ -58,7 +58,7 @@ export const VisControl = (props: IVisControlProps) => {
 
 
   return <Segment id='vis-control' padded='very' raised>
-    <Image src='./content/images/logo.png' style={{width: 100}}/>
+    <Image href='/' src='./content/images/logo.png' style={{width: 100}}/>
     <h5>
       Dataset <Popup content='Reinitialize Dataset Index' trigger={<Button circular compact icon='refresh' size='mini'
                                                                            onClick={() => props.reset(dataset.id)}/>}/>
@@ -66,8 +66,8 @@ export const VisControl = (props: IVisControlProps) => {
     <Label size='medium' color='blue'>
       <Dropdown text={dataset.name}>
         <Dropdown.Menu>
-          <Dropdown.Item as={Link} to="/visualize/1" text='taxi.csv'/>
-          <Dropdown.Item as={Link} to="/visualize/2" text='network_data.csv'/>
+          <Dropdown.Item as={Link} to="/visualize/taxi" text='taxi.csv'/>
+          <Dropdown.Item as={Link} to="/visualize/network" text='network_data.csv'/>
         </Dropdown.Menu>
       </Dropdown>
     </Label>

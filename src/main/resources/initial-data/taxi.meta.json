@@ -1,0 +1,61 @@
+{
+  "id": "taxi",
+  "name": "taxi.csv",
+  "type": "CSV",
+  "objectCount": 1000000,
+  "xMin": -75.0,
+  "xMax": -71.0,
+  "yMin": 39.0,
+  "yMax": 42.0,
+  "queryXMin": -73.998,
+  "queryXMax": -73.963,
+  "queryYMin": 40.748,
+  "queryYMax": 40.766,
+  "measure0": {
+    "id": 12,
+    "name": "Fare amount",
+    "fieldIndex": 12
+  },
+  "measure1": {
+    "id": 16,
+    "name": "Tip amount",
+    "fieldIndex": 16
+  },
+  "lat": {
+    "id": 6,
+    "name": "Pickup latitude",
+    "fieldIndex": 6
+  },
+  "lon": {
+    "id": 5,
+    "name": "Pickup longitude",
+    "fieldIndex": 5
+  },
+  "dimensions": [
+    {
+      "id": 1,
+      "name": "Vendor",
+      "fieldIndex": 0
+    },
+    {
+      "id": 3,
+      "name": "Passenger Count",
+      "fieldIndex": 3
+    },
+    {
+      "id": 7,
+      "name": "Rate Code ID",
+      "fieldIndex": 7
+    },
+    {
+      "id": 8,
+      "name": "Store and Forward Flag",
+      "fieldIndex": 8
+    },
+    {
+      "id": 11,
+      "name": "Payment type",
+      "fieldIndex": 11
+    }
+  ]
+}
