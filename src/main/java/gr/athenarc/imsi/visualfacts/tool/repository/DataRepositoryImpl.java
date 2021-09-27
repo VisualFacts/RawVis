@@ -12,8 +12,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class DataRepositoryImpl implements DatasetRepository {
@@ -27,8 +30,16 @@ public class DataRepositoryImpl implements DatasetRepository {
     }
 
     @Override
-    public List<Dataset> findAll() {
-        throw new UnsupportedOperationException();
+    public List<Dataset> findAll() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<Dataset> datasets = new ArrayList<>();
+        List<File> metadataFiles = Files.list(Paths.get(applicationProperties.getWorkspacePath()))
+            .filter(path -> path.toString().endsWith(".meta.json")).map(Path::toFile).collect(Collectors.toList());
+        for (File metadataFile : metadataFiles) {
+            FileReader reader = new FileReader(metadataFile);
+            datasets.add(mapper.readValue(reader, Dataset.class));
+        }
+        return datasets;
     }
 
     @Override
