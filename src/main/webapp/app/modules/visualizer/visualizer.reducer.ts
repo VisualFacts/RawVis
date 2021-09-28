@@ -7,9 +7,13 @@ import Supercluster from 'supercluster';
 import { IRectangle } from 'app/shared/model/rectangle.model';
 import { AggregateFunctionType } from 'app/shared/model/enumerations/aggregate-function-type.model';
 import { IRectStats } from 'app/shared/model/rect-stats.model';
+import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
+import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
-import _ from 'lodash';
+import _, { initial } from 'lodash';
+import StatsPanel from './stats-panel';
+import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
@@ -26,11 +30,22 @@ export const ACTION_TYPES = {
   UPDATE_FILTERS: 'visualizer/UPDATE_FILTERS',
   UPDATE_QUERY_INFO: 'visualizer/UPDATE_QUERY_INFO',
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
+  UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
+  TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
+  REMOVE_DUPLICATES: 'visualizer/REMOVE_DUPLICATES',
+  REMOVE_CLUSTERS: 'visualizer/REMOVE_CLUSTERS',
+  GET_COLUMNS: 'visualizer/GET_COLUMNS',
+  TOGGLE_ALL: 'visualizer/TOGGLE_ALL',
+  TOGGLE_CLUSTER_CHART: 'visualizer/TOGGLE_CLUSTER_CHART',
+  CLOSE_CLUSTER_CHART: 'visualizer/CLOSE_CLUSTER_CHART',
+  UPDATE_CLUSTER_STATS: 'visualizer/UPDATE_CLUSTER_STATS',
 };
 
 const initialState = {
   indexStatus: defaultValue,
   loading: true,
+  loadingDups: false,
+  firstDupLoad: true,
   errorMessage: null,
   dataset: null,
   zoom: 14,
@@ -44,6 +59,8 @@ const initialState = {
   series: [] as IGroupedStats[],
   facets: {},
   rectStats: null as IRectStats,
+  dedupStats: null as IDedupStats,
+  dedupClusterStats: null as IDedupClusterStats,
   clusters: [],
   fullyContainedTileCount: 0,
   tileCount: 0,
@@ -53,6 +70,12 @@ const initialState = {
   totalPointCount: 0,
   executionTime: 0,
   totalTime: 0,
+  duplicates: [],
+  bounds: null,
+  showDuplicates: false,
+  showAll: false,
+  columns: [],
+  showClusterChart: false,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -87,6 +110,19 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         clusters: action.payload,
         totalTime: new Date().getTime() - action.meta.requestTime,
+      };
+    case SUCCESS(ACTION_TYPES.UPDATE_DUPLICATES):
+      return {
+        ...state,
+        loadingDups: false,
+        firstDupLoad: false,
+        dedupStats: action.payload.dedupStats,
+        duplicates: action.payload.duplicates,
+      };
+    case REQUEST(ACTION_TYPES.UPDATE_DUPLICATES):
+      return {
+        ...state,
+        loadingDups: state.firstDupLoad ? true : false,
       };
     case ACTION_TYPES.UPDATE_FACETS:
       return {
@@ -164,6 +200,49 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         indexStatus: action.payload.data,
       };
+    case ACTION_TYPES.TOGGLE_DUPLICATES:
+      return {
+        ...state,
+        showAll: false,
+        showDuplicates: !state.showDuplicates,
+      };
+    case ACTION_TYPES.TOGGLE_ALL:
+      return {
+        ...state,
+        showAll: !state.showAll,
+        showDuplicates: false,
+      };
+    case ACTION_TYPES.REMOVE_DUPLICATES:
+      return {
+        ...state,
+        duplicates: [],
+      };
+    case ACTION_TYPES.REMOVE_CLUSTERS:
+      return {
+        ...state,
+        clusters: [],
+      };
+    case SUCCESS(ACTION_TYPES.GET_COLUMNS):
+      return {
+        ...state,
+        columns: action.payload,
+      };
+    case ACTION_TYPES.TOGGLE_CLUSTER_CHART:
+      return {
+        ...state,
+        showClusterChart: true,
+        dedupClusterStats: action.payload,
+      };
+    case ACTION_TYPES.CLOSE_CLUSTER_CHART:
+      return {
+        ...state,
+        showClusterChart: false,
+      };
+    // case SUCCESS(ACTION_TYPES.UPDATE_CLUSTER_STATS):
+    //   return{
+    //     ...state,
+
+    //   }
     default:
       return state;
   }
@@ -206,6 +285,48 @@ const updateAnalysisResults = id => (dispatch, getState) => {
   dispatch({
     type: ACTION_TYPES.UPDATE_ANALYSIS_RESULTS,
     payload: axios.post(`api/datasets/${id}/query`, analysisQuery),
+  });
+};
+
+const getDuplicateData = (data, dataset) => {
+  // console.log(data.bigVizClusters[0].bigVizData[0]);
+  const duplicateData = {
+    dedupStats: {
+      percentOfDups: data.bigVizStatistic.percentOfDups,
+      similarityMeasures: data.bigVizStatistic.similarityMeasures,
+      columnValues: data.bigVizStatistic.columnValues,
+    },
+
+    duplicates: data.bigVizDataset.map(d => {
+      let lat = 0.0;
+      let lon = 0.0;
+      for (let i = 0; i < d.bigVizData.length; i++) {
+        if (d.bigVizData[i].columns[dataset.lat.name] !== null && d.bigVizData[i].columns[dataset.lon.name] !== null) {
+          lat = parseFloat(d.bigVizData[i].columns[dataset.lat.name]);
+          lon = parseFloat(d.bigVizData[i].columns[dataset.lon.name]);
+          break;
+        }
+      }
+      return [lon, lat, d.bigVizData.length, d.groupedObj, d.clusterColumnSimilarity, d.clusterColumns];
+    }),
+  };
+  return duplicateData;
+};
+
+export const updateDuplicates = id => (dispatch, getState) => {
+  const { dataset, viewRect, columns } = getState().visualizer;
+  let colString = columns[0];
+  for (let i = 1; i < columns.length; i++) {
+    colString += ', ' + columns[i];
+  }
+  const sqlQuery = `SELECT DEDUP ${colString} FROM all.${dataset.name.split('.')[0]} WHERE ${dataset.lat.name} BETWEEN ${
+    viewRect.lat[0]
+  } AND ${viewRect.lat[1]} AND ${dataset.lon.name} BETWEEN ${viewRect.lon[0]} AND ${viewRect.lon[1]}`;
+  dispatch({
+    type: ACTION_TYPES.UPDATE_DUPLICATES,
+    payload: axios.get(`api/datasets/${id}/dedup-query?q=${sqlQuery}`).then(res => {
+      return getDuplicateData(res.data, dataset);
+    }),
   });
 };
 
@@ -305,17 +426,44 @@ export const updateDrawnRect = (id, drawnRectBounds: LatLngBounds) => dispatch =
   dispatch(updateAnalysisResults(id));
 };
 
-export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number) => dispatch => {
+export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number, showDuplicates: boolean, showAll: boolean) => dispatch => {
   const viewRect = {
     lat: [bounds.getSouth(), bounds.getNorth()],
     lon: [bounds.getWest(), bounds.getEast()],
   };
-
   dispatch({
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
     payload: { zoom, viewRect },
   });
-  dispatch(updateClusters(id));
+  if (showAll) {
+    dispatch(updateClusters(id));
+    dispatch(updateDuplicates(id));
+  } else {
+    if (showDuplicates) {
+      dispatch(updateDuplicates(id));
+      dispatch({ type: ACTION_TYPES.REMOVE_CLUSTERS });
+    } else {
+      dispatch(updateClusters(id));
+      dispatch({ type: ACTION_TYPES.REMOVE_DUPLICATES });
+    }
+  }
+};
+
+export const updateMap = (id, viewRect, zoom: number, showDuplicates: boolean, showAll: boolean) => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
+    payload: { zoom, viewRect },
+  });
+  if (showAll) {
+    dispatch(updateClusters(id));
+    dispatch(updateDuplicates(id));
+  } else {
+    dispatch(updateClusters(id));
+    if (showDuplicates) {
+      dispatch({ type: ACTION_TYPES.REMOVE_CLUSTERS });
+      dispatch(updateDuplicates(id));
+    } else dispatch({ type: ACTION_TYPES.REMOVE_DUPLICATES });
+  }
 };
 
 export const reset = id => async dispatch => {
@@ -327,10 +475,50 @@ export const reset = id => async dispatch => {
   dispatch(updateClusters(id));
 };
 
+export const toggleClusterChart = (clusterColumnSimilarity, clusterColumnValues, clusterId) => dispatch => {
+  const dedupClusterStats = {
+    clusterColumnSimilarity,
+    clusterColumnValues,
+    clusterId,
+  };
+  dispatch({
+    type: ACTION_TYPES.TOGGLE_CLUSTER_CHART,
+    payload: dedupClusterStats,
+  });
+};
+
+export const closeClusterChart = () => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.CLOSE_CLUSTER_CHART,
+  });
+};
+
+export const toggleDuplicates = () => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.TOGGLE_DUPLICATES,
+  });
+};
+
+export const toggleAll = () => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.TOGGLE_ALL,
+  });
+};
+
 export const getIndexStatus = id => {
   const requestUrl = `api/datasets/${id}/status`;
   return {
     type: ACTION_TYPES.FETCH_INDEX_STATUS,
     payload: axios.get<IIndexStatus>(requestUrl),
   };
+};
+
+export const getColumns = (id, dataset) => dispatch => {
+  const name = 'all.' + dataset.name.split('.')[0];
+  dispatch({
+    type: ACTION_TYPES.GET_COLUMNS,
+    payload: axios.get(`api/datasets/${id}/columns?d=${name}`).then(res => {
+      return res.data.slice(1);
+    }),
+  });
 };

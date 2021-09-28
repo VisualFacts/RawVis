@@ -51,7 +51,7 @@ public class RawDataService {
         if (dataset.getMeasure1() != null) {
             measureCol1 = dataset.getMeasure1().getFieldIndex();
         }
-        Schema schema = new Schema(applicationProperties.getDataPath() + dataset.getName(), DELIMITER,
+        Schema schema = new Schema(applicationProperties.getWorkspacePath() + dataset.getName(), DELIMITER,
             dataset.getLon().getFieldIndex(), dataset.getLat().getFieldIndex(), measureCol0, measureCol1,
             new Rectangle(Range.open(dataset.getxMin(), dataset.getxMax()), Range.open(dataset.getyMin(), dataset.getyMax())), dataset.getObjectCount());
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field.getFieldIndex())).collect(Collectors.toList());

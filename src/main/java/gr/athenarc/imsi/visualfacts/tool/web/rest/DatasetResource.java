@@ -8,31 +8,37 @@ import gr.athenarc.imsi.visualfacts.tool.service.RawDataService;
 import gr.athenarc.imsi.visualfacts.tool.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+
+import org.imsi.queryERAPI.controller.QueryController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+
 
 /**
  * REST controller for managing {@link gr.athenarc.imsi.visualfacts.tool.domain.Dataset}.
  */
 @RestController
 @RequestMapping("/api")
-@Transactional
 public class DatasetResource {
-
     private static final String ENTITY_NAME = "dataset";
     private final Logger log = LoggerFactory.getLogger(DatasetResource.class);
     private final DatasetRepository datasetRepository;
     private final RawDataService rawDataService;
+    private final QueryController queryController = new QueryController();
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
@@ -49,7 +55,7 @@ public class DatasetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/datasets")
-    public ResponseEntity<Dataset> createDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException {
+    public ResponseEntity<Dataset> createDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException, IOException {
         log.debug("REST request to save Dataset : {}", dataset);
         if (dataset.getId() != null) {
             throw new BadRequestAlertException("A new dataset cannot already have an ID", ENTITY_NAME, "idexists");
@@ -70,7 +76,7 @@ public class DatasetResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/datasets")
-    public ResponseEntity<Dataset> updateDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException {
+    public ResponseEntity<Dataset> updateDataset(@Valid @RequestBody Dataset dataset) throws URISyntaxException, IOException {
         log.debug("REST request to update Dataset : {}", dataset);
         if (dataset.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -99,9 +105,10 @@ public class DatasetResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the dataset, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/datasets/{id}")
-    public ResponseEntity<Dataset> getDataset(@PathVariable String id) {
+    public ResponseEntity<Dataset> getDataset(@PathVariable String id) throws IOException {
         log.debug("REST request to get Dataset : {}", id);
         Optional<Dataset> dataset = datasetRepository.findById(id);
+        log.debug(dataset.toString());
         return ResponseUtil.wrapOrNotFound(dataset);
     }
 
@@ -122,14 +129,14 @@ public class DatasetResource {
      * POST executeQuery
      */
     @PostMapping("/datasets/{id}/query")
-    public ResponseEntity<VisQueryResults> executeQuery(@PathVariable String id, @Valid @RequestBody VisQuery query) {
+    public ResponseEntity<VisQueryResults> executeQuery(@PathVariable String id, @Valid @RequestBody VisQuery query) throws IOException {
         log.debug("REST request to execute Query: {}", query);
         Optional<VisQueryResults> queryResultsOptional = datasetRepository.findById(id).map(dataset -> rawDataService.executeQuery(dataset, query));
         return ResponseUtil.wrapOrNotFound(queryResultsOptional);
     }
 
     @PostMapping(path = "/datasets/{id}/reset-index")
-    public void resetIndex(@PathVariable String id) {
+    public void resetIndex(@PathVariable String id) throws IOException {
         log.debug("REST request to reset index for dataset: {}", id);
         datasetRepository.findById(id).ifPresent(dataset -> rawDataService.removeIndex(dataset));
     }
@@ -138,6 +145,51 @@ public class DatasetResource {
     public IndexStatus getIndexStatus(@PathVariable String id) {
         return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
     }
+    
+    @GetMapping("/datasets/{id}/dedup-query")
+    public ResponseEntity dedupQuery(@RequestParam String q) {
+    	try {
+			return queryController.liResult(q);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return null;
+    }
+    
+    @GetMapping("/datasets/{id}/columns")
+    public ResponseEntity columns(@RequestParam String d) {
+    	try {
+			return queryController.columns(d);
+		} catch (JsonProcessingException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    }
+
+//    @GetMapping("/datasets/{id}/dedup-query")
+//    public ResponseEntity dedupQuery(@RequestParam String q) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/query-rv?q=" + q;
+//        ResponseEntity response
+//            = restTemplate.postForEntity(url, "", String.class);
+//        log.debug(response.toString());
+//        return response;
+//    }
+//    
+//    @GetMapping("/datasets/{id}/columns")
+//    public ResponseEntity columns(@RequestParam String d) {
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "http://localhost:8090/queryER-API-0.0.1-SNAPSHOT/api/columns?d=" + d;
+//        ResponseEntity response
+//            = restTemplate.postForEntity(url, "", String.class);
+//        log.debug(response.toString());
+//        return response;
+//    }
 }
 
 class IndexStatus {

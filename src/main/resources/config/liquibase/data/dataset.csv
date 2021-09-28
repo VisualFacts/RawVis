@@ -1,3 +1,0 @@
-id;name;type;measure0_id;measure1_id;lat_id;lon_id;object_count;x_min;x_max;y_min;y_max;query_x_min;query_x_max;query_y_min;query_y_max
-taxi;taxi.csv;CSV;12;16;6;5;1000000;-75;-71;39;42;-73.998;-73.963;40.748;40.766
-network;network_data.csv;CSV;23;24;17;18;1516023;139.28706;140.268;35.12885;36.17055;139.7443;139.79395;35.6937;35.6630

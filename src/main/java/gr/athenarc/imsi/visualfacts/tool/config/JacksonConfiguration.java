@@ -1,6 +1,5 @@
 package gr.athenarc.imsi.visualfacts.tool.config;
 
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -24,14 +23,6 @@ public class JacksonConfiguration {
     @Bean
     public Jdk8Module jdk8TimeModule() {
         return new Jdk8Module();
-    }
-
-    /*
-     * Support for Hibernate types in Jackson.
-     */
-    @Bean
-    public Hibernate5Module hibernate5Module() {
-        return new Hibernate5Module();
     }
 
     /*
