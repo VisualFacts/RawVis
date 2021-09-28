@@ -1,0 +1,61 @@
+{
+  "id": "hotel",
+  "name": "hotel_FACTUAL_200k_dups.csv",
+  "type": "CSV",
+  "objectCount": 200000,
+  "xMin": -157.9287779,
+  "xMax": 119.819558,
+  "yMin": 8.91667,
+  "yMax": 61.231374,
+  "queryXMin": -138.293226,
+  "queryXMax": -110.189389,
+  "queryYMin": 10.024589,
+  "queryYMax": 74.081639,
+  "measure0": {
+    "id": 5,
+    "name": "postcode",
+    "fieldIndex": 5
+  },
+  "measure1": {
+    "id": 3,
+    "name": "status",
+    "fieldIndex": 3
+  },
+  "lat": {
+    "id": 13,
+    "name": "latitude",
+    "fieldIndex": 13
+  },
+  "lon": {
+    "id": 12,
+    "name": "longitude",
+    "fieldIndex": 12
+  },
+  "dimensions": [
+    {
+      "id": 1,
+      "name": "region",
+      "fieldIndex": 1
+    },
+    {
+      "id": 6,
+      "name": "fitness_facilities",
+      "fieldIndex": 6
+    },
+    {
+      "id": 7,
+      "name": "category",
+      "fieldIndex": 7
+    },
+    {
+      "id": 8,
+      "name": "address",
+      "fieldIndex": 8
+    },
+    {
+      "id": 10,
+      "name": "name",
+      "fieldIndex": 10
+    }
+  ]
+}
