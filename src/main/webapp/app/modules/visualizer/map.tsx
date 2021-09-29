@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
-import {MapContainer, Marker, TileLayer, ZoomControl, Popup} from "react-leaflet";
-import {updateDrawnRect, updateMapBounds, updateMap, toggleClusterChart, closeClusterChart} from "app/modules/visualizer/visualizer.reducer";
+import {MapContainer, Marker, Popup, TileLayer, ZoomControl} from "react-leaflet";
+import {
+  closeClusterChart,
+  toggleClusterChart,
+  updateDrawnRect,
+  updateMap,
+  updateMapBounds
+} from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
@@ -13,8 +19,8 @@ export interface IMapProps {
   duplicates: any,
   dataset: IDataset,
   showDuplicates: any,
-  zoom:any,
-  viewRect:any,
+  zoom: any,
+  viewRect: any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
   updateMap: typeof updateMap,
@@ -23,10 +29,9 @@ export interface IMapProps {
 }
 
 
-
 export const Map = (props: IMapProps) => {
 
-  const {clusters, dataset, duplicates} = props;
+  const {clusters, dataset, duplicates, showDuplicates} = props;
 
   const [map, setMap] = useState(null);
   useEffect(() => {
@@ -77,7 +82,6 @@ export const Map = (props: IMapProps) => {
   }, [map])
 
 
-
   const fetchIcon = count => {
     if (count === 1) return new L.Icon.Default();
     const size =
@@ -93,8 +97,8 @@ export const Map = (props: IMapProps) => {
 
   const fetchDedupIcon = count => {
     const size =
-    count < 10 ? 'small' :
-      count < 100 ? 'medium' : 'large';
+      count < 10 ? 'small' :
+        count < 100 ? 'medium' : 'large';
 
     return L.divIcon({
       html: `<div><span>${count}</span></div>`,
@@ -104,12 +108,12 @@ export const Map = (props: IMapProps) => {
   };
 
 
-  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false} >
+  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false}>
     <TileLayer
       attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     />
-    {clusters && clusters.map((cluster, index) => {
+    {!showDuplicates && clusters && clusters.map((cluster, index) => {
       // every cluster point has coordinates
       // the point may be either a cluster or a single point
       const {
@@ -117,39 +121,39 @@ export const Map = (props: IMapProps) => {
       } = cluster.properties;
       return (
         <Marker key={`marker-${index}`}
-          position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
-          icon={fetchIcon(totalCount)}/>
+                position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
+                icon={fetchIcon(totalCount)}/>
       );
     })}
-    { duplicates && duplicates.map((duplicate, index) => {
+    {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
       return (
-      <Marker key={`marker-${index}`}
-      position={[duplicate[1], duplicate[0]]}
-      icon={fetchDedupIcon(duplicate[2])}
-      eventHandlers={{
-        click(e)  {
-          props.toggleClusterChart(duplicate[4], duplicate[5], index + 1);
-        },
+        <Marker key={`marker-${index}`}
+                position={[duplicate[1], duplicate[0]]}
+                icon={fetchDedupIcon(duplicate[2])}
+                eventHandlers={{
+                  click(e) {
+                    props.toggleClusterChart(duplicate[4], duplicate[5], index + 1);
+                  },
 
-      }}
-      >
+                }}
+        >
           <Popup className="request-popup">
             <div className="cluster-title">Cluster #{index + 1}</div>
-           {dataset.headers && dataset.headers.map((col, colId) => {
-                let val = duplicate[3][colId];
-                if(val == null) val = "";
-                return(
-                  <div  className = {`dup-item ${val.includes("|") ? "active" : ""}`}
-                    key = {`dup-item-${index}-${colId} ${val.includes("|") ? "active" : ""}`}>
+            {dataset.headers && dataset.headers.map((col, colId) => {
+              let val = duplicate[3][colId];
+              if (val == null) val = "";
+              return (
+                <div className={`dup-item ${val.includes("|") ? "active" : ""}`}
+                     key={`dup-item-${index}-${colId} ${val.includes("|") ? "active" : ""}`}>
                     <span>
                     <b>{col}: </b>{val}
                     </span>
-                    <br></br>
-                  </div>
-                )
-                })}
+                  <br></br>
+                </div>
+              )
+            })}
           </Popup>
-      </Marker>
+        </Marker>
       );
     })}
     <ZoomControl position="topright"/>
