@@ -5,7 +5,6 @@ import gr.athenarc.imsi.visualfacts.tool.config.ApplicationProperties;
 import io.github.jhipster.config.DefaultProfileUtil;
 import io.github.jhipster.config.JHipsterConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.imsi.queryEREngine.imsi.er.QueryEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -29,11 +28,9 @@ public class RawVisApp {
     private static final Logger log = LoggerFactory.getLogger(RawVisApp.class);
 
     private final Environment env;
-    private final QueryEngine queryEngine;
 
     public RawVisApp(Environment env) {
         this.env = env;
-        this.queryEngine = new QueryEngine(env.getProperty("application.modelPath"));
     }
 
     /**
@@ -54,13 +51,6 @@ public class RawVisApp {
             log.error("You have misconfigured your application! It should not " +
                 "run with both the 'dev' and 'cloud' profiles at the same time.");
         }
-        try {
- 			queryEngine.initialize();
- 		} catch (IOException e) {
- 			log.error("QueryER IOException");
- 		} catch (SQLException e) {
- 			log.error("QueryER SQLException");
- 		}
     }
 
     /**
@@ -73,7 +63,7 @@ public class RawVisApp {
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);
-        
+
     }
 
     private static void logApplicationStartup(Environment env) {

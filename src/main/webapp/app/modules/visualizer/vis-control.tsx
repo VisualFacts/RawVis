@@ -1,7 +1,7 @@
-import React, { useState, useEffect} from 'react';
+import React from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
 import {Button, Checkbox, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
-import {reset, toggleDuplicates, updateFilters, toggleAll} from "app/modules/visualizer/visualizer.reducer";
+import {reset, toggleDuplicates, updateFilters} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
 
 
@@ -10,11 +10,9 @@ export interface IVisControlProps {
   facets: any,
   groupByCols: number[],
   categoricalFilters: any,
-  showDuplicates: any,
-  showAll: any,
+  showDuplicates: boolean,
   updateFilters: typeof updateFilters,
   toggleDuplicates: typeof toggleDuplicates,
-  toggleAll: typeof toggleAll,
   reset: typeof reset,
 }
 
@@ -26,10 +24,6 @@ export const VisControl = (props: IVisControlProps) => {
     const filters = {...categoricalFilters};
     filters[dimIndex] = value === "" ? null : value;
     props.updateFilters(dataset.id, filters);
-  };
-
-  const handleShowAllToggleChange = (e) => {
-    props.toggleAll();
   };
 
   const handleDuplicateToggleChange = (e) => {
@@ -44,16 +38,16 @@ export const VisControl = (props: IVisControlProps) => {
           Filtering
         </Header>
       </Divider>
-      {dataset.dimensions.map(dim => facets[dim.fieldIndex] &&
+      {dataset.dimensions.map(dim => facets[dim] &&
         <>
           <h5>
-            <span>{dim.name}</span>
+            <span>{dataset.headers[dim]}</span>
           </h5>
           <Dropdown
-            options={facets[dim.fieldIndex].map((value, index) => ({key: index, value, text: value}))}
-            selection clearable upward fluid disabled={groupByCols.includes(dim.fieldIndex)}
-            value={categoricalFilters[dim.fieldIndex] || null}
-            onChange={handleFilterChange(dim.fieldIndex)}
+            options={facets[dim].map((value, index) => ({key: index, value, text: value}))}
+            selection clearable upward fluid disabled={groupByCols.includes(dim)}
+            value={categoricalFilters[dim] || null}
+            onChange={handleFilterChange(dim)}
           /></>)}</div>;
 
 
@@ -73,11 +67,11 @@ export const VisControl = (props: IVisControlProps) => {
     </Label>
     <Header as='h5'>Latitude</Header>
     <Label size='medium' color='blue'>
-      {dataset.lat.name}
+      {dataset.headers[dataset.lat]}
     </Label>
     <Header as='h5'>Longitude</Header>
     <Label size='medium' color='blue'>
-      {dataset.lon.name}
+      {dataset.headers[dataset.lon]}
     </Label>
     {/* <Header as='h5'>Show All</Header>
     <Checkbox className="toggle"
@@ -86,8 +80,8 @@ export const VisControl = (props: IVisControlProps) => {
     /> */}
     <Header as='h5'>Show Duplicates</Header>
     <Checkbox className="toggle"
-       checked = {props.showDuplicates}
-       onChange={handleDuplicateToggleChange}
+              checked={props.showDuplicates}
+              onChange={handleDuplicateToggleChange}
     />
 
     <br/>

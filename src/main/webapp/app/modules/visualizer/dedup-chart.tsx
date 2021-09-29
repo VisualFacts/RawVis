@@ -8,23 +8,24 @@ import DedupChartPercentage from './dedup-chart-percentage';
 import DedupChartSimilarities from './dedup-chart-similarities';
 import DedupChartCluster from './dedup-chart-cluster';
 import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
+import {IDataset} from "app/shared/model/dataset.model";
 
 Piechart(Highcharts);
 
 export interface IDedupChartProps {
   dedupStats: IDedupStats,
-  columns: any,
+  dataset: IDataset,
   showClusterChart: boolean,
 }
 
 
 export const DedupChart = (props: IDedupChartProps) => {
-  const {dedupStats, columns, showClusterChart} = props;
+  const {dedupStats, dataset, showClusterChart} = props;
   let percentOfDups = 0;
   if(dedupStats != null) percentOfDups =  dedupStats.percentOfDups;
 
   const [chart, setChart] = useState('dedup');
-  
+
 
   const handleChartChange = (chartClicked) => () => {
     if(chartClicked === "dedup"){
@@ -41,7 +42,7 @@ export const DedupChart = (props: IDedupChartProps) => {
     </Button.Group>
     <br/><br/><br/>
     {chart==="dedup" && <DedupChartPercentage dedupStats = {dedupStats}/>}
-    {chart==="similarities" && <DedupChartSimilarities columns = {columns} dedupStats = {dedupStats}/> }
+    {chart==="similarities" && <DedupChartSimilarities dataset={dataset} dedupStats = {dedupStats}/> }
   </Segment>
 };
 

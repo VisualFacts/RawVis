@@ -8,6 +8,7 @@ export interface IQuery {
   groupByCols?: number[];
   measureCol?: number;
   aggType?: AggregateFunctionType;
+  dedupEnabled?: boolean;
 }
 
 export const defaultValue: Readonly<IQuery> = {
@@ -17,4 +18,5 @@ export const defaultValue: Readonly<IQuery> = {
   measureCol: 16,
   categoricalFilters: {},
   aggType: AggregateFunctionType.AVG,
+  dedupEnabled: false,
 };

@@ -29,7 +29,7 @@ export const Chart = (props: IChartProps) => {
 
   const [chartType, setChartType] = useState('column');
 
-  const xAxisOptions = dimensions.map(dim => ({key: dim.id, value: dim.fieldIndex, text: dim.name}));
+  const xAxisOptions = dimensions.map(dim => ({key: dim, value: dim, text: dataset.headers[dim]}));
   const aggTypeOptions = Object.values(AggregateFunctionType).map((type, index) => ({
     key: `agg-type-${index}`,
     value: type,
@@ -66,7 +66,7 @@ export const Chart = (props: IChartProps) => {
   const handleChartTypeChange = (newChartType) => () => {
     if (newChartType !== chartType) {
       if (newChartType === 'heatmap') {
-        props.updateGroupBy(dataset.id, [groupByCols[0], dimensions.find(dim => dim.fieldIndex !== groupByCols[0]).fieldIndex]);
+        props.updateGroupBy(dataset.id, [groupByCols[0], dimensions.find(dim => dim !== groupByCols[0])]);
       } else if (chartType === 'heatmap') {
         props.updateGroupBy(dataset.id, [groupByCols[0]]);
       }
@@ -75,11 +75,11 @@ export const Chart = (props: IChartProps) => {
   };
 
 
-  const xAxis = groupByCols && dataset.dimensions.find(d => d.fieldIndex === groupByCols[0]);
+  const xAxis = groupByCols && dataset.dimensions.find(d => d === groupByCols[0]);
 
-  const yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d.fieldIndex === groupByCols[1]) : null;
+  const yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d === groupByCols[1]) : null;
 
-  const measure = dataset.measure0 == null ? null : dataset.measure0.fieldIndex === measureCol ? dataset.measure0 : dataset.measure1;
+  const measure = dataset.measure0 == null ? null : dataset.measure0 === measureCol ? dataset.measure0 : dataset.measure1;
   return <Segment id='chart-container' raised textAlign='center'>
     <Button.Group floated='right' basic size='mini'>
       <Button icon='chart bar outline' active={chartType === 'column'} onClick={handleChartTypeChange('column')}/>
@@ -104,13 +104,13 @@ export const Chart = (props: IChartProps) => {
         },
         xAxis: {
           title: {
-            text: xAxis.name
+            text: dataset.headers[xAxis]
           },
           categories: xCategories
         },
         yAxis: {
           title: {
-            text: yAxis.name
+            text: dataset.headers[yAxis]
           },
           categories: yCategories,
           reversed: true
@@ -149,13 +149,13 @@ export const Chart = (props: IChartProps) => {
         xAxis: {
           type: 'category',
           title: {
-            text: xAxis.name
+            text: dataset.headers[xAxis]
           },
           categories: null
         },
         yAxis: {
           title: {
-            text: `${aggType}(${measure == null ? '' : measure.name})`
+            text: `${aggType}(${measure == null ? '' : dataset.headers[measure]})`
           },
           reversed: false,
           categories: null
@@ -176,16 +176,16 @@ export const Chart = (props: IChartProps) => {
                                              onChange={handleAggTypeChange}/></Label>}
 
         {dataset.measure0 != null &&
-        <Label>Measure: <Dropdown options={[{text: dataset.measure0.name, value: dataset.measure0.fieldIndex}, {
-          text: dataset.measure1.name,
-          value: dataset.measure1.fieldIndex
-        }]} inline value={measure.fieldIndex} onChange={handleMeasureChange}/></Label>}
+        <Label>Measure: <Dropdown options={[{text: dataset.headers[dataset.measure0], value: dataset.measure0}, {
+          text: dataset.headers[dataset.measure1],
+          value: dataset.measure1
+        }]} inline value={measure} onChange={handleMeasureChange}/></Label>}
 
         <Label>xAxis: <Dropdown options={xAxisOptions} inline
-                                value={xAxis && xAxis.fieldIndex}
+                                value={xAxis && xAxis}
                                 onChange={handleXAxisChange}/></Label>
         {chartType === 'heatmap' && <Label>yAxis: <Dropdown options={xAxisOptions} inline onChange={handleYAxisChange}
-                                                            value={yAxis && yAxis.fieldIndex}/></Label>}
+                                                            value={yAxis && yAxis}/></Label>}
       </Label.Group>
     </Segment>
   </Segment>

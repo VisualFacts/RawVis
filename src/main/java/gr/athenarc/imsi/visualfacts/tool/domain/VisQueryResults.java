@@ -1,5 +1,7 @@
 package gr.athenarc.imsi.visualfacts.tool.domain;
 
+import gr.athenarc.imsi.visualfacts.queryER.VizUtilities.DedupVizOutput;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,9 @@ public class VisQueryResults implements Serializable {
 
     private int totalTileCount;
     private int totalPointCount;
+
+    private DedupVizOutput dedupVizOutput;
+
 
 
     public List<GroupedStats> getSeries() {
@@ -105,12 +110,18 @@ public class VisQueryResults implements Serializable {
         this.totalPointCount = totalPointCount;
     }
 
+    public DedupVizOutput getDedupVizOutput() {
+        return dedupVizOutput;
+    }
+
+    public void setDedupVizOutput(DedupVizOutput dedupVizOutput) {
+        this.dedupVizOutput = dedupVizOutput;
+    }
+
     @Override
     public String toString() {
         return "VisQueryResults{" +
-            "series=" + series +
-            ", facets=" + facets +
-            ", rectStats=" + rectStats +
+            "rectStats=" + rectStats +
             ", fullyContainedTileCount=" + fullyContainedTileCount +
             ", tileCount=" + tileCount +
             ", pointCount=" + pointCount +

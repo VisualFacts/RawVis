@@ -6,10 +6,11 @@ import _ from 'lodash';
 import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
 import { Button, Header, Image, Modal } from 'semantic-ui-react'
 import './visualizer.scss';
+import {IDataset} from "app/shared/model/dataset.model";
 
 export interface IDedupChartSimilaritiesProps {
   dedupStats: IDedupStats,
-  columns: any,
+  dataset: IDataset,
 }
 
 const createSimilarityData = (similarityMeasures, columns) => {
@@ -32,7 +33,7 @@ const createColumnValueData = (columnValues) => {
 
 
 export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
-  const {dedupStats, columns} = props;
+  const {dedupStats, dataset} = props;
   let similarityMeasures = null;
   let data = {};
   let columnData = {};
@@ -40,14 +41,11 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
   const [col, setCol] = useState('');
   if(dedupStats != null) {
     similarityMeasures =  dedupStats.similarityMeasures;
-    data = createSimilarityData(similarityMeasures, columns);
+    data = createSimilarityData(similarityMeasures, dataset.headers);
     columnData = createColumnValueData(dedupStats.columnValues[col]);
   }
-  
-  
-  //const [columnData, setColumnData] = useState([]);
 
-  
+
   const changeChart = (column) => {
     const start = '<span class="text-center">';
     const end = '</span>';
@@ -65,10 +63,10 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
       marginBottom: 50,
       paddingBottom:40,
       plotBorderWidth: 1
-      
+
     },
     xAxis: {
-      categories: columns,
+      categories: dataset.headers,
       title: {
           text: null
       },
@@ -123,7 +121,7 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
       marginBottom: 50,
       paddingBottom:20,
       plotBorderWidth: 1
-      
+
     },
     plotOptions: {
       pie: {
@@ -153,7 +151,7 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
       immutable={true}
       options = {options}
     />}
-    {chart==="col"  &&  
+    {chart==="col"  &&
     <div style={{border:"solid lightgrey 2px"}}>
     <div className="column-value-chart-title">{col} value distribution</div>
     <div onClick={() => setChart("similarities")} className="x-button">x</div>

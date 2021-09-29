@@ -15,15 +15,12 @@ import {
   updateMapBounds,
   updateMeasure,
   toggleDuplicates,
-  toggleAll,
   updateMap,
-  getColumns,
   toggleClusterChart,
   closeClusterChart,
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
-import DedupStatsPanel from "app/modules/visualizer/dedup-stats-panel";
 import DedupChartCluster from "app/modules/visualizer/dedup-chart-cluster";
 import StatsPanel from "app/modules/visualizer/stats-panel";
 import Chart from "app/modules/visualizer/chart";
@@ -52,8 +49,8 @@ export const VisPage = (props: IVisPageProps) => {
     measureCol,
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
-    totalPointCount, zoom, totalTileCount, totalTime, executionTime, 
-    showDuplicates, showAll, columns, showClusterChart, dedupClusterStats,
+    totalPointCount, zoom, totalTileCount, totalTime, executionTime,
+    showDuplicates, showClusterChart, dedupClusterStats,
   } = props;
 
   useEffect(() => {
@@ -71,11 +68,6 @@ export const VisPage = (props: IVisPageProps) => {
     }
   }, [indexStatus]);
 
-  useEffect(() => {
-    if(dataset != null)
-      props.getColumns(props.match.params.id, dataset);
-  }, [dataset]);
-
   /*  return !loading && <Grid>
       <Grid.Column width={4}>
         <VisControl dataset={dataset} query={query} queryResults={queryResults} executeQuery={props.executeQuery}/>
@@ -89,10 +81,10 @@ export const VisPage = (props: IVisPageProps) => {
 
   return !loading && <div>
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
-                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates} toggleAll = {props.toggleAll}
-                showAll = {showAll} showDuplicates = {showDuplicates} />
-    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates} showAll = {showAll}
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset} columns = {columns} 
+                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates}
+                showDuplicates = {showDuplicates} />
+    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates}
+         updateDrawnRect={props.updateDrawnRect} dataset={dataset}
          duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}
          toggleClusterChart = {props.toggleClusterChart} closeClusterChart = {props.closeClusterChart}/>
     <div className='bottom-panel-group'>
@@ -111,8 +103,8 @@ export const VisPage = (props: IVisPageProps) => {
       </>}
       {rectStats && <>
         {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
-        {showClusterChart === true && <DedupChartCluster columns = {columns} dedupClusterStats = {dedupClusterStats}/> }
-        {showDuplicates && <DedupChart dedupStats={dedupStats} columns = {columns} showClusterChart= {showClusterChart}/>}
+        {showClusterChart === true && <DedupChartCluster dataset={dataset} dedupClusterStats = {dedupClusterStats}/> }
+        {showDuplicates && <DedupChart dedupStats={dedupStats} dataset={dataset} showClusterChart= {showClusterChart}/>}
       </>}
     </div>
     <Modal
@@ -167,8 +159,6 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   totalTime: visualizer.totalTime,
   executionTime: visualizer.executionTime,
   showDuplicates: visualizer.showDuplicates,
-  showAll: visualizer.showAll,
-  columns: visualizer.columns,
   showClusterChart: visualizer.showClusterChart,
   dedupClusterStats: visualizer.dedupClusterStats,
 });
@@ -185,9 +175,7 @@ const mapDispatchToProps = {
   getIndexStatus,
   updateClusters,
   toggleDuplicates,
-  toggleAll,
   updateMap,
-  getColumns,
   toggleClusterChart,
   closeClusterChart,
 };

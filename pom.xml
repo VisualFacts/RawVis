@@ -220,11 +220,6 @@
             <artifactId>geo</artifactId>
             <version>0.7.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.imsi</groupId>
-            <artifactId>queryER-API</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
 
     </dependencies>
