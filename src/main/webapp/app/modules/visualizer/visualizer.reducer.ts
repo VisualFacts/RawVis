@@ -29,8 +29,7 @@ export const ACTION_TYPES = {
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
   UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
   TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
-  REMOVE_DUPLICATES: 'visualizer/REMOVE_DUPLICATES',
-  REMOVE_CLUSTERS: 'visualizer/REMOVE_CLUSTERS',
+
   TOGGLE_CLUSTER_CHART: 'visualizer/TOGGLE_CLUSTER_CHART',
   CLOSE_CLUSTER_CHART: 'visualizer/CLOSE_CLUSTER_CHART',
   UPDATE_CLUSTER_STATS: 'visualizer/UPDATE_CLUSTER_STATS',
@@ -103,7 +102,7 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         clusters: action.payload,
         totalTime: new Date().getTime() - action.meta.requestTime,
       };
-    case SUCCESS(ACTION_TYPES.UPDATE_DUPLICATES):
+    case ACTION_TYPES.UPDATE_DUPLICATES:
       return {
         ...state,
         loadingDups: false,
@@ -197,16 +196,6 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         showDuplicates: !state.showDuplicates,
       };
-    case ACTION_TYPES.REMOVE_DUPLICATES:
-      return {
-        ...state,
-        duplicates: [],
-      };
-    case ACTION_TYPES.REMOVE_CLUSTERS:
-      return {
-        ...state,
-        clusters: [],
-      };
     case ACTION_TYPES.TOGGLE_CLUSTER_CHART:
       return {
         ...state,
@@ -292,14 +281,6 @@ const getDuplicateData = (data, dataset) => {
   return duplicateData;
 };
 
-/* export const updateDuplicates = id => (dispatch, getState) => {
-  const { dataset, viewRect } = getState().visualizer;
-  dispatch({
-    type: ACTION_TYPES.UPDATE_DUPLICATES,
-    payload: null
-    }),
-  });
-}; */
 
 export const updateClusters = id => (dispatch, getState) => {
   const {
