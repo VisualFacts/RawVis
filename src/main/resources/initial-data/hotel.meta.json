@@ -1,6 +1,6 @@
 {
   "id": "hotel",
-  "name": "hotel_FACTUAL_200k_dups.csv",
+  "name": "hotel_FACTUAL_100k_dups.csv",
   "type": "CSV",
   "hasHeader": true,
   "objectCount": 200000,
@@ -16,11 +16,6 @@
   "measure1": 3,
   "lat": 13,
   "lon": 12,
-  "dimensions": [
-    1,
-    6,
-    7,
-    8,
-    10
-  ]
+  "dimensions": [1, 6, 7],
+  "dedupCols": [1, 6, 7, 8, 10, 11, 14, 17, 19, 21, 22, 23, 24, 25, 26, 28, 29, 36, 42, 45]
 }
