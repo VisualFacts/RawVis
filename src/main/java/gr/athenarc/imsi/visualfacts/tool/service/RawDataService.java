@@ -55,7 +55,7 @@ public class RawDataService {
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field)).collect(Collectors.toList());
         schema.setCategoricalColumns(categoricalColumns);
         schema.setHasHeader(dataset.getHasHeader());
-        schema.setDedupCols(dataset.getDimensions());
+        schema.setDedupCols(dataset.getDedupCols());
 
         log.debug(schema.toString());
         Veti veti = new Veti(schema, 100000000, "binn", 100);
