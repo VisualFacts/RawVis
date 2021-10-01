@@ -126,6 +126,7 @@ export const Map = (props: IMapProps) => {
       );
     })}
     {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
+      
       return (
         <Marker key={`marker-${index}`}
                 position={[duplicate[1], duplicate[0]]}
@@ -137,7 +138,7 @@ export const Map = (props: IMapProps) => {
 
                 }}
         >
-          <Popup className="request-popup">
+          <Popup className="request-popup" maxHeight={400}>
             <div className="cluster-title">Cluster #{index + 1}</div>
             {dataset.headers && dataset.headers.map((col, colId) => {
               let val = duplicate[3][colId];

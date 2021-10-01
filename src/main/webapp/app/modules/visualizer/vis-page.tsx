@@ -78,7 +78,6 @@ export const VisPage = (props: IVisPageProps) => {
         {query && query.groupByCol != null && <Chart dataset={dataset} query={query} queryResults={queryResults}/>}
       </Grid.Column>
     </Grid>;*/
-
   return !loading && <div>
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
                 updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates}

@@ -1,16 +1,16 @@
 import axios from 'axios';
-import {FAILURE, REQUEST, SUCCESS} from 'app/shared/reducers/action-type.util';
-import {IDataset} from 'app/shared/model/dataset.model';
-import {IQuery} from 'app/shared/model/query.model';
-import {LatLngBounds} from 'leaflet';
+import { FAILURE, REQUEST, SUCCESS } from 'app/shared/reducers/action-type.util';
+import { IDataset } from 'app/shared/model/dataset.model';
+import { IQuery } from 'app/shared/model/query.model';
+import { LatLngBounds } from 'leaflet';
 import Supercluster from 'supercluster';
-import {IRectangle} from 'app/shared/model/rectangle.model';
-import {AggregateFunctionType} from 'app/shared/model/enumerations/aggregate-function-type.model';
-import {IRectStats} from 'app/shared/model/rect-stats.model';
-import {IDedupStats} from 'app/shared/model/rect-dedup-stats.model';
-import {IDedupClusterStats} from 'app/shared/model/rect-dedup-cluster-stats.model';
-import {IGroupedStats} from 'app/shared/model/grouped-stats.model';
-import {defaultValue, IIndexStatus} from 'app/shared/model/index-status.model';
+import { IRectangle } from 'app/shared/model/rectangle.model';
+import { AggregateFunctionType } from 'app/shared/model/enumerations/aggregate-function-type.model';
+import { IRectStats } from 'app/shared/model/rect-stats.model';
+import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
+import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
+import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
+import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
@@ -105,8 +105,6 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
     case ACTION_TYPES.UPDATE_DUPLICATES:
       return {
         ...state,
-        loadingDups: false,
-        firstDupLoad: false,
         dedupStats: action.payload.dedupStats,
         duplicates: action.payload.duplicates,
       };
@@ -229,7 +227,7 @@ export const getDataset = id => {
 const prepareSupercluster = points => {
   const geoJsonPoints = points.map(point => ({
     type: 'Feature',
-    properties: {totalCount: point[2] || 1},
+    properties: { totalCount: point[2] || 1 },
     geometry: {
       type: 'Point',
       coordinates: [point[1], point[0]],
@@ -249,8 +247,8 @@ const prepareSupercluster = points => {
 };
 
 const updateAnalysisResults = id => (dispatch, getState) => {
-  const {categoricalFilters, drawnRect, groupByCols, measureCol, aggType, viewRect} = getState().visualizer;
-  const analysisQuery = {categoricalFilters, rect: drawnRect || viewRect, groupByCols, measureCol, aggType} as IQuery;
+  const { categoricalFilters, drawnRect, groupByCols, measureCol, aggType, viewRect } = getState().visualizer;
+  const analysisQuery = { categoricalFilters, rect: drawnRect || viewRect, groupByCols, measureCol, aggType } as IQuery;
   dispatch({
     type: ACTION_TYPES.UPDATE_ANALYSIS_RESULTS,
     payload: axios.post(`api/datasets/${id}/query`, analysisQuery),
@@ -269,10 +267,13 @@ const getDuplicateData = (data, dataset) => {
       let lat = 0.0;
       let lon = 0.0;
       for (let i = 0; i < d.VizData.length; i++) {
-        if (d.VizData[i].columns[dataset.lat] !== null && d.VizData[i].columns[dataset.lon] !== null) {
-          lat = parseFloat(d.VizData[i].columns[dataset.lat]);
-          lon = parseFloat(d.VizData[i].columns[dataset.lon]);
+        lat = parseFloat(d.VizData[i].columns[dataset.lat]);
+        lon = parseFloat(d.VizData[i].columns[dataset.lon]);
+        if (!isNaN(lat) && !isNaN(lon)) {
           break;
+        } else {
+          lon = 0;
+          lat = 0;
         }
       }
       return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumnSimilarity, d.clusterColumns];
@@ -280,7 +281,6 @@ const getDuplicateData = (data, dataset) => {
   };
   return duplicateData;
 };
-
 
 export const updateClusters = id => (dispatch, getState) => {
   const {
@@ -292,7 +292,7 @@ export const updateClusters = id => (dispatch, getState) => {
     aggType,
     drawnRect,
     showDuplicates,
-    dataset
+    dataset,
   } = getState().visualizer;
   const requestTime = new Date().getTime();
   if (viewRect == null) {
@@ -300,7 +300,7 @@ export const updateClusters = id => (dispatch, getState) => {
   }
   dispatch({
     type: ACTION_TYPES.UPDATE_CLUSTERS,
-    meta: {requestTime},
+    meta: { requestTime },
     payload: axios
       .post(`api/datasets/${id}/query`, {
         rect: viewRect,
@@ -309,22 +309,21 @@ export const updateClusters = id => (dispatch, getState) => {
         groupByCols,
         measureCol,
         aggType,
-        dedupEnabled: showDuplicates
+        dedupEnabled: showDuplicates,
       })
       .then(res => {
-        dispatch({type: ACTION_TYPES.UPDATE_FACETS, payload: res.data.facets});
+        dispatch({ type: ACTION_TYPES.UPDATE_FACETS, payload: res.data.facets });
         const responseTime = new Date().getTime();
         dispatch({
           type: ACTION_TYPES.UPDATE_QUERY_INFO,
-          payload: {...res.data, executionTime: responseTime - requestTime},
+          payload: { ...res.data, executionTime: responseTime - requestTime },
         });
 
-
-        showDuplicates && dispatch({
-          type: ACTION_TYPES.UPDATE_DUPLICATES,
-          payload: getDuplicateData(res.data.dedupVizOutput, dataset)
-        });
-
+        showDuplicates &&
+          dispatch({
+            type: ACTION_TYPES.UPDATE_DUPLICATES,
+            payload: getDuplicateData(res.data.dedupVizOutput, dataset),
+          });
 
         if (drawnRect == null) {
           dispatch({
@@ -349,13 +348,13 @@ export const updateFilters = (id, filters) => dispatch => {
 };
 
 export const updateGroupBy = (id, groupByCols) => (dispatch, getState) => {
-  const {categoricalFilters} = getState().visualizer;
+  const { categoricalFilters } = getState().visualizer;
 
   dispatch({
     type: ACTION_TYPES.UPDATE_GROUP_BY,
     payload: groupByCols,
   });
-  const newCategoricalFilters = {...categoricalFilters};
+  const newCategoricalFilters = { ...categoricalFilters };
   groupByCols.forEach(groupByCol => {
     delete newCategoricalFilters[groupByCol];
   });
@@ -404,7 +403,7 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number) => dispa
   };
   dispatch({
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
-    payload: {zoom, viewRect},
+    payload: { zoom, viewRect },
   });
   dispatch(updateClusters(id));
 };
@@ -412,7 +411,7 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number) => dispa
 export const updateMap = (id, viewRect, zoom: number) => dispatch => {
   dispatch({
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
-    payload: {zoom, viewRect},
+    payload: { zoom, viewRect },
   });
   dispatch(updateClusters(id));
 };
@@ -449,7 +448,6 @@ export const toggleDuplicates = () => dispatch => {
     type: ACTION_TYPES.TOGGLE_DUPLICATES,
   });
 };
-
 
 export const getIndexStatus = id => {
   const requestUrl = `api/datasets/${id}/status`;
