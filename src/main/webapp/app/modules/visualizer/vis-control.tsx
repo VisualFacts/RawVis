@@ -27,7 +27,7 @@ export const VisControl = (props: IVisControlProps) => {
   };
 
   const handleDuplicateToggleChange = (e) => {
-    props.toggleDuplicates();
+    props.toggleDuplicates(dataset.id);
   };
 
   const filterDropdowns = facets &&

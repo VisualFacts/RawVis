@@ -435,10 +435,12 @@ export const closeClusterChart = () => dispatch => {
   });
 };
 
-export const toggleDuplicates = () => dispatch => {
+export const toggleDuplicates = id => dispatch => {
   dispatch({
     type: ACTION_TYPES.TOGGLE_DUPLICATES,
   });
+  dispatch(updateClusters(id));
+
 };
 
 export const getIndexStatus = id => {
