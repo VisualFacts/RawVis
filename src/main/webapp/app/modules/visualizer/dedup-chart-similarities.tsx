@@ -17,7 +17,7 @@ const createSimilarityData = (similarityMeasures, columns) => {
   const data = [];
   for(let i = 0; i< columns.length; i++){
     const col = columns[i];
-    data.push({y: col in similarityMeasures ? similarityMeasures[col] : 0.0})
+    data.push({y: i in similarityMeasures ? similarityMeasures[i] : 0.0})
   }
   return data;
 }
