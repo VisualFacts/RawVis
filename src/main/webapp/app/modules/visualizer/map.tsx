@@ -5,7 +5,6 @@ import {
   closeClusterChart,
   toggleClusterChart,
   updateDrawnRect,
-  updateMap,
   updateMapBounds
 } from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -23,7 +22,6 @@ export interface IMapProps {
   viewRect: any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
-  updateMap: typeof updateMap,
   toggleClusterChart: typeof toggleClusterChart,
   closeClusterChart: typeof closeClusterChart,
 }
@@ -126,7 +124,7 @@ export const Map = (props: IMapProps) => {
       );
     })}
     {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
-      
+
       return (
         <Marker key={`marker-${index}`}
                 position={[duplicate[1], duplicate[0]]}

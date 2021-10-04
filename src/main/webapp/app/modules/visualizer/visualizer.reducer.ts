@@ -408,14 +408,6 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number) => dispa
   dispatch(updateClusters(id));
 };
 
-export const updateMap = (id, viewRect, zoom: number) => dispatch => {
-  dispatch({
-    type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
-    payload: { zoom, viewRect },
-  });
-  dispatch(updateClusters(id));
-};
-
 export const reset = id => async dispatch => {
   const requestUrl = `api/datasets/${id}/reset-index`;
   await dispatch({

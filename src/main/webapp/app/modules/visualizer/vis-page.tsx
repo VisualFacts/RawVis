@@ -15,7 +15,6 @@ import {
   updateMapBounds,
   updateMeasure,
   toggleDuplicates,
-  updateMap,
   toggleClusterChart,
   closeClusterChart,
 } from './visualizer.reducer';
@@ -63,9 +62,9 @@ export const VisPage = (props: IVisPageProps) => {
       setTimeout(() => {
         props.getIndexStatus(props.match.params.id);
       }, 1000);
-    } else if (viewRect) {
+    } /* else if (viewRect) {
       props.updateClusters(props.match.params.id);
-    }
+    }*/
   }, [indexStatus]);
 
   /*  return !loading && <Grid>
@@ -84,7 +83,7 @@ export const VisPage = (props: IVisPageProps) => {
                 showDuplicates = {showDuplicates} />
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates}
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
-         duplicates={duplicates} viewRect={viewRect} zoom={zoom} updateMap = {props.updateMap}
+         duplicates={duplicates} viewRect={viewRect} zoom={zoom}
          toggleClusterChart = {props.toggleClusterChart} closeClusterChart = {props.closeClusterChart}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
@@ -174,7 +173,6 @@ const mapDispatchToProps = {
   getIndexStatus,
   updateClusters,
   toggleDuplicates,
-  updateMap,
   toggleClusterChart,
   closeClusterChart,
 };

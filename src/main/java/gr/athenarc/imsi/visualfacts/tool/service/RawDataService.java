@@ -120,6 +120,7 @@ public class RawDataService {
                 LatLong latLong = GeoHash.decodeHash(e.getKey());
                 return new float[]{(float) latLong.getLat(), (float) latLong.getLon(), e.getValue()};
             }).collect(Collectors.toList()));
+            // visQueryResults.setPoints(points.stream().map(point -> new float[]{point.getY(), point.getX()}).collect(Collectors.toList()));
             visQueryResults.setFacets(schema.getCategoricalColumns().stream().collect(Collectors.toMap(CategoricalColumn::getIndex, CategoricalColumn::getNonNullValues)));
             return visQueryResults;
         } catch (IOException | ClassNotFoundException e) {
