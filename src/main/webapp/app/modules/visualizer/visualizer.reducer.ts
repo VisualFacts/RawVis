@@ -66,6 +66,7 @@ const initialState = {
   totalTime: 0,
   duplicates: [],
   bounds: null,
+  allowDedup: false,
   showDuplicates: false,
   showClusterChart: false,
 };
@@ -152,6 +153,8 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
     case ACTION_TYPES.UPDATE_MAP_BOUNDS:
       return {
         ...state,
+        allowDedup: action.payload.zoom > 12,
+        showDuplicates: action.payload.zoom > 12 && state.showDuplicates,
         zoom: action.payload.zoom,
         viewRect: action.payload.viewRect,
       };

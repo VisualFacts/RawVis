@@ -4,9 +4,12 @@ import {RouteComponentProps} from 'react-router-dom';
 
 import {IRootState} from 'app/shared/reducers';
 import {
+  closeClusterChart,
   getDataset,
   getIndexStatus,
   reset,
+  toggleClusterChart,
+  toggleDuplicates,
   updateAggType,
   updateClusters,
   updateDrawnRect,
@@ -14,9 +17,6 @@ import {
   updateGroupBy,
   updateMapBounds,
   updateMeasure,
-  toggleDuplicates,
-  toggleClusterChart,
-  closeClusterChart,
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -79,12 +79,13 @@ export const VisPage = (props: IVisPageProps) => {
     </Grid>;*/
   return !loading && <div>
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
-                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates = {props.toggleDuplicates}
-                showDuplicates = {showDuplicates} />
-    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds} showDuplicates={showDuplicates}
+                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates={props.toggleDuplicates}
+                showDuplicates={showDuplicates} allowDedup={props.allowDedup}/>
+    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
+         showDuplicates={showDuplicates}
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
          duplicates={duplicates} viewRect={viewRect} zoom={zoom}
-         toggleClusterChart = {props.toggleClusterChart} closeClusterChart = {props.closeClusterChart}/>
+         toggleClusterChart={props.toggleClusterChart} closeClusterChart={props.closeClusterChart}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -94,15 +95,17 @@ export const VisPage = (props: IVisPageProps) => {
     </div>
     <div className='right-panel-group'>
       {rectStats && <>
-        {(dataset.measure0 != null && showDuplicates === false) && <StatsPanel dataset={dataset} rectStats={rectStats}/>}
-        {showDuplicates === false && <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+        {(dataset.measure0 != null && showDuplicates === false) &&
+        <StatsPanel dataset={dataset} rectStats={rectStats}/>}
+        {showDuplicates === false &&
+        <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
                updateMeasure={props.updateMeasure}/>}
       </>}
       {rectStats && <>
         {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
-        {showClusterChart === true && <DedupChartCluster dataset={dataset} dedupClusterStats = {dedupClusterStats}/> }
-        {showDuplicates && <DedupChart dedupStats={dedupStats} dataset={dataset} showClusterChart= {showClusterChart}/>}
+        {showClusterChart === true && <DedupChartCluster dataset={dataset} dedupClusterStats={dedupClusterStats}/>}
+        {showDuplicates && <DedupChart dedupStats={dedupStats} dataset={dataset} showClusterChart={showClusterChart}/>}
       </>}
     </div>
     <Modal
@@ -113,7 +116,8 @@ export const VisPage = (props: IVisPageProps) => {
         Parsing and indexing dataset {dataset.name}
       </Header>
       <Modal.Content>
-        <Progress progress='percent' value={indexStatus.objectsIndexed} total={dataset.objectCount} autoSuccess precision={2}/>
+        <Progress progress='percent' value={indexStatus.objectsIndexed} total={dataset.objectCount} autoSuccess
+                  precision={2}/>
       </Modal.Content>
     </Modal>
     <Modal
@@ -157,6 +161,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   totalTime: visualizer.totalTime,
   executionTime: visualizer.executionTime,
   showDuplicates: visualizer.showDuplicates,
+  allowDedup: visualizer.allowDedup,
   showClusterChart: visualizer.showClusterChart,
   dedupClusterStats: visualizer.dedupClusterStats,
 });

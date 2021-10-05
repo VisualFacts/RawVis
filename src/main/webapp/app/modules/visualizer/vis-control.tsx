@@ -11,6 +11,7 @@ export interface IVisControlProps {
   groupByCols: number[],
   categoricalFilters: any,
   showDuplicates: boolean,
+  allowDedup: boolean,
   updateFilters: typeof updateFilters,
   toggleDuplicates: typeof toggleDuplicates,
   reset: typeof reset,
@@ -79,7 +80,7 @@ export const VisControl = (props: IVisControlProps) => {
        onChange={handleShowAllToggleChange}
     /> */}
     <Header as='h5'>Show Duplicates</Header>
-    <Checkbox className="toggle"
+    <Checkbox className="toggle" disabled={!props.allowDedup}
               checked={props.showDuplicates}
               onChange={handleDuplicateToggleChange}
     />
