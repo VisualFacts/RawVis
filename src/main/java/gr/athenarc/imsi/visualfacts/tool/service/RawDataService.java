@@ -57,7 +57,6 @@ public class RawDataService {
         schema.setHasHeader(dataset.getHasHeader());
         schema.setDedupCols(dataset.getDedupCols());
 
-        log.debug(schema.toString());
         Veti veti = new Veti(schema, 100000000, "binn", 100);
         this.indexes.put(dataset.getId(), veti);
         return veti;
@@ -110,7 +109,7 @@ public class RawDataService {
 
             Map<String, Float> geoHashes = new HashMap<>();
 
-            Coverage coverage = GeoHash.coverBoundingBoxMaxHashes(query.getRect().getYRange().upperEndpoint(), query.getRect().getXRange().lowerEndpoint(), query.getRect().getYRange().lowerEndpoint(), query.getRect().getXRange().upperEndpoint(), 10000);
+            /*Coverage coverage = GeoHash.coverBoundingBoxMaxHashes(query.getRect().getYRange().upperEndpoint(), query.getRect().getXRange().lowerEndpoint(), query.getRect().getYRange().lowerEndpoint(), query.getRect().getXRange().upperEndpoint(), 10000);
             points.stream().forEach(point -> {
                 String geoHashValue = GeoHash.encodeHash(point.getY(), point.getX(), coverage.getHashLength());
                 geoHashes.merge(geoHashValue, 1f, Float::sum);
@@ -119,8 +118,8 @@ public class RawDataService {
             visQueryResults.setPoints(geoHashes.entrySet().stream().map(e -> {
                 LatLong latLong = GeoHash.decodeHash(e.getKey());
                 return new float[]{(float) latLong.getLat(), (float) latLong.getLon(), e.getValue()};
-            }).collect(Collectors.toList()));
-            // visQueryResults.setPoints(points.stream().map(point -> new float[]{point.getY(), point.getX()}).collect(Collectors.toList()));
+            }).collect(Collectors.toList()));*/
+            visQueryResults.setPoints(points.stream().map(point -> new float[]{point.getY(), point.getX()}).collect(Collectors.toList()));
             visQueryResults.setFacets(schema.getCategoricalColumns().stream().collect(Collectors.toMap(CategoricalColumn::getIndex, CategoricalColumn::getNonNullValues)));
             return visQueryResults;
         } catch (IOException | ClassNotFoundException e) {
