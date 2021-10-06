@@ -11,6 +11,7 @@ import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
 import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
+import {MIN_DEDUP_ZOOM_LEVEL} from "app/config/constants";
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
@@ -153,8 +154,8 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
     case ACTION_TYPES.UPDATE_MAP_BOUNDS:
       return {
         ...state,
-        allowDedup: action.payload.zoom > 12,
-        showDuplicates: action.payload.zoom > 12 && state.showDuplicates,
+        allowDedup: action.payload.zoom >= MIN_DEDUP_ZOOM_LEVEL,
+        showDuplicates: action.payload.zoom >= MIN_DEDUP_ZOOM_LEVEL && state.showDuplicates,
         zoom: action.payload.zoom,
         viewRect: action.payload.viewRect,
       };
