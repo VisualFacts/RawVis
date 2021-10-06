@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import HeadersCreator from './HeadersCreator';
 import { Table, Checkbox, Dropdown, Form, Segment, Button, Container } from 'semantic-ui-react';
 import TableCellRowCreator from './TableCellRowCreator';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';
-import axios from 'axios';
-import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
 export const TablePagination = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
@@ -30,6 +28,35 @@ export const TablePagination = () => {
       return filtered;
     }, []);
     return optionFil;
+  };
+
+  const checkLatLon = (matrix, limit) => {
+    let flag = false,
+      result,
+      temp = 0;
+    for (let i = 0; i < matrix[0].length; i++) {
+      for (let y = 0; y < matrix.length; y++) {
+        if (matrix[y][i] < -limit || matrix[y][i] > limit || typeof matrix[y][i] !== 'number') {
+          flag = true;
+          y = matrix.length;
+        }
+      }
+      if (flag === true) {
+        flag = false;
+      } else {
+        if (limit === 180) {
+          temp++;
+          if (temp === 2) {
+            result = i;
+            break;
+          }
+        } else {
+          result = i;
+          break;
+        }
+      }
+    }
+    return result;
   };
 
   const handleChange = () => {
@@ -66,9 +93,30 @@ export const TablePagination = () => {
       };
 
       const found = options.find(helpFind);
-      dispatch(Actions.setDimensions(name, found.key));
+      dispatch(Actions.setDimensions(nam, found.key));
     });
   };
+
+  const filterItems = (item, headers, matrix) => {
+    let avoidnull;
+    const query = item.toLowerCase();
+    const res = headers.filter(item => {
+      item !== null ? (avoidnull = item) : (avoidnull = '');
+      return avoidnull.toString().toLowerCase().indexOf(query) >= 0;
+    });
+    if (res.length === 0) {
+      item === 'lat' ? res.push(headers[checkLatLon(matrix, 90)]) : res.push(headers[checkLatLon(matrix, 180)]);
+    }
+    return res[0];
+  };
+
+  useEffect(() => {
+    if (uploadState.dropdown1 === '' && uploadState.rend === false && uploadState.trimData.length !== 0) {
+      dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
+      dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
+      dispatch(Actions.setRend());
+    }
+  });
 
   return (
     <div>
@@ -76,6 +124,8 @@ export const TablePagination = () => {
         <Button
           onClick={() => {
             dispatch(Actions.addData(''));
+            dispatch(Actions.resetDropdowns());
+            uploadState.rend === true && dispatch(Actions.setRend());
           }}
         >
           Back
@@ -170,6 +220,13 @@ export const TablePagination = () => {
                   }}
                 />
               </Form.Field>
+              <Button
+                onClick={() => {
+                  dispatch(Actions.createEntity(displayInfo));
+                }}
+              >
+                Apply
+              </Button>
             </Form>
           </div>
         </div>

@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CSVReader from 'react-csv-reader';
 import { Button, Segment, Image, Header, Grid, Divider } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { addData, setData, store, RootState } from './upload-reducer';
+import { addData, setData, store, RootState, setName } from './upload-reducer';
 import { TablePagination } from './Table';
 import LeftMenu from './LeftMenu';
+import DatasetsTable from './DatasetsTable';
 import './upload-styles.scss';
 
 const App = () => {
   const storeState = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
+  let jsx;
 
   const papaparseOptions = {
     header: false,
@@ -23,6 +25,7 @@ const App = () => {
     if (data.length > 0) {
       dispatch(addData(data));
       dispatch(setData(data.slice(1, 51)));
+      dispatch(setName(fileInfo.name));
     }
   };
 
@@ -30,24 +33,30 @@ const App = () => {
     return <div>{Object.keys(storeState.uploadState.data).length === 0 ? <h1>No data yet</h1> : <TablePagination />}</div>;
   };
 
-  return (
-    <div>
-      <div className="select-csv-btn">
-        {storeState.uploadState.data.length === 0 && (
-          <Button className="csv-input-btn" size="big">
-            <CSVReader
-              cssClass="react-csv-input"
-              inputStyle={{ display: 'none' }}
-              label="Select CSV file"
-              onFileLoaded={force}
-              parserOptions={papaparseOptions}
-            />
-          </Button>
-        )}
+  if (storeState.uploadState.activeMenu === 'New Dataset') {
+    jsx = (
+      <div>
+        <div className="select-csv-btn">
+          {storeState.uploadState.data.length === 0 && (
+            <Button className="csv-input-btn" size="big">
+              <CSVReader
+                cssClass="react-csv-input"
+                inputStyle={{ display: 'none' }}
+                label="Select CSV file"
+                onFileLoaded={force}
+                parserOptions={papaparseOptions}
+              />
+            </Button>
+          )}
+        </div>
+        <HandleForce />
       </div>
-      <HandleForce />
-    </div>
-  );
+    );
+  } else if (storeState.uploadState.activeMenu === 'Open Dataset') {
+    jsx = <DatasetsTable />;
+  }
+
+  return jsx;
 };
 
 const Upload = () => (
@@ -67,7 +76,6 @@ const Upload = () => (
               <LeftMenu />
             </Segment>
           </Grid.Column>
-
           <Grid.Column width="14" textAlign="center">
             <App />
           </Grid.Column>

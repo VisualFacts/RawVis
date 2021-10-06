@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Table, Checkbox, Dropdown, Form, Segment } from 'semantic-ui-react';
+import { Menu } from 'semantic-ui-react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';
 
@@ -22,6 +22,7 @@ const LeftMenu = () => {
           active={activeItem === 'Open Dataset'}
           onClick={() => {
             dispatch(Actions.setMenuItem('Open Dataset'));
+            dispatch(Actions.fetchEntitiesList());
           }}
         />
       </Menu>

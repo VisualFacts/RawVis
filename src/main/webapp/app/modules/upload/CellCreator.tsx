@@ -1,6 +1,13 @@
 import React from 'react';
 import { Icon, Label, Menu, Table } from 'semantic-ui-react';
 
-const CellCreator = props => <Table.Cell collapsing>{props.cell}</Table.Cell>;
+const CellCreator = props => {
+  const stringCheck = cellstring => {
+    let noNull;
+    cellstring === null ? (noNull = '') : (noNull = cellstring);
+    return noNull;
+  };
+  return <Table.Cell collapsing>{stringCheck(props.cell)}</Table.Cell>;
+};
 
 export default CellCreator;
