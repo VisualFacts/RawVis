@@ -10,6 +10,7 @@ import {
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
+import {Icon} from "semantic-ui-react";
 
 
 export interface IMapProps {
@@ -124,6 +125,12 @@ export const Map = (props: IMapProps) => {
                 icon={fetchIcon(totalCount)}/>
       );
     })}
+    <Marker position={[40.75795780927519, -73.98551938996594]}
+            icon={L.divIcon({
+              html: `<i class="crosshairs big icon"></i>`,
+              className: `marker`,
+              iconSize: L.point(50, 50)
+            })}/>
     {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
       return (
         <Marker key={`marker-${index}`}
