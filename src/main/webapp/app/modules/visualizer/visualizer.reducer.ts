@@ -8,7 +8,6 @@ import { IRectangle } from 'app/shared/model/rectangle.model';
 import { AggregateFunctionType } from 'app/shared/model/enumerations/aggregate-function-type.model';
 import { IRectStats } from 'app/shared/model/rect-stats.model';
 import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
-import { IDedupClusterStats } from 'app/shared/model/rect-dedup-cluster-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import {MIN_DEDUP_ZOOM_LEVEL} from "app/config/constants";
@@ -30,9 +29,8 @@ export const ACTION_TYPES = {
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
   UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
   TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
-
-  TOGGLE_CLUSTER_CHART: 'visualizer/TOGGLE_CLUSTER_CHART',
-  CLOSE_CLUSTER_CHART: 'visualizer/CLOSE_CLUSTER_CHART',
+  SELECT_DUPLICATE_CLUSTER: 'visualizer/SELECT_DUPLICATE_CLUSTER',
+  UNSELECT_DUPLICATE_CLUSTER: 'visualizer/UNSELECT_DUPLICATE_CLUSTER',
   UPDATE_CLUSTER_STATS: 'visualizer/UPDATE_CLUSTER_STATS',
 };
 
@@ -45,7 +43,6 @@ const initialState = {
   dataset: null,
   zoom: 14,
   categoricalFilters: {},
-  chartType: 'column',
   groupByCols: null,
   measureCol: null,
   aggType: AggregateFunctionType.AVG,
@@ -55,7 +52,6 @@ const initialState = {
   facets: {},
   rectStats: null as IRectStats,
   dedupStats: null as IDedupStats,
-  dedupClusterStats: null as IDedupClusterStats,
   clusters: [],
   fullyContainedTileCount: 0,
   tileCount: 0,
@@ -65,11 +61,11 @@ const initialState = {
   totalPointCount: 0,
   executionTime: 0,
   totalTime: 0,
-  duplicates: [],
   bounds: null,
   allowDedup: false,
   showDuplicates: false,
-  showClusterChart: false,
+  duplicates: [],
+  selectedDedupClusterIndex: null,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -141,11 +137,6 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         aggType: action.payload,
       };
-    case ACTION_TYPES.UPDATE_CHART_TYPE:
-      return {
-        ...state,
-        chartType: action.payload,
-      };
     case ACTION_TYPES.UPDATE_DRAWN_RECT:
       return {
         ...state,
@@ -198,22 +189,16 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         showDuplicates: !state.showDuplicates,
       };
-    case ACTION_TYPES.TOGGLE_CLUSTER_CHART:
+    case ACTION_TYPES.SELECT_DUPLICATE_CLUSTER:
       return {
         ...state,
-        showClusterChart: true,
-        dedupClusterStats: action.payload,
+        selectedDedupClusterIndex: action.payload,
       };
-    case ACTION_TYPES.CLOSE_CLUSTER_CHART:
+    case ACTION_TYPES.UNSELECT_DUPLICATE_CLUSTER:
       return {
         ...state,
-        showClusterChart: false,
+        selectedDedupClusterIndex: null,
       };
-    // case SUCCESS(ACTION_TYPES.UPDATE_CLUSTER_STATS):
-    //   return{
-    //     ...state,
-
-    //   }
     default:
       return state;
   }
@@ -381,13 +366,6 @@ export const updateAggType = (id, aggType) => dispatch => {
   dispatch(updateAnalysisResults(id));
 };
 
-export const updateChartType = (id, chartType) => dispatch => {
-  dispatch({
-    type: ACTION_TYPES.UPDATE_CHART_TYPE,
-    payload: chartType,
-  });
-  dispatch(updateAnalysisResults(id));
-};
 export const updateDrawnRect = (id, drawnRectBounds: LatLngBounds) => dispatch => {
   const drawnRect = drawnRectBounds && {
     lat: [drawnRectBounds.getSouth(), drawnRectBounds.getNorth()],
@@ -421,21 +399,21 @@ export const reset = id => async dispatch => {
   dispatch(updateClusters(id));
 };
 
-export const toggleClusterChart = (clusterColumnSimilarity, clusterColumnValues, clusterId) => dispatch => {
-  const dedupClusterStats = {
+export const selectDuplicateCluster = (duplicateClusterIndex) => dispatch => {
+/*  const dedupClusterStats = {
     clusterColumnSimilarity,
     clusterColumnValues,
     clusterId,
-  };
+  }; */
   dispatch({
-    type: ACTION_TYPES.TOGGLE_CLUSTER_CHART,
-    payload: dedupClusterStats,
+    type: ACTION_TYPES.SELECT_DUPLICATE_CLUSTER,
+    payload: duplicateClusterIndex,
   });
 };
 
-export const closeClusterChart = () => dispatch => {
+export const unselectDuplicateCluster = () => dispatch => {
   dispatch({
-    type: ACTION_TYPES.CLOSE_CLUSTER_CHART,
+    type: ACTION_TYPES.UNSELECT_DUPLICATE_CLUSTER,
   });
 };
 

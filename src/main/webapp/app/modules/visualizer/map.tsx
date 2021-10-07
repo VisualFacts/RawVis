@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
-import {MapContainer, Marker, Popup, TileLayer, ZoomControl} from "react-leaflet";
+import {MapContainer, Marker, TileLayer, ZoomControl} from "react-leaflet";
 import {
-  closeClusterChart,
-  toggleClusterChart,
+  selectDuplicateCluster,
+  unselectDuplicateCluster,
   updateDrawnRect,
   updateMapBounds
 } from "app/modules/visualizer/visualizer.reducer";
@@ -22,14 +22,15 @@ export interface IMapProps {
   viewRect: any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
-  toggleClusterChart: typeof toggleClusterChart,
-  closeClusterChart: typeof closeClusterChart,
+  selectedDedupClusterIndex: number,
+  selectDuplicateCluster: typeof selectDuplicateCluster,
+  unselectDuplicateCluster: typeof unselectDuplicateCluster,
 }
 
 
 export const Map = (props: IMapProps) => {
 
-  const {clusters, dataset, duplicates, showDuplicates} = props;
+  const {clusters, dataset, duplicates, showDuplicates, selectedDedupClusterIndex} = props;
 
   const [map, setMap] = useState(null);
   useEffect(() => {
@@ -70,7 +71,7 @@ export const Map = (props: IMapProps) => {
     });
 
     map.on('popupclose', (e) => {
-      props.closeClusterChart();
+      props.unselectDuplicateCluster();
     });
 
     map.on('moveend', (e) => {
@@ -93,14 +94,14 @@ export const Map = (props: IMapProps) => {
     });
   };
 
-  const fetchDedupIcon = count => {
+  const fetchDedupIcon = (count, isSelected) => {
     const size =
       count < 10 ? 'small' :
         count < 100 ? 'medium' : 'large';
 
     return L.divIcon({
       html: `<div><span>${count}</span></div>`,
-      className: `marker-cluster marker-cluster-${size} marker-duplicate`,
+      className: `marker-cluster marker-cluster-${size} marker-duplicate ${isSelected ? "marker-cluster-selected" : ""}`,
       iconSize: L.point(40, 40)
     });
   };
@@ -124,35 +125,17 @@ export const Map = (props: IMapProps) => {
       );
     })}
     {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
-
       return (
         <Marker key={`marker-${index}`}
                 position={[duplicate[1], duplicate[0]]}
-                icon={fetchDedupIcon(duplicate[2])}
+                icon={fetchDedupIcon(duplicate[2], index === selectedDedupClusterIndex)}
                 eventHandlers={{
                   click(e) {
-                    props.toggleClusterChart(duplicate[4], duplicate[5], index + 1);
+                    props.selectDuplicateCluster(index);
                   },
 
                 }}
-        >
-          <Popup className="request-popup" maxHeight={400}>
-            <div className="cluster-title">Cluster #{index + 1}</div>
-            {dataset.headers && dataset.headers.map((col, colId) => {
-              let val = duplicate[3][colId];
-              if (val == null) val = "";
-              return (
-                <div className={`dup-item ${val.includes("|") ? "active" : ""}`}
-                     key={`dup-item-${index}-${colId} ${val.includes("|") ? "active" : ""}`}>
-                    <span>
-                    <b>{col}: </b>{val}
-                    </span>
-                  <br></br>
-                </div>
-              )
-            })}
-          </Popup>
-        </Marker>
+        />
       );
     })}
     <ZoomControl position="topright"/>

@@ -2,14 +2,16 @@ import React, {useState} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official';
 import CustomEvents from 'highcharts-custom-events';
-import {IDedupClusterStats} from 'app/shared/model/rect-dedup-cluster-stats.model';
-import {Label} from 'semantic-ui-react'
+import {Header, Icon, Label, Segment} from 'semantic-ui-react'
 import './visualizer.scss';
 import {IDataset} from "app/shared/model/dataset.model";
+import {unselectDuplicateCluster} from "app/modules/visualizer/visualizer.reducer";
 
 export interface IDedupChartClusterProps {
-  dedupClusterStats: IDedupClusterStats,
+  duplicateCluster: any,
+  clusterIndex: number,
   dataset: IDataset,
+  unselectDuplicateCluster: typeof unselectDuplicateCluster
 }
 
 const createSimilarityData = (similarityMeasures, columns) => {
@@ -31,27 +33,18 @@ const createColumnValueData = (columnValues) => {
 }
 
 export const DedupChartCluster = (props: IDedupChartClusterProps) => {
-  const {dedupClusterStats, dataset} = props;
+  const {duplicateCluster, clusterIndex, dataset} = props;
   let similarityMeasures = null;
   let data = {};
   let columnData = {};
-  let clusterId;
   const [chart, setChart] = useState('clusterSimilarities');
-  const [col, setCol] = useState('');
+  const [col, setCol] = useState(null);
 
-  if (dedupClusterStats != null) {
-    similarityMeasures = dedupClusterStats.clusterColumnSimilarity;
-    data = createSimilarityData(similarityMeasures, dataset.headers);
-    columnData = createColumnValueData(dedupClusterStats.clusterColumnValues[col]);
-    clusterId = dedupClusterStats.clusterId;
-  }
-
-
+  similarityMeasures = duplicateCluster[4];
+  data = createSimilarityData(similarityMeasures, dataset.headers);
+  columnData = col != null && createColumnValueData(duplicateCluster[5][col]);
 
   const changeChart = (column) => {
-    const start = '<span class="text-center">';
-    const end = '</span>';
-    column = column.replace(start, "").replace(end, "");
     setChart("clusterCol");
     setCol(column);
   }
@@ -81,8 +74,8 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
           cursor: 'pointer'
         },
         events: {
-          click() {
-            changeChart(this.value);
+          click(e) {
+            changeChart(this.pos);
           }
         },
         formatter() {
@@ -146,32 +139,53 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
     }]
   };
 
-  return <div>
-    <Label attached='top' size='large'>Cluster #{clusterId} Statistics</Label>
-
-    {chart === "clusterSimilarities" &&
-    <div style={{border: "solid lightgrey 2px", background: "white"}}>
-      <div className="column-value-chart-title">Distance Measures</div>
-      < HighchartsReact
-        highcharts={CustomEvents(Highcharts)}
-        allowChartUpdate={true}
-        immutable={true}
-        options={options}
-
-      />
-    </div>}
-    {chart === "clusterCol" &&
-    <div style={{border: "solid lightgrey 2px", background: "white"}}>
-      <div className="column-value-chart-title">{col} value distribution</div>
-      <div onClick={() => setChart("clusterSimilarities")} className="x-button">x</div>
-      <HighchartsReact
-        highcharts={CustomEvents(Highcharts)}
-        allowChartUpdate={true}
-        immutable={true}
-        options={colOptions}
-      />
-    </div>}
-  </div>
+  return <Segment.Group raised padded>
+    <Segment textAlign='left'>
+      <Label attached='top' size='large'>Cluster #{clusterIndex} <Icon name='close' size="mini"
+                                                                       style={{float: "right"}}
+                                                                       onClick={() => props.unselectDuplicateCluster()}/></Label>
+      {chart === "clusterSimilarities" &&
+      <div>
+        <Header as='h5' className="dedup-cluster-subtitle" dividing>Distance Measures</Header>
+        <HighchartsReact
+          highcharts={CustomEvents(Highcharts)}
+          allowChartUpdate={true}
+          immutable={true}
+          options={options}
+        />
+      </div>}
+      {chart === "clusterCol" &&
+      <div style={{border: "solid lightgrey 2px", background: "white"}}>
+        <Header as='h5' className="dedup-cluster-subtitle" dividing><i>{dataset.headers[col]}</i> value
+          distribution</Header>
+        <div onClick={() => setChart("clusterSimilarities")} className="x-button">x</div>
+        <HighchartsReact
+          highcharts={CustomEvents(Highcharts)}
+          allowChartUpdate={true}
+          immutable={true}
+          options={colOptions}
+        />
+      </div>}
+    </Segment>
+    <Segment textAlign='left' style={{border: "none"}}>
+      <Header as='h5' className="dedup-cluster-subtitle" dividing>Details</Header>
+      <div className="cluster-details">
+        {dataset.headers && dataset.headers.map((colName, colIndex) => {
+          let val = duplicateCluster[3][colIndex];
+          if (val == null) val = "";
+          return (
+            <div className={`dup-item ${val.includes("|") ? "active" : ""}`}
+                 key={`dup-item-${clusterIndex}-${colIndex} ${val.includes("|") ? "active" : ""}`}>
+                    <span>
+                    <b>{colName}: </b>{val}
+                    </span>
+              <br></br>
+            </div>
+          )
+        })}
+      </div>
+    </Segment>
+  </Segment.Group>
 };
 
 

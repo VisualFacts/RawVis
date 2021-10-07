@@ -4,19 +4,19 @@ import {RouteComponentProps} from 'react-router-dom';
 
 import {IRootState} from 'app/shared/reducers';
 import {
-  closeClusterChart,
   getDataset,
   getIndexStatus,
   reset,
-  toggleClusterChart,
+  selectDuplicateCluster,
   toggleDuplicates,
+  unselectDuplicateCluster,
   updateAggType,
   updateClusters,
   updateDrawnRect,
   updateFilters,
   updateGroupBy,
   updateMapBounds,
-  updateMeasure,
+  updateMeasure
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -49,7 +49,7 @@ export const VisPage = (props: IVisPageProps) => {
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
     totalPointCount, zoom, totalTileCount, totalTime, executionTime,
-    showDuplicates, showClusterChart, dedupClusterStats,
+    showDuplicates, selectedDedupClusterIndex
   } = props;
 
   useEffect(() => {
@@ -84,8 +84,9 @@ export const VisPage = (props: IVisPageProps) => {
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
          showDuplicates={showDuplicates}
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
-         duplicates={duplicates} viewRect={viewRect} zoom={zoom}
-         toggleClusterChart={props.toggleClusterChart} closeClusterChart={props.closeClusterChart}/>
+         duplicates={duplicates} viewRect={viewRect} zoom={zoom} selectedDedupClusterIndex={selectedDedupClusterIndex}
+         selectDuplicateCluster={props.selectDuplicateCluster}
+         unselectDuplicateCluster={props.unselectDuplicateCluster}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -104,8 +105,12 @@ export const VisPage = (props: IVisPageProps) => {
       </>}
       {rectStats && <>
         {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
-        {showClusterChart === true && <DedupChartCluster dataset={dataset} dedupClusterStats={dedupClusterStats}/>}
-        {showDuplicates && <DedupChart dedupStats={dedupStats} dataset={dataset} showClusterChart={showClusterChart}/>}
+        {showDuplicates && selectedDedupClusterIndex !== null &&
+        <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
+                           duplicateCluster={duplicates[selectedDedupClusterIndex]}
+                           unselectDuplicateCluster={props.unselectDuplicateCluster}/>}
+        {showDuplicates && selectedDedupClusterIndex === null &&
+        <DedupChart dedupStats={dedupStats} dataset={dataset}/>}
       </>}
     </div>
     <Modal
@@ -162,8 +167,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   executionTime: visualizer.executionTime,
   showDuplicates: visualizer.showDuplicates,
   allowDedup: visualizer.allowDedup,
-  showClusterChart: visualizer.showClusterChart,
-  dedupClusterStats: visualizer.dedupClusterStats,
+  selectedDedupClusterIndex: visualizer.selectedDedupClusterIndex,
 });
 
 const mapDispatchToProps = {
@@ -178,8 +182,8 @@ const mapDispatchToProps = {
   getIndexStatus,
   updateClusters,
   toggleDuplicates,
-  toggleClusterChart,
-  closeClusterChart,
+  selectDuplicateCluster,
+  unselectDuplicateCluster
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
