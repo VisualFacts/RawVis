@@ -12,14 +12,10 @@
   "queryXMax": 139.79395,
   "queryYMin": 35.6937,
   "queryYMax": 35.663,
-  "measure0": 138,
-  "measure1": 11,
-  "lat": 9,
-  "lon": 10,
-  "dimensions": [
-    52,
-    47,
-    131,
-    65
-  ]
+  "measure0": 12,
+  "measure1": 19,
+  "lat": 1,
+  "lon": 2,
+  "dimensions": [6, 7, 15, 20],
+  "dedupCols": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 }

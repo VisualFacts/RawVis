@@ -1,9 +1,9 @@
 {
   "id": "hotel",
-  "name": "hotel_FACTUAL_100k_dups.csv",
+  "name": "hotel_FACTUAL_250k_dups.csv",
   "type": "CSV",
   "hasHeader": true,
-  "objectCount": 200000,
+  "objectCount": 250000,
   "xMin": -157.9287779,
   "xMax": 119.819558,
   "yMin": 8.91667,
