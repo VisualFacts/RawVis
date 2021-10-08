@@ -5,7 +5,7 @@ const CellCreator = props => {
   const stringCheck = cellstring => {
     let noNull;
     cellstring === null ? (noNull = '') : (noNull = cellstring);
-    return noNull;
+    return noNull.toString();
   };
   return <Table.Cell collapsing>{stringCheck(props.cell)}</Table.Cell>;
 };

@@ -18,11 +18,14 @@ export const TablePagination = () => {
   const filterOptions = () => {
     const optionFil = options.reduce((filtered, option) => {
       if (
+        option.value !== null &&
         option.value !== uploadState.dropdown1 &&
         option.value !== uploadState.dropdown2 &&
         option.value !== uploadState.dropdown3 &&
         uploadState.dropMultBox.includes(option.value) === false
       ) {
+        option.value.toString();
+        option.text.toString();
         filtered.push(option);
       }
       return filtered;
@@ -57,6 +60,19 @@ export const TablePagination = () => {
       }
     }
     return result;
+  };
+
+  const filterItems = (itemSearch, headers, matrix) => {
+    let avoidnull;
+    const query = itemSearch.toLowerCase();
+    const res = headers.filter(item => {
+      item !== null ? (avoidnull = item) : (avoidnull = '');
+      return avoidnull.toString().toLowerCase().indexOf(query) >= 0;
+    });
+    if (res.length === 0) {
+      itemSearch === 'lat' ? res.push(headers[checkLatLon(matrix, 90)]) : res.push(headers[checkLatLon(matrix, 180)]);
+    }
+    return res[0];
   };
 
   const handleChange = () => {
@@ -97,33 +113,20 @@ export const TablePagination = () => {
     });
   };
 
-  const filterItems = (item, headers, matrix) => {
-    let avoidnull;
-    const query = item.toLowerCase();
-    const res = headers.filter(item => {
-      item !== null ? (avoidnull = item) : (avoidnull = '');
-      return avoidnull.toString().toLowerCase().indexOf(query) >= 0;
-    });
-    if (res.length === 0) {
-      item === 'lat' ? res.push(headers[checkLatLon(matrix, 90)]) : res.push(headers[checkLatLon(matrix, 180)]);
-    }
-    return res[0];
-  };
-
   useEffect(() => {
-    if (uploadState.dropdown1 === '' && uploadState.rend === false && uploadState.trimData.length !== 0) {
+    if (uploadState.rend === false && uploadState.trimData.length !== 0) {
       dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
       dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
       dispatch(Actions.setRend());
     }
   });
-
   return (
     <div>
       <Container fluid textAlign="left">
         <Button
           onClick={() => {
-            dispatch(Actions.addData(''));
+            dispatch(Actions.addData([]));
+            dispatch(Actions.setData([]));
             dispatch(Actions.resetDropdowns());
             uploadState.rend === true && dispatch(Actions.setRend());
           }}
