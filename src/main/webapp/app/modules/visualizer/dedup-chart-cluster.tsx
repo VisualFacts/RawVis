@@ -16,11 +16,14 @@ export interface IDedupChartClusterProps {
 
 const createSimilarityData = (similarityMeasures, columns) => {
   const data = [];
+  const cols = [];
   for (let i = 0; i < columns.length; i++) {
-    const col = columns[i];
-    data.push({y: i in similarityMeasures ? similarityMeasures[i] : 0.0})
+      if (similarityMeasures[i] > 0){
+        cols.push(columns[i])
+        data.push({y : similarityMeasures[i]})
+    }
   }
-  return data;
+  return [data, cols];
 }
 
 const createColumnValueData = (columnValues) => {
@@ -35,18 +38,21 @@ const createColumnValueData = (columnValues) => {
 export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   const {duplicateCluster, clusterIndex, dataset} = props;
   let similarityMeasures = null;
-  let data = {};
+  let similarities = [];
+  let similarityData = {};
+  let similariyColumns = [];
   let columnData = {};
   const [chart, setChart] = useState('clusterSimilarities');
-  const [col, setCol] = useState(null);
-
+  const [colId, setColId] = useState(null);
   similarityMeasures = duplicateCluster[4];
-  data = createSimilarityData(similarityMeasures, dataset.headers);
-  columnData = col != null && createColumnValueData(duplicateCluster[5][col]);
+  similarities = createSimilarityData(similarityMeasures, dataset.headers);
+  similarityData = similarities[0];
+  similariyColumns = similarities[1];
+  columnData = colId != null && createColumnValueData(duplicateCluster[5][colId]);
 
-  const changeChart = (column) => {
+  const changeChart = (id) => {
     setChart("clusterCol");
-    setCol(column);
+    setColId(id);
   }
 
   const options = {
@@ -57,11 +63,15 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
       paddingTop: 0,
       marginBottom: 50,
       paddingBottom: 40,
-      plotBorderWidth: 1
+      plotBorderWidth: 1,
+      scrollablePlotArea: {
+        minHeight: 200,
+        scrollPositionY: 0
+    }
 
     },
     xAxis: {
-      categories: dataset.headers,
+      categories: similariyColumns,
       title: {
         text: null
       },
@@ -75,7 +85,9 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
         },
         events: {
           click(e) {
-            changeChart(this.pos);
+            const val = this.value.replace( /(<([^>]+)>)/ig, '')
+            const id = dataset.headers.indexOf(val)
+            changeChart(id);
           }
         },
         formatter() {
@@ -103,7 +115,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
     title: "Distance Measure",
     series: [{
       name: "Distance Measure",
-      data
+      data: similarityData
     }]
   };
 
@@ -156,9 +168,9 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
       </div>}
       {chart === "clusterCol" &&
       <div style={{border: "solid lightgrey 2px", background: "white"}}>
-        <Header as='h5' className="dedup-cluster-subtitle" dividing><i>{dataset.headers[col]}</i> value
-          distribution</Header>
         <div onClick={() => setChart("clusterSimilarities")} className="x-button">x</div>
+        <Header as='h5' className="dedup-cluster-subtitle" dividing><i>{dataset.headers[colId]}</i> value
+          distribution</Header>
         <HighchartsReact
           highcharts={CustomEvents(Highcharts)}
           allowChartUpdate={true}

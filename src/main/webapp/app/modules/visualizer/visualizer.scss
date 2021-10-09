@@ -183,10 +183,17 @@
 
 .x-button {
   float: right;
-  right: 10px;
   cursor: pointer;
-  top: -28px;
   position: relative;
+  right: 10px;
+}
+
+.x-button2 {
+  float: right;
+  cursor: pointer;
+  position: relative;
+  right: 10px;
+  top: -29px;
 }
 
 .column-value-chart-title {
@@ -213,4 +220,5 @@
 
 .ui.dividing.header.dedup-cluster-subtitle {
   margin-top: 10px;
+  text-align: center;
 }

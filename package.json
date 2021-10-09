@@ -23,6 +23,7 @@
     "react": "16.13.1",
     "react-custom-events": "^1.0.3",
     "react-dom": "16.13.1",
+    "react-highcharts": "^16.1.0",
     "react-hot-loader": "4.12.20",
     "react-leaflet": "^3.0.2",
     "react-leaflet-draw": "^0.19.0",

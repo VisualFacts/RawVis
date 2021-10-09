@@ -147,3 +147,4 @@ Desktop.ini
 ######################
 .eslintcache
 run.sh
+groundTruthResults.csv

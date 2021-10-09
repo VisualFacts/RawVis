@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Highcharts from 'highcharts'
+import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import CustomEvents from "highcharts-custom-events";
 import _ from 'lodash';
@@ -13,20 +13,24 @@ export interface IDedupChartSimilaritiesProps {
   dataset: IDataset,
 }
 
+
 const createSimilarityData = (similarityMeasures, columns) => {
   const data = [];
-  for(let i = 0; i< columns.length; i++){
-    const col = columns[i];
-    data.push({y: i in similarityMeasures ? similarityMeasures[i] : 0.0})
+  const cols = [];
+  for (let i = 0; i < columns.length; i++) {
+      if (similarityMeasures[i] > 0){
+        cols.push(columns[i])
+        data.push({y : similarityMeasures[i]})
+    }
   }
-  return data;
+  return [data, cols];
 }
 
 const createColumnValueData = (columnValues) => {
   const data = [];
-  for(const colVal in columnValues){
-    if(colVal in columnValues)
-      data.push({name: colVal, y : columnValues[colVal]});
+  for (const colVal in columnValues) {
+    if (colVal in columnValues)
+      data.push({name: colVal, y: columnValues[colVal]});
   }
   return data;
 }
@@ -35,23 +39,27 @@ const createColumnValueData = (columnValues) => {
 export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
   const {dedupStats, dataset} = props;
   let similarityMeasures = null;
-  let data = {};
+  let similarities = [];
+  let similarityData = {};
+  let similariyColumns = [];
   let columnData = {};
   const [chart, setChart] = useState('similarities');
-  const [col, setCol] = useState('');
+  const [colId, setColId] = useState('');
   if(dedupStats != null) {
     similarityMeasures =  dedupStats.similarityMeasures;
-    data = createSimilarityData(similarityMeasures, dataset.headers);
-    columnData = createColumnValueData(dedupStats.columnValues[col]);
+    similarities = createSimilarityData(similarityMeasures, dataset.headers);
+    similarityData = similarities[0];
+    similariyColumns = similarities[1];
+    columnData = createColumnValueData(dedupStats.columnValues[colId]);
   }
 
 
-  const changeChart = (column) => {
-    const start = '<span class="text-center">';
-    const end = '</span>';
-    column = column.replace(start, "").replace(end, "");
+  const changeChart = (id) => {
+    // const start = '<span class="text-center">';
+    // const end = '</span>';
+    // colId = colId.replace(start, "").replace(end, "");
     setChart("col");
-    setCol(column);
+    setColId(id);
   }
 
   const options = {
@@ -62,11 +70,16 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
       paddingTop: 0,
       marginBottom: 50,
       paddingBottom:40,
-      plotBorderWidth: 1
+      plotBorderWidth: 1,
+      scrollablePlotArea: {
+        minHeight: 800,
+        scrollPositionY: 0
+    }
 
     },
+    
     xAxis: {
-      categories: dataset.headers,
+      categories: similariyColumns,
       title: {
           text: null
       },
@@ -80,7 +93,9 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
         },
         events: {
           click() {
-            changeChart(this.value);
+            const val = this.value.replace( /(<([^>]+)>)/ig, '')
+            const id = dataset.headers.indexOf(val)
+            changeChart(id);
           }
         },
         formatter() {
@@ -108,7 +123,7 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
     title: "Distance Measure",
     series: [{
       name: "Distance Measure",
-      data
+      data: similarityData
     }]
   };
 
@@ -153,8 +168,8 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
     />}
     {chart==="col"  &&
     <div style={{border:"solid lightgrey 2px"}}>
-    <div className="column-value-chart-title">{col} value distribution</div>
-    <div onClick={() => setChart("similarities")} className="x-button">x</div>
+    <div className="column-value-chart-title">{dataset.headers[colId]} value distribution</div>
+    <div onClick={() => setChart("similarities")} className="x-button2">x</div>
     <HighchartsReact
       highcharts={CustomEvents(Highcharts)}
       allowChartUpdate={true}
