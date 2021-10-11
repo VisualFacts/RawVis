@@ -84,11 +84,11 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
     case ActionTypes.SET_REND:
       return { ...state, rend: !state.rend };
     case ActionTypes.SET_DROPBOX1:
-      return { ...state, dropdown1: action.payload };
+      return { ...state, dropdown1: `${action.payload}` };
     case ActionTypes.SET_DROPBOX2:
-      return { ...state, dropdown2: action.payload };
+      return { ...state, dropdown2: `${action.payload}` };
     case ActionTypes.SET_DROPBOX3:
-      return { ...state, dropdown3: action.payload };
+      return { ...state, dropdown3: `${action.payload}` };
     case ActionTypes.SET_DROPMULTBOX:
       return { ...state, dropMultBox: action.payload };
     case ActionTypes.SET_DATA:
@@ -113,7 +113,7 @@ const displayReducer = (state: IDataset = initialState, action) => {
     case ActionTypes.SET_NAME:
       return { ...state, name: action.payload };
     case ActionTypes.SET_LON:
-      return { ...state, lon: { ...state.lon, name: action.payload.latName, fieldIndex: action.payload.latIndex } };
+      return { ...state, lon: { ...state.lon, name: action.payload.lonName, fieldIndex: action.payload.lonIndex } };
     case ActionTypes.SET_MEASURE:
       return {
         ...state,
@@ -295,17 +295,31 @@ export const setDropMultBox = value => {
 };
 
 export const setLat = (latName, latIndex) => {
-  return {
-    type: ActionTypes.SET_LAT,
-    payload: { latName, latIndex },
-  };
+  if (latName !== null) {
+    return {
+      type: ActionTypes.SET_LAT,
+      payload: { latName, latIndex },
+    };
+  } else {
+    return {
+      type: ActionTypes.SET_LAT,
+      payload: '',
+    };
+  }
 };
 
-export const setLon = (latName, latIndex) => {
-  return {
-    type: ActionTypes.SET_LON,
-    payload: { latName, latIndex },
-  };
+export const setLon = (lonName, lonIndex) => {
+  if (lonName !== null) {
+    return {
+      type: ActionTypes.SET_LON,
+      payload: { lonName, lonIndex },
+    };
+  } else {
+    return {
+      type: ActionTypes.SET_LON,
+      payload: '',
+    };
+  }
 };
 
 export const setOptionsState = value => {
@@ -323,10 +337,17 @@ export const setName = value => {
 };
 
 export const setMeasure = (measureName, measureIndex) => {
-  return {
-    type: ActionTypes.SET_MEASURE,
-    payload: { measureName, measureIndex },
-  };
+  if (measureName !== null) {
+    return {
+      type: ActionTypes.SET_MEASURE,
+      payload: { measureName, measureIndex },
+    };
+  } else {
+    return {
+      type: ActionTypes.SET_MEASURE,
+      payload: '',
+    };
+  }
 };
 
 export const setDimensions = (dimensionName, dimensionIndex) => {

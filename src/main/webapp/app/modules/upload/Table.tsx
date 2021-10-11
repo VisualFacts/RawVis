@@ -15,33 +15,55 @@ export const TablePagination = () => {
     ? uploadState.data[0].map((header, index) => ({ key: index, value: header, text: header }))
     : uploadState.data[0].map((header, index) => ({ key: index, value: `col(${index})`, text: `col(${index})` }));
 
-  const filterOptions = () => {
-    const optionFil = options.reduce((filtered, option) => {
-      if (
-        option.value !== null &&
-        option.value !== uploadState.dropdown1 &&
-        option.value !== uploadState.dropdown2 &&
-        option.value !== uploadState.dropdown3 &&
-        uploadState.dropMultBox.includes(option.value) === false
-      ) {
-        option.value.toString();
-        option.text.toString();
-        filtered.push(option);
+  const filterOptions = numericCols => {
+    let optionFil = [];
+    if (numericCols !== null) {
+      for (let i = 0; i < numericCols.length; i++) {
+        if (
+          options[numericCols[i]].value !== uploadState.dropdown1 &&
+          options[numericCols[i]].value !== uploadState.dropdown2 &&
+          options[numericCols[i]].value !== uploadState.dropdown3 &&
+          uploadState.dropMultBox.includes(options[numericCols[i]].value) === false
+        ) {
+          optionFil.push(options[numericCols[i]]);
+        }
       }
-      return filtered;
-    }, []);
-    return optionFil;
+      return optionFil;
+    } else {
+      optionFil = options.reduce((filtered, option) => {
+        if (
+          option.value !== null &&
+          option.value !== uploadState.dropdown1 &&
+          option.value !== uploadState.dropdown2 &&
+          option.value !== uploadState.dropdown3 &&
+          uploadState.dropMultBox.includes(option.value) === false
+        ) {
+          option.text === false && (option.text = 'false');
+          option.text === true && (option.text = 'true');
+          filtered.push(option);
+        }
+        return filtered;
+      }, []);
+      return optionFil;
+    }
   };
 
   const checkLatLon = (matrix, limit) => {
     let flag = false,
-      result,
       temp = 0;
+    const result = [];
     for (let i = 0; i < matrix[0].length; i++) {
       for (let y = 0; y < matrix.length; y++) {
-        if (matrix[y][i] < -limit || matrix[y][i] > limit || typeof matrix[y][i] !== 'number') {
-          flag = true;
-          y = matrix.length;
+        if (limit !== null) {
+          if (matrix[y][i] < -limit || matrix[y][i] > limit || typeof matrix[y][i] !== 'number') {
+            flag = true;
+            y = matrix.length;
+          }
+        } else {
+          if (typeof matrix[y][i] !== 'number') {
+            flag = true;
+            y = matrix.length;
+          }
         }
       }
       if (flag === true) {
@@ -49,13 +71,15 @@ export const TablePagination = () => {
       } else {
         if (limit === 180) {
           temp++;
+          result.push(i);
           if (temp === 2) {
-            result = i;
             break;
           }
-        } else {
-          result = i;
+        } else if (limit === 90) {
+          result.push(i);
           break;
+        } else {
+          result.push(i);
         }
       }
     }
@@ -70,8 +94,9 @@ export const TablePagination = () => {
       return avoidnull.toString().toLowerCase().indexOf(query) >= 0;
     });
     if (res.length === 0) {
-      itemSearch === 'lat' ? res.push(headers[checkLatLon(matrix, 90)]) : res.push(headers[checkLatLon(matrix, 180)]);
+      itemSearch === 'lat' ? res.push(headers[checkLatLon(matrix, 90)[0]]) : res.push(headers[checkLatLon(matrix, 180)[1]]);
     }
+    res[0] === undefined && (res[0] = '');
     return res[0];
   };
 
@@ -80,25 +105,33 @@ export const TablePagination = () => {
   };
 
   const dropdownLatChange = (name, choice) => {
-    const helpFind = element => {
-      return element.value === name;
-    };
-    if (choice) {
-      const found = options.find(helpFind);
-      dispatch(Actions.setLat(name, found.key));
+    if (name) {
+      const helpFind = element => {
+        return element.value === name;
+      };
+      if (choice) {
+        const found = options.find(helpFind);
+        dispatch(Actions.setLat(name, found.key));
+      } else {
+        const found = options.find(helpFind);
+        dispatch(Actions.setLon(name, found.key));
+      }
     } else {
-      const found = options.find(helpFind);
-      dispatch(Actions.setLon(name, found.key));
+      choice ? dispatch(Actions.setLat(null, null)) : dispatch(Actions.setLon(null, null));
     }
   };
 
   const dropdownMeasureChange = name => {
-    const helpFind = element => {
-      return element.value === name;
-    };
+    if (name) {
+      const helpFind = element => {
+        return element.value === name;
+      };
 
-    const found = options.find(helpFind);
-    dispatch(Actions.setMeasure(name, found.key));
+      const found = options.find(helpFind);
+      dispatch(Actions.setMeasure(name, found.key));
+    } else {
+      dispatch(Actions.setMeasure(null, null));
+    }
   };
 
   const multDropboxChange = name => {
@@ -116,7 +149,9 @@ export const TablePagination = () => {
   useEffect(() => {
     if (uploadState.rend === false && uploadState.trimData.length !== 0) {
       dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
+      dropdownLatChange(filterItems('lat', uploadState.data[0], uploadState.trimData), true);
       dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
+      dropdownLatChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
       dispatch(Actions.setRend());
     }
   });
@@ -168,7 +203,7 @@ export const TablePagination = () => {
                   search
                   clearable
                   selection
-                  options={filterOptions()}
+                  options={filterOptions(null)}
                   value={uploadState.dropdown1}
                   onChange={(e, data) => {
                     dispatch(Actions.setDropbox1(data.value));
@@ -184,7 +219,7 @@ export const TablePagination = () => {
                   search
                   clearable
                   selection
-                  options={filterOptions()}
+                  options={filterOptions(null)}
                   value={uploadState.dropdown2}
                   onChange={(e, data) => {
                     dispatch(Actions.setDropbox2(data.value));
@@ -200,7 +235,7 @@ export const TablePagination = () => {
                   search
                   clearable
                   selection
-                  options={filterOptions()}
+                  options={filterOptions(checkLatLon(uploadState.data.slice(1, 51), null))}
                   value={uploadState.dropdown3}
                   onChange={(e, data) => {
                     dispatch(Actions.setDropbox3(data.value));
