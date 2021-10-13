@@ -113,7 +113,7 @@ export const Map = (props: IMapProps) => {
       attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     />
-    {!showDuplicates && clusters && clusters.map((cluster, index) => {
+    {clusters && clusters.map((cluster, index) => {
       // every cluster point has coordinates
       // the point may be either a cluster or a single point
       const {
