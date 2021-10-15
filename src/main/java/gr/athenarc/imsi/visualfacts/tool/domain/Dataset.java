@@ -5,9 +5,7 @@ import gr.athenarc.imsi.visualfacts.tool.domain.enumeration.DatasetType;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A Dataset.
@@ -63,7 +61,7 @@ public class Dataset implements Serializable {
 
     private Integer lon;
 
-    private Set<Integer> dimensions = new HashSet<>();
+    private LinkedHashSet<Integer> dimensions = new LinkedHashSet<>();
 
     private Set<Integer> dedupCols = new HashSet<>();
 
@@ -222,11 +220,11 @@ public class Dataset implements Serializable {
         this.lon = lon;
     }
 
-    public Set<Integer> getDimensions() {
+    public LinkedHashSet<Integer> getDimensions() {
         return dimensions;
     }
 
-    public void setDimensions(Set<Integer> dimensions) {
+    public void setDimensions(LinkedHashSet<Integer> dimensions) {
         this.dimensions = dimensions;
     }
 
