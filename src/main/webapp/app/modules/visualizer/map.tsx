@@ -108,7 +108,7 @@ export const Map = (props: IMapProps) => {
   };
 
 
-  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false}>
+  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false} maxZoom={17}>
     <TileLayer
       attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
