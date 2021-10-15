@@ -12,7 +12,7 @@ public class VisQueryResults implements Serializable {
 
     List<GroupedStats> series;
 
-    private List<float[]> points;
+    private List<Object[]> points;
 
     private Map<Integer, List<String>> facets;
 
@@ -29,7 +29,6 @@ public class VisQueryResults implements Serializable {
     private DedupVizOutput dedupVizOutput;
 
 
-
     public List<GroupedStats> getSeries() {
         return series;
     }
@@ -38,11 +37,11 @@ public class VisQueryResults implements Serializable {
         this.series = series;
     }
 
-    public List<float[]> getPoints() {
+    public List<Object[]> getPoints() {
         return points;
     }
 
-    public void setPoints(List<float[]> points) {
+    public void setPoints(List<Object[]> points) {
         this.points = points;
     }
 

@@ -107,7 +107,7 @@ public class RawDataService {
             //Collections.shuffle(points);
             //visQueryResults.setPoints(points.subList(0, Math.min(1000000, points.size())));
 
-            Map<String, Float> geoHashes = new HashMap<>();
+            // Map<String, Float> geoHashes = new HashMap<>();
 
             /*Coverage coverage = GeoHash.coverBoundingBoxMaxHashes(query.getRect().getYRange().upperEndpoint(), query.getRect().getXRange().lowerEndpoint(), query.getRect().getYRange().lowerEndpoint(), query.getRect().getXRange().upperEndpoint(), 10000);
             points.stream().forEach(point -> {
@@ -119,7 +119,7 @@ public class RawDataService {
                 LatLong latLong = GeoHash.decodeHash(e.getKey());
                 return new float[]{(float) latLong.getLat(), (float) latLong.getLon(), e.getValue()};
             }).collect(Collectors.toList()));*/
-            visQueryResults.setPoints(points.stream().map(point -> new float[]{point.getY(), point.getX()}).collect(Collectors.toList()));
+            visQueryResults.setPoints(points.stream().map(point -> new Object[]{point.getY(), point.getX(), 1, point.getFileOffset()}).collect(Collectors.toList()));
             visQueryResults.setFacets(schema.getCategoricalColumns().stream().collect(Collectors.toMap(CategoricalColumn::getIndex, CategoricalColumn::getNonNullValues)));
             return visQueryResults;
         } catch (IOException | ClassNotFoundException e) {

@@ -1,15 +1,15 @@
 import axios from 'axios';
-import { FAILURE, REQUEST, SUCCESS } from 'app/shared/reducers/action-type.util';
-import { IDataset } from 'app/shared/model/dataset.model';
-import { IQuery } from 'app/shared/model/query.model';
-import { LatLngBounds } from 'leaflet';
+import {FAILURE, REQUEST, SUCCESS} from 'app/shared/reducers/action-type.util';
+import {IDataset} from 'app/shared/model/dataset.model';
+import {IQuery} from 'app/shared/model/query.model';
+import {LatLngBounds} from 'leaflet';
 import Supercluster from 'supercluster';
-import { IRectangle } from 'app/shared/model/rectangle.model';
-import { AggregateFunctionType } from 'app/shared/model/enumerations/aggregate-function-type.model';
-import { IRectStats } from 'app/shared/model/rect-stats.model';
-import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
-import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
-import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
+import {IRectangle} from 'app/shared/model/rectangle.model';
+import {AggregateFunctionType} from 'app/shared/model/enumerations/aggregate-function-type.model';
+import {IRectStats} from 'app/shared/model/rect-stats.model';
+import {IDedupStats} from 'app/shared/model/rect-dedup-stats.model';
+import {IGroupedStats} from 'app/shared/model/grouped-stats.model';
+import {defaultValue, IIndexStatus} from 'app/shared/model/index-status.model';
 import {MIN_DEDUP_ZOOM_LEVEL} from "app/config/constants";
 
 export const ACTION_TYPES = {
@@ -216,7 +216,7 @@ export const getDataset = id => {
 const prepareSupercluster = points => {
   const geoJsonPoints = points.map(point => ({
     type: 'Feature',
-    properties: { totalCount: point[2] || 1 },
+    properties: {totalCount: point[2] || 1, pointIds: [point[3]]},
     geometry: {
       type: 'Point',
       coordinates: [point[1], point[0]],
@@ -228,7 +228,8 @@ const prepareSupercluster = points => {
     extent: 256,
     maxZoom: 18,
     reduce(accumulated, props) {
-      return (accumulated.totalCount += props.totalCount);
+      accumulated.totalCount += props.totalCount;
+      accumulated.pointIds = accumulated.pointIds.concat(props.pointIds);
     },
   });
   supercluster.load(geoJsonPoints);
@@ -236,8 +237,8 @@ const prepareSupercluster = points => {
 };
 
 const updateAnalysisResults = id => (dispatch, getState) => {
-  const { categoricalFilters, drawnRect, groupByCols, measureCol, aggType, viewRect } = getState().visualizer;
-  const analysisQuery = { categoricalFilters, rect: drawnRect || viewRect, groupByCols, measureCol, aggType } as IQuery;
+  const {categoricalFilters, drawnRect, groupByCols, measureCol, aggType, viewRect} = getState().visualizer;
+  const analysisQuery = {categoricalFilters, rect: drawnRect || viewRect, groupByCols, measureCol, aggType} as IQuery;
   dispatch({
     type: ACTION_TYPES.UPDATE_ANALYSIS_RESULTS,
     payload: axios.post(`api/datasets/${id}/query`, analysisQuery),
@@ -289,7 +290,7 @@ export const updateClusters = id => (dispatch, getState) => {
   }
   dispatch({
     type: ACTION_TYPES.UPDATE_CLUSTERS,
-    meta: { requestTime },
+    meta: {requestTime},
     payload: axios
       .post(`api/datasets/${id}/query`, {
         rect: viewRect,
@@ -301,18 +302,18 @@ export const updateClusters = id => (dispatch, getState) => {
         dedupEnabled: showDuplicates,
       })
       .then(res => {
-        dispatch({ type: ACTION_TYPES.UPDATE_FACETS, payload: res.data.facets });
+        dispatch({type: ACTION_TYPES.UPDATE_FACETS, payload: res.data.facets});
         const responseTime = new Date().getTime();
         dispatch({
           type: ACTION_TYPES.UPDATE_QUERY_INFO,
-          payload: { ...res.data, executionTime: responseTime - requestTime },
+          payload: {...res.data, executionTime: responseTime - requestTime},
         });
 
         showDuplicates &&
-          dispatch({
-            type: ACTION_TYPES.UPDATE_DUPLICATES,
-            payload: getDuplicateData(res.data.dedupVizOutput, dataset),
-          });
+        dispatch({
+          type: ACTION_TYPES.UPDATE_DUPLICATES,
+          payload: getDuplicateData(res.data.dedupVizOutput, dataset),
+        });
 
         if (drawnRect == null) {
           dispatch({
@@ -337,13 +338,13 @@ export const updateFilters = (id, filters) => dispatch => {
 };
 
 export const updateGroupBy = (id, groupByCols) => (dispatch, getState) => {
-  const { categoricalFilters } = getState().visualizer;
+  const {categoricalFilters} = getState().visualizer;
 
   dispatch({
     type: ACTION_TYPES.UPDATE_GROUP_BY,
     payload: groupByCols,
   });
-  const newCategoricalFilters = { ...categoricalFilters };
+  const newCategoricalFilters = {...categoricalFilters};
   groupByCols.forEach(groupByCol => {
     delete newCategoricalFilters[groupByCol];
   });
@@ -385,7 +386,7 @@ export const updateMapBounds = (id, bounds: LatLngBounds, zoom: number) => dispa
   };
   dispatch({
     type: ACTION_TYPES.UPDATE_MAP_BOUNDS,
-    payload: { zoom, viewRect },
+    payload: {zoom, viewRect},
   });
   dispatch(updateClusters(id));
 };
@@ -400,11 +401,11 @@ export const reset = id => async dispatch => {
 };
 
 export const selectDuplicateCluster = (duplicateClusterIndex) => dispatch => {
-/*  const dedupClusterStats = {
-    clusterColumnSimilarity,
-    clusterColumnValues,
-    clusterId,
-  }; */
+  /*  const dedupClusterStats = {
+      clusterColumnSimilarity,
+      clusterColumnValues,
+      clusterId,
+    }; */
   dispatch({
     type: ACTION_TYPES.SELECT_DUPLICATE_CLUSTER,
     payload: duplicateClusterIndex,

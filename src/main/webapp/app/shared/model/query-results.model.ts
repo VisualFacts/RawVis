@@ -4,7 +4,7 @@ import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 
 export interface IQueryResults {
   series?: IGroupedStats[];
-  points?: LatLngTuple[];
+  points?: [][];
   facets?: any;
   rectStats?: IRectStats;
   fullyContainedTileCount?: number;
