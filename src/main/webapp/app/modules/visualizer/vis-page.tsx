@@ -121,8 +121,7 @@ export const VisPage = (props: IVisPageProps) => {
         Parsing and indexing dataset {dataset.name}
       </Header>
       <Modal.Content>
-        <Progress progress='percent' value={indexStatus.objectsIndexed} total={dataset.objectCount} autoSuccess
-                  precision={2}/>
+        <Progress inverted value={indexStatus.objectsIndexed} total={dataset.objectCount} label={"Objects indexed: " + indexStatus.objectsIndexed} autoSuccess />
       </Modal.Content>
     </Modal>
     <Modal
