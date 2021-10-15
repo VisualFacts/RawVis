@@ -14,6 +14,7 @@ import {
   updateGroupBy,
   updateMapBounds,
   updateMeasure,
+  getRows,
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -41,6 +42,7 @@ export const VisPage = (props: IVisPageProps) => {
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
     totalPointCount, totalTileCount, totalTime, executionTime,
+    rows,
   } = props;
 
   useEffect(() => {
@@ -75,7 +77,7 @@ export const VisPage = (props: IVisPageProps) => {
     <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
                 updateFilters={props.updateFilters} reset={props.reset}/>
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset}/>
+         updateDrawnRect={props.updateDrawnRect} dataset={dataset} rows={rows} getRows={props.getRows}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -128,6 +130,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   totalPointCount: visualizer.totalPointCount,
   totalTime: visualizer.totalTime,
   executionTime: visualizer.executionTime,
+  rows: visualizer.rows,
 });
 
 const mapDispatchToProps = {
@@ -141,6 +144,7 @@ const mapDispatchToProps = {
   reset,
   getIndexStatus,
   updateClusters,
+  getRows,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

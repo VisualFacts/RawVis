@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
-import {MapContainer, Marker, TileLayer, ZoomControl} from "react-leaflet";
+import {MapContainer, Marker, TileLayer, ZoomControl, Popup} from "react-leaflet";
 import {updateDrawnRect, updateMapBounds} from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
@@ -13,11 +13,13 @@ export interface IMapProps {
   dataset: IDataset,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
+  getRows: typeof getRows,
+  rows: any,
 }
 
 
 export const Map = (props: IMapProps) => {
-  const {clusters, dataset} = props;
+  const {clusters, dataset, rows} = props;
 
   const [map, setMap] = useState(null);
 
@@ -89,7 +91,15 @@ export const Map = (props: IMapProps) => {
         totalCount
       } = cluster.properties;
       return (
-        <Marker key={`marker-${index}`} position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} icon={fetchIcon(totalCount)}/>
+        <Marker key={`marker-${index}`} position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} icon={fetchIcon(totalCount)}
+        >
+          {totalCount === 1
+            ? (<Popup onOpen={ () => { props.getRows(rows); }}>
+              Rows variable is {rows}.
+            </Popup>)
+            : null
+          }
+        </Marker>
       );
     })}
     <ZoomControl position="topright"/>

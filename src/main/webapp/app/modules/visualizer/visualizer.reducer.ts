@@ -10,6 +10,7 @@ import { IRectStats } from 'app/shared/model/rect-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import _ from 'lodash';
+import { ActionType } from 'redux-promise-middleware';
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
@@ -26,6 +27,7 @@ export const ACTION_TYPES = {
   UPDATE_FILTERS: 'visualizer/UPDATE_FILTERS',
   UPDATE_QUERY_INFO: 'visualizer/UPDATE_QUERY_INFO',
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
+  FETCH_ROWS: 'visualizer/FETCH_ROWS',
 };
 
 const initialState = {
@@ -53,6 +55,7 @@ const initialState = {
   totalPointCount: 0,
   executionTime: 0,
   totalTime: 0,
+  rows: 0,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -67,6 +70,12 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         errorMessage: null,
         loading: true,
       };
+    // case REQUEST(ACTION_TYPES.FETCH_ROWS):
+    //   return {
+    //     ...initialState,
+    //     errorMessage: null,
+    //     loading: true,
+    //   };
     case FAILURE(ACTION_TYPES.FETCH_DATASET):
       return {
         ...state,
@@ -81,6 +90,26 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         dataset: action.payload.data,
         groupByCols: [action.payload.data.dimensions[0].fieldIndex],
         measureCol: action.payload.data.measure0 && action.payload.data.measure0.fieldIndex,
+      };
+    /* required when an API call is made, so not yet */
+    // case SUCCESS(ACTION_TYPES.FETCH_ROWS):
+    //   return {
+    //     ...state,
+    //     loading: false,
+    //     rows: action.payload + 1,
+    //   };
+    // case FAILURE(ACTION_TYPES.FETCH_ROWS):
+    //   return {
+    //     ...state,
+    //     loading: false,
+    //     errorMessage: 'Well, get rows failed.',
+    //     rows: 0,
+    //   };
+    case ACTION_TYPES.FETCH_ROWS:
+      return {
+        ...state,
+        loading: false,
+        rows: action.payload + 1,
       };
     case SUCCESS(ACTION_TYPES.UPDATE_CLUSTERS):
       return {
@@ -175,6 +204,13 @@ export const getDataset = id => {
   return {
     type: ACTION_TYPES.FETCH_DATASET,
     payload: axios.get<IDataset>(requestUrl),
+  };
+};
+
+export const getRows = rows => {
+  return {
+    type: ACTION_TYPES.FETCH_ROWS,
+    payload: rows,
   };
 };
 
