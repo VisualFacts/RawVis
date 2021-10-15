@@ -1,9 +1,9 @@
 {
   "id": "hotel",
-  "name": "hotel_FACTUAL_50k_dups.csv",
+  "name": "hotel.csv",
   "type": "CSV",
   "hasHeader": true,
-  "objectCount": 250000,
+  "objectCount": 83736,
   "xMin": -157.9287779,
   "xMax": 119.819558,
   "yMin": 8.91667,
@@ -16,6 +16,6 @@
   "measure1": 29,
   "lat": 13,
   "lon": 12,
-  "dimensions": [50, 2, 6, 9, 14, 16, 21, 22, 23, 42, 32],
+  "dimensions": [2, 50, 6, 9, 14, 16, 21, 22, 23, 42, 32],
   "dedupCols": [1, 6, 7, 8, 10, 11, 14, 17, 19, 21, 22, 23, 24, 25, 26, 28, 29, 36, 42, 45]
 }
