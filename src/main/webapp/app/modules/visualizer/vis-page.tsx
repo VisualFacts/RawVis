@@ -5,7 +5,7 @@ import {RouteComponentProps} from 'react-router-dom';
 import {IRootState} from 'app/shared/reducers';
 import {
   getDataset,
-  getIndexStatus,
+  getIndexStatus, getRow,
   reset,
   selectDuplicateCluster,
   toggleDuplicates,
@@ -49,7 +49,7 @@ export const VisPage = (props: IVisPageProps) => {
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
     totalPointCount, zoom, totalTileCount, totalTime, executionTime,
-    showDuplicates, selectedDedupClusterIndex
+    showDuplicates, selectedDedupClusterIndex, row
   } = props;
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export const VisPage = (props: IVisPageProps) => {
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
          duplicates={duplicates} viewRect={viewRect} zoom={zoom} selectedDedupClusterIndex={selectedDedupClusterIndex}
          selectDuplicateCluster={props.selectDuplicateCluster}
-         unselectDuplicateCluster={props.unselectDuplicateCluster}/>
+         unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}/>
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -167,6 +167,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   showDuplicates: visualizer.showDuplicates,
   allowDedup: visualizer.allowDedup,
   selectedDedupClusterIndex: visualizer.selectedDedupClusterIndex,
+  row: visualizer.row,
 });
 
 const mapDispatchToProps = {
@@ -182,7 +183,8 @@ const mapDispatchToProps = {
   updateClusters,
   toggleDuplicates,
   selectDuplicateCluster,
-  unselectDuplicateCluster
+  unselectDuplicateCluster,
+  getRow,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

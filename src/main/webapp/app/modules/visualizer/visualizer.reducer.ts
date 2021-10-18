@@ -32,6 +32,7 @@ export const ACTION_TYPES = {
   SELECT_DUPLICATE_CLUSTER: 'visualizer/SELECT_DUPLICATE_CLUSTER',
   UNSELECT_DUPLICATE_CLUSTER: 'visualizer/UNSELECT_DUPLICATE_CLUSTER',
   UPDATE_CLUSTER_STATS: 'visualizer/UPDATE_CLUSTER_STATS',
+  FETCH_ROW: 'visualizer/FETCH_ROW',
 };
 
 const initialState = {
@@ -66,6 +67,8 @@ const initialState = {
   showDuplicates: false,
   duplicates: [],
   selectedDedupClusterIndex: null,
+  row: null,
+  selectedPointId: null,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -199,6 +202,17 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         selectedDedupClusterIndex: null,
       };
+    case REQUEST(ACTION_TYPES.FETCH_ROW):
+      return {
+        ...state,
+        selectedPointId: action.meta,
+        row: null,
+      };
+    case SUCCESS(ACTION_TYPES.FETCH_ROW):
+      return {
+        ...state,
+        row: action.payload.data,
+      };
     default:
       return state;
   }
@@ -212,6 +226,16 @@ export const getDataset = id => {
     payload: axios.get<IDataset>(requestUrl),
   };
 };
+
+export const getRow = (datasetId, rowId) => {
+  const requestUrl = `api/datasets/${datasetId}/objects/${rowId}`;
+  return {
+    type: ACTION_TYPES.FETCH_ROW,
+    payload: axios.get(requestUrl),
+    meta: rowId
+  };
+};
+
 
 const prepareSupercluster = points => {
   const geoJsonPoints = points.map(point => ({
