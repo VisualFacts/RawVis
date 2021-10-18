@@ -39,7 +39,11 @@ public class RawDataService {
         indexes.remove(dataset.getId());
     }
 
-    private Veti initIndex(Dataset dataset) {
+    private synchronized Veti getIndex(Dataset dataset) throws IOException {
+        Veti veti = indexes.get(dataset.getId());
+        if (veti != null) {
+            return veti;
+        }
         Integer measureCol0 = null;
         Integer measureCol1 = null;
         if (dataset.getMeasure0() != null) {
@@ -57,7 +61,7 @@ public class RawDataService {
         schema.setHasHeader(dataset.getHasHeader());
         schema.setDedupCols(dataset.getDedupCols());
 
-        Veti veti = new Veti(schema, 100000000, "binn", 100);
+        veti = new Veti(schema, 100000000, "binn", 100);
         this.indexes.put(dataset.getId(), veti);
         return veti;
     }
@@ -72,15 +76,20 @@ public class RawDataService {
         return index != null && index.isInitialized();
     }
 
+    public String[] getObject(Dataset dataset, long objectId) {
+        try {
+            Veti veti = this.getIndex(dataset);
+            return veti.getObject(objectId);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public VisQueryResults executeQuery(Dataset dataset, VisQuery query) {
         log.debug(query.toString());
         try {
-            Veti veti = indexes.get(dataset.getId());
-            if (veti == null) {
-                veti = this.initIndex(dataset);
-                veti.executeQuery(query); // todo
-            }
-
+            Veti veti = this.getIndex(dataset);
             Schema schema = veti.getSchema();
             QueryResults results = veti.executeQuery(query);
             VisQueryResults visQueryResults = new VisQueryResults();
