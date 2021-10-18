@@ -7,6 +7,8 @@ import {
   updateDrawnRect,
   updateMapBounds
 } from "app/modules/visualizer/visualizer.reducer";
+import {MapContainer, Marker, TileLayer, ZoomControl, Popup} from "react-leaflet";
+import {updateDrawnRect, updateMapBounds} from "app/modules/visualizer/visualizer.reducer";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
@@ -26,14 +28,18 @@ export interface IMapProps {
   selectedDedupClusterIndex: number,
   selectDuplicateCluster: typeof selectDuplicateCluster,
   unselectDuplicateCluster: typeof unselectDuplicateCluster,
+  getRows: typeof getRows,
+  rows: any,
 }
 
 
 export const Map = (props: IMapProps) => {
 
   const {clusters, dataset, duplicates, showDuplicates, selectedDedupClusterIndex} = props;
+  const {clusters, dataset, rows} = props;
 
   const [map, setMap] = useState(null);
+
   useEffect(() => {
     if (!map) return;
 
@@ -143,6 +149,15 @@ export const Map = (props: IMapProps) => {
 
                 }}
         />
+        <Marker key={`marker-${index}`} position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} icon={fetchIcon(totalCount)}
+        >
+          {totalCount === 1
+            ? (<Popup onOpen={ () => { props.getRows(rows); }}>
+              Rows variable is {rows}.
+            </Popup>)
+            : null
+          }
+        </Marker>
       );
     })}
     <ZoomControl position="topright"/>
