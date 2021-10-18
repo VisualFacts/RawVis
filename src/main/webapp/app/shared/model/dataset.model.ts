@@ -1,15 +1,15 @@
-import { IField } from 'app/shared/model/field.model';
-import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
+import {DatasetType} from 'app/shared/model/enumerations/dataset-type.model';
 
 export interface IDataset {
   id?: string;
   name?: string;
   type?: DatasetType;
-  measure0?: IField;
-  measure1?: IField;
-  lat?: IField;
-  lon?: IField;
-  dimensions?: IField[];
+  headers?: string[];
+  measure0?: number;
+  measure1?: number;
+  lat?: number;
+  lon?: number;
+  dimensions?: number[];
   xMin?: number;
   xMax?: number;
   yMin?: number;

@@ -11,7 +11,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "application", ignoreUnknownFields = false)
 public class ApplicationProperties {
     String workspacePath;
-
+    String modelPath;
+    
     public String getWorkspacePath() {
         return workspacePath;
     }
@@ -19,4 +20,14 @@ public class ApplicationProperties {
     public void setWorkspacePath(String workspacePath) {
         this.workspacePath = workspacePath;
     }
+
+	public String getModelPath() {
+		return modelPath;
+	}
+
+	public void setModelPath(String modelPath) {
+		this.modelPath = modelPath;
+	}
+    
+    
 }

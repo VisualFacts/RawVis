@@ -18,9 +18,15 @@ export const StatsPanel = (props: IStatsPanelProps) => {
 
   return <Segment id='stats-panel' textAlign='left' raised padded>
     <Label attached='top' size='large'>Statistics</Label>
-    <h5>Univariate Stats for field: <Label><Dropdown
-      options={[{text: dataset.measure0.name, value: 0}, {
-        text: dataset.measure1.name,
+    <Statistic.Group widths='5' className='field-stats'>
+      <Statistic>
+        <Statistic.Value>{rectStats.count}</Statistic.Value>
+        <Statistic.Label># Objects</Statistic.Label>
+      </Statistic>
+    </Statistic.Group>
+    <h5>Statistics for field: <Label><Dropdown
+      options={[{text: dataset.headers[dataset.measure0], value: 0}, {
+        text: dataset.headers[dataset.measure1],
         value: 1
       }]}
       inline
@@ -49,8 +55,8 @@ export const StatsPanel = (props: IStatsPanelProps) => {
         <Statistic.Label>Var</Statistic.Label>
       </Statistic>
     </Statistic.Group>
-    <h5>Bivariate Stats for fields: <Label><Dropdown
-      options={[{text: dataset.measure0.name + ' ~ ' + dataset.measure1.name, value: 0}]}
+    <h5>Statistics between fields: <Label><Dropdown
+      options={[{text: dataset.headers[dataset.measure0] + ' ~ ' + dataset.headers[dataset.measure1], value: 0}]}
       inline
       value={0}/>
     </Label></h5>

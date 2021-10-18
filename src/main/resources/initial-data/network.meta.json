@@ -1,61 +1,21 @@
 {
-    "id": "network",
-    "name": "network_data.csv",
-    "type": "CSV",
-    "objectCount": 1516023,
-    "xMin": 139.28706,
-    "xMax": 140.268,
-    "yMin": 35.12885,
-    "yMax": 36.17055,
-    "queryXMin": 139.7443,
-    "queryXMax": 139.79395,
-    "queryYMin": 35.6937,
-    "queryYMax": 35.663,
-    "measure0":
-    {
-        "id": 23,
-        "name": "Latency",
-        "fieldIndex": 138
-    },
-    "measure1":
-    {
-        "id": 24,
-        "name": "Location Altitude",
-        "fieldIndex": 11
-    },
-    "lat":
-    {
-        "id": 17,
-        "name": "Measurement Latitude",
-        "fieldIndex": 9
-    },
-    "lon":
-    {
-        "id": 18,
-        "name": "Measurement Longitude",
-        "fieldIndex": 10
-    },
-    "dimensions":
-    [
-        {
-            "id": 19,
-            "name": "Radio Operator Name",
-            "fieldIndex": 52
-        },
-        {
-            "id": 20,
-            "name": "Radio Network Type",
-            "fieldIndex": 47
-        },
-        {
-            "id": 21,
-            "name": "Device Manufacturer",
-            "fieldIndex": 131
-        },
-        {
-            "id": 22,
-            "name": "Roaming",
-            "fieldIndex": 65
-        }
-    ]
+  "id": "network",
+  "name": "network_data.csv",
+  "type": "CSV",
+  "hasHeader": true,
+  "objectCount": 1516023,
+  "xMin": 139.28706,
+  "xMax": 140.268,
+  "yMin": 35.12885,
+  "yMax": 36.17055,
+  "queryXMin": 139.7443,
+  "queryXMax": 139.79395,
+  "queryYMin": 35.6937,
+  "queryYMax": 35.663,
+  "measure0": 12,
+  "measure1": 19,
+  "lat": 1,
+  "lon": 2,
+  "dimensions": [6, 7, 15, 20],
+  "dedupCols": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 }

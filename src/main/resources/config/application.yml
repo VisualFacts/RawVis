@@ -129,3 +129,4 @@ jhipster:
 
 application:
   workspacePath: /opt/rawvis-workspace
+  modelPath: /Users/vasilisstamatopoulos/Documents/Works/ATHENA/Projects/ER/Code/RawVis/model.json

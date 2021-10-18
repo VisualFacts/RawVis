@@ -1,7 +1,7 @@
 import React from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
-import {Button, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
-import {reset, updateFilters} from "app/modules/visualizer/visualizer.reducer";
+import {Button, Checkbox, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
+import {reset, toggleDuplicates, updateFilters} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
 
 
@@ -10,7 +10,10 @@ export interface IVisControlProps {
   facets: any,
   groupByCols: number[],
   categoricalFilters: any,
+  showDuplicates: boolean,
+  allowDedup: boolean,
   updateFilters: typeof updateFilters,
+  toggleDuplicates: typeof toggleDuplicates,
   reset: typeof reset,
 }
 
@@ -24,6 +27,9 @@ export const VisControl = (props: IVisControlProps) => {
     props.updateFilters(dataset.id, filters);
   };
 
+  const handleDuplicateToggleChange = (e) => {
+    props.toggleDuplicates(dataset.id);
+  };
 
   const filterDropdowns = facets &&
     <div>
@@ -31,17 +37,18 @@ export const VisControl = (props: IVisControlProps) => {
         <Header as='h4'>
           <Icon name='filter'/>
           Filtering
-        </Header></Divider>
-      {dataset.dimensions.map(dim => facets[dim.fieldIndex] &&
+        </Header>
+      </Divider>
+      {dataset.dimensions.map(dim => facets[dim] &&
         <>
           <h5>
-            <span>{dim.name}</span>
+            <span>{dataset.headers[dim]}</span>
           </h5>
           <Dropdown
-            options={facets[dim.fieldIndex].map((value, index) => ({key: index, value, text: value}))}
-            selection clearable upward fluid disabled={groupByCols.includes(dim.fieldIndex)}
-            value={categoricalFilters[dim.fieldIndex] || null}
-            onChange={handleFilterChange(dim.fieldIndex)}
+            options={facets[dim].map((value, index) => ({key: index, value, text: value}))}
+            selection clearable upward fluid disabled={groupByCols.includes(dim)}
+            value={categoricalFilters[dim] || null}
+            onChange={handleFilterChange(dim)}
           /></>)}</div>;
 
 
@@ -61,12 +68,23 @@ export const VisControl = (props: IVisControlProps) => {
     </Label>
     <Header as='h5'>Latitude</Header>
     <Label size='medium' color='blue'>
-      {dataset.lat.name}
+      {dataset.headers[dataset.lat]}
     </Label>
     <Header as='h5'>Longitude</Header>
     <Label size='medium' color='blue'>
-      {dataset.lon.name}
+      {dataset.headers[dataset.lon]}
     </Label>
+    {/* <Header as='h5'>Show All</Header>
+    <Checkbox className="toggle"
+       checked = {props.showAll}
+       onChange={handleShowAllToggleChange}
+    /> */}
+    <Header as='h5'>Show Duplicates</Header>
+    <Checkbox className="toggle" disabled={!props.allowDedup}
+              checked={props.showDuplicates}
+              onChange={handleDuplicateToggleChange}
+    />
+
     <br/>
     {
       filterDropdowns

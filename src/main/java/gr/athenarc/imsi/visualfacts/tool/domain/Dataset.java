@@ -5,8 +5,7 @@ import gr.athenarc.imsi.visualfacts.tool.domain.enumeration.DatasetType;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A Dataset.
@@ -22,6 +21,10 @@ public class Dataset implements Serializable {
     private String name;
 
     private DatasetType type;
+
+    private Boolean hasHeader;
+
+    private String[] headers;
 
     @NotNull
     private Integer objectCount;
@@ -50,15 +53,17 @@ public class Dataset implements Serializable {
     @NotNull
     private Float queryYMax;
 
-    private Field measure0;
+    private Integer measure0;
 
-    private Field measure1;
+    private Integer measure1;
 
-    private Field lat;
+    private Integer lat;
 
-    private Field lon;
+    private Integer lon;
 
-    private Set<Field> dimensions = new HashSet<>();
+    private LinkedHashSet<Integer> dimensions = new LinkedHashSet<>();
+
+    private Set<Integer> dedupCols = new HashSet<>();
 
 
     public String getId() {
@@ -80,6 +85,22 @@ public class Dataset implements Serializable {
     public Dataset name(String name) {
         this.name = name;
         return this;
+    }
+
+    public Boolean getHasHeader() {
+        return hasHeader;
+    }
+
+    public void setHasHeader(Boolean hasHeader) {
+        this.hasHeader = hasHeader;
+    }
+
+    public String[] getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(String[] headers) {
+        this.headers = headers;
     }
 
     public DatasetType getType() {
@@ -167,69 +188,52 @@ public class Dataset implements Serializable {
         this.queryYMax = queryYMax;
     }
 
-    public Field getMeasure0() {
+    public Integer getMeasure0() {
         return measure0;
     }
 
-    public void setMeasure0(Field measure0) {
+    public void setMeasure0(Integer measure0) {
         this.measure0 = measure0;
     }
 
-    public Field getMeasure1() {
+    public Integer getMeasure1() {
         return measure1;
     }
 
-    public void setMeasure1(Field measure1) {
+    public void setMeasure1(Integer measure1) {
         this.measure1 = measure1;
     }
 
-    public Field getLat() {
+    public Integer getLat() {
         return lat;
     }
 
-    public void setLat(Field field) {
-        this.lat = field;
+    public void setLat(Integer lat) {
+        this.lat = lat;
     }
 
-    public Dataset lat(Field field) {
-        this.lat = field;
-        return this;
-    }
-
-    public Field getLon() {
+    public Integer getLon() {
         return lon;
     }
 
-    public void setLon(Field field) {
-        this.lon = field;
+    public void setLon(Integer lon) {
+        this.lon = lon;
     }
 
-    public Dataset lon(Field field) {
-        this.lon = field;
-        return this;
-    }
-
-    public Set<Field> getDimensions() {
+    public LinkedHashSet<Integer> getDimensions() {
         return dimensions;
     }
 
-    public void setDimensions(Set<Field> fields) {
-        this.dimensions = fields;
+    public void setDimensions(LinkedHashSet<Integer> dimensions) {
+        this.dimensions = dimensions;
     }
 
-    public Dataset dimensions(Set<Field> fields) {
-        this.dimensions = fields;
-        return this;
+    public Set<Integer> getDedupCols() {
+        return dedupCols;
     }
 
-    public Dataset addDimensions(Field field) {
-        this.dimensions.add(field);
-        return this;
-    }
-
-    public Dataset removeDimensions(Field field) {
-        this.dimensions.remove(field);
-        return this;
+    public void setDedupCols(Set<Integer> dedupCols) {
+        this.dedupCols = dedupCols;
     }
 
     @Override
@@ -243,18 +247,35 @@ public class Dataset implements Serializable {
         return id != null && id.equals(((Dataset) o).id);
     }
 
+
     @Override
     public int hashCode() {
         return 31;
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
         return "Dataset{" +
-            "id=" + getId() +
-            ", name='" + getName() + "'" +
-            ", type='" + getType() + "'" +
-            "}";
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", type=" + type +
+            ", hasHeader=" + hasHeader +
+            ", headers=" + Arrays.toString(headers) +
+            ", objectCount=" + objectCount +
+            ", xMin=" + xMin +
+            ", xMax=" + xMax +
+            ", yMin=" + yMin +
+            ", yMax=" + yMax +
+            ", queryXMin=" + queryXMin +
+            ", queryXMax=" + queryXMax +
+            ", queryYMin=" + queryYMin +
+            ", queryYMax=" + queryYMax +
+            ", measure0=" + measure0 +
+            ", measure1=" + measure1 +
+            ", lat=" + lat +
+            ", lon=" + lon +
+            ", dimensions=" + dimensions +
+            ", dedupCols=" + dedupCols +
+            '}';
     }
 }

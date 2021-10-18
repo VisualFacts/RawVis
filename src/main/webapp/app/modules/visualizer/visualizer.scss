@@ -3,27 +3,27 @@
 }
 
 .marker-cluster-small {
-  background-color: rgba(181, 226, 140, 0.6);
+  background-color: rgba(102,194,164, 0.6);
 }
 
 .marker-cluster-small div {
-  background-color: rgba(110, 204, 57, 0.6);
+  background-color: rgba(102,194,164, 0.6);
 }
 
 .marker-cluster-medium {
-  background-color: rgba(241, 211, 87, 0.6);
+  background-color: rgba(44,162,95, 0.6);
 }
 
 .marker-cluster-medium div {
-  background-color: rgba(240, 194, 12, 0.6);
+  background-color: rgba(44,162,95, 0.6);
 }
 
 .marker-cluster-large {
-  background-color: rgba(253, 156, 115, 0.6);
+  background-color: rgba(0,109,44, 0.6);
 }
 
 .marker-cluster-large div {
-  background-color: rgba(241, 128, 23, 0.6);
+  background-color: rgba(0,109,44, 0.6);
 }
 
 .marker-cluster {
@@ -46,6 +46,38 @@
 }
 
 .marker-cluster span {
+  line-height: 30px;
+  white-space: nowrap;
+}
+
+.marker-duplicate {
+  // border-radius: 20px;
+  //background-clip: padding-box;
+  cursor: pointer !important;
+  background-color: rgba(225, 61, 61, 0.7);
+  div {
+    background-color: rgba(253, 156, 115, 0.6);
+  }
+  &.marker-cluster-selected {
+    background-color: rgb(60, 138, 202);
+  }
+}
+
+.marker-duplicate div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+
+  display: flex;
+  justify-content: center;
+
+  text-align: center;
+  border-radius: 15px;
+  font: 12px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.marker-duplicate span {
   line-height: 30px;
   white-space: nowrap;
 }
@@ -139,4 +171,54 @@
   .label {
     font-size: 0.85rem;
   }
+}
+
+.dup-item {
+  color: green;
+}
+
+.dup-item.active {
+  color: red;
+}
+
+.x-button {
+  float: right;
+  cursor: pointer;
+  position: relative;
+  right: 10px;
+}
+
+.x-button2 {
+  float: right;
+  cursor: pointer;
+  position: relative;
+  right: 10px;
+  top: -29px;
+}
+
+.column-value-chart-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  padding-top: 10px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cluster-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  padding-bottom: 5px;
+  border-bottom: solid black 1px;
+  margin-bottom: 5px;
+}
+
+.cluster-details {
+  height: 20vh;
+  overflow-y: scroll;
+}
+
+.ui.dividing.header.dedup-cluster-subtitle {
+  margin-top: 10px;
+  text-align: center;
 }
