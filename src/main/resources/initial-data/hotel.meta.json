@@ -1,9 +1,9 @@
 {
-  "id": "hotel",
-  "name": "hotel.csv",
+  "id": "hotels",
+  "name": "hotels.csv",
   "type": "CSV",
   "hasHeader": true,
-  "objectCount": 83736,
+  "objectCount": 233203,
   "xMin": -157.9287779,
   "xMax": 119.819558,
   "yMin": 8.91667,
@@ -17,5 +17,6 @@
   "lat": 13,
   "lon": 12,
   "dimensions": [2, 50, 6, 9, 14, 16, 21, 22, 23, 42, 32],
+  "blockingCols": [1, 6, 7, 8, 10, 11, 14, 17, 19, 21, 22, 23, 24, 25, 26, 28, 29, 36, 42, 45],
   "dedupCols": [1, 6, 7, 8, 10, 11, 14, 17, 19, 21, 22, 23, 24, 25, 26, 28, 29, 36, 42, 45]
 }

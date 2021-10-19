@@ -65,6 +65,8 @@ public class Dataset implements Serializable {
 
     private Set<Integer> dedupCols = new HashSet<>();
 
+    private Set<Integer> blockingCols = new HashSet<>();
+
 
     public String getId() {
         return id;
@@ -236,7 +238,16 @@ public class Dataset implements Serializable {
         this.dedupCols = dedupCols;
     }
 
-    @Override
+    
+    public Set<Integer> getBlockingCols() {
+		return blockingCols;
+	}
+
+	public void setBlockingCols(Set<Integer> blockingCols) {
+		this.blockingCols = blockingCols;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -276,6 +287,7 @@ public class Dataset implements Serializable {
             ", lon=" + lon +
             ", dimensions=" + dimensions +
             ", dedupCols=" + dedupCols +
+            ", blockingCols=" + blockingCols +
             '}';
     }
 }

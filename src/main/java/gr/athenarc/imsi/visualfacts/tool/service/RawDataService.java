@@ -39,7 +39,7 @@ public class RawDataService {
         indexes.remove(dataset.getId());
     }
 
-    private Veti initIndex(Dataset dataset) {
+    private Veti initIndex(Dataset dataset) throws IOException {
         Integer measureCol0 = null;
         Integer measureCol1 = null;
         if (dataset.getMeasure0() != null) {
@@ -55,6 +55,7 @@ public class RawDataService {
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field)).collect(Collectors.toList());
         schema.setCategoricalColumns(categoricalColumns);
         schema.setHasHeader(dataset.getHasHeader());
+        schema.setBlockingCols(dataset.getBlockingCols());
         schema.setDedupCols(dataset.getDedupCols());
 
         Veti veti = new Veti(schema, 100000000, "binn", 100);

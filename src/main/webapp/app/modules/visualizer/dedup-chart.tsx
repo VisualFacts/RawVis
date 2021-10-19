@@ -33,7 +33,7 @@ export const DedupChart = (props: IDedupChartProps) => {
   return <Segment id='chart-container' raised textAlign='center'>
     <Button.Group basic>
       <Button onClick={handleChartChange('dedup')} active={chart === 'dedup'}>Dirtiness Ratio</Button>
-      <Button onClick={handleChartChange('similarities')} active={chart === 'similarities'}>Distance Measures</Button>
+      <Button onClick={handleChartChange('similarities')} active={chart === 'similarities'}>Similarities</Button>
     </Button.Group>
     <br/><br/><br/>
     {chart === "dedup" && <DedupChartPercentage dedupStats={dedupStats}/>}

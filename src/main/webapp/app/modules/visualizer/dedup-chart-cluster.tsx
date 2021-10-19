@@ -98,7 +98,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
     yAxis: {
       max: 1,
       title: {
-        text: "Average Pairwise Distance",
+        text: "Attribute Similarity",
         x: -20
       },
     },
@@ -112,9 +112,9 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
     legend: {
       enabled: false
     },
-    title: "Distance Measure",
+    title: "Similarities",
     series: [{
-      name: "Distance Measure",
+      name: "Similarity",
       data: similarityData
     }]
   };
@@ -158,7 +158,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
                                                                        onClick={() => props.unselectDuplicateCluster()}/></Label>
       {chart === "clusterSimilarities" &&
       <div>
-        <Header as='h5' className="dedup-cluster-subtitle" dividing>Distance Measures</Header>
+        <Header as='h5' className="dedup-cluster-subtitle" dividing>Similarities</Header>
         <HighchartsReact
           highcharts={CustomEvents(Highcharts)}
           allowChartUpdate={true}

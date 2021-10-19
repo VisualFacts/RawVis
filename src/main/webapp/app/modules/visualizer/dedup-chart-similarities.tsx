@@ -106,7 +106,7 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
    yAxis: {
     max: 1,
     title: {
-      text: "Average Pairwise Distance",
+      text: "Attribute Similarities",
       x: -20
     },
   },
@@ -120,9 +120,9 @@ export const DedupChartSimilarities = (props: IDedupChartSimilaritiesProps) => {
     legend: {
       enabled: false
     },
-    title: "Distance Measure",
+    title: "Similarities",
     series: [{
-      name: "Distance Measure",
+      name: "Similarity",
       data: similarityData
     }]
   };
