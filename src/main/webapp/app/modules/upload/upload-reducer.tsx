@@ -16,13 +16,17 @@ export const ActionTypes = {
   SET_REND: 'rend',
   SET_LON: 'lon',
   SET_BOOLEAN: 'setbool',
+  SET_EDITBUTTON: 'setEditButton',
   SET_DROPBOX1: 'setdrop1',
   SET_DROPBOX2: 'setdrop2',
   SET_DROPBOX3: 'setdrop3',
+  SET_DROPBOX4: 'setdrop4',
   SET_DROPMULTBOX: 'setDropMultBox',
   SET_DATA: 'setdata',
   ADD_DATA: 'addData',
-  SET_MEASURE: 'setMeasure',
+  SET_MEASURE0: 'setMeasure0',
+  SET_MEASURE1: 'setMeasure1',
+  SET_COORDINATES: 'setCoordinates',
   SET_DIMENSIONS: 'setDimensions',
   EMPTY_DIMENSIONS: 'emptyDimensions',
   SET_OPTIONS: 'setOptions',
@@ -59,11 +63,14 @@ const uploadPageInitial = {
   dropdown1: '',
   dropdown2: '',
   dropdown3: '',
+  dropdown4: '',
   activeMenu: 'New Dataset',
+  editButton: [],
   dropMultBox: [],
   optionsState: [],
   trimData: [],
   data: [],
+  coordinates: [],
 };
 
 const initialStato = {
@@ -89,8 +96,12 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
       return { ...state, dropdown2: `${action.payload}` };
     case ActionTypes.SET_DROPBOX3:
       return { ...state, dropdown3: `${action.payload}` };
+    case ActionTypes.SET_DROPBOX4:
+      return { ...state, dropdown4: `${action.payload}` };
     case ActionTypes.SET_DROPMULTBOX:
       return { ...state, dropMultBox: action.payload };
+    case ActionTypes.SET_COORDINATES:
+      return { ...state, coordinates: action.payload };
     case ActionTypes.SET_DATA:
       return { ...state, trimData: action.payload };
     case ActionTypes.ADD_DATA:
@@ -99,8 +110,10 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
       return { ...state, optionsState: action.payload };
     case ActionTypes.SET_ACTIVEMENU:
       return { ...state, activeMenu: action.payload };
+    case ActionTypes.SET_EDITBUTTON:
+      return { ...state, editButton: action.payload };
     case ActionTypes.RESET_DROPDOWNS:
-      return { ...state, dropdown1: '', dropdown2: '', dropdown3: '', dropMultBox: [] };
+      return { ...state, dropdown1: '', dropdown2: '', dropdown3: '', dropdown4: '', dropMultBox: [] };
     default:
       return state;
   }
@@ -114,11 +127,15 @@ const displayReducer = (state: IDataset = initialState, action) => {
       return { ...state, name: action.payload };
     case ActionTypes.SET_LON:
       return { ...state, lon: { ...state.lon, name: action.payload.lonName, fieldIndex: action.payload.lonIndex } };
-    case ActionTypes.SET_MEASURE:
+    case ActionTypes.SET_MEASURE0:
       return {
         ...state,
         measure0: { ...state.measure0, name: action.payload.measureName, fieldIndex: action.payload.measureIndex },
-        measure1: { ...state.measure0, name: action.payload.measureName, fieldIndex: action.payload.measureIndex },
+      };
+    case ActionTypes.SET_MEASURE1:
+      return {
+        ...state,
+        measure1: { ...state.measure1, name: action.payload.measureName, fieldIndex: action.payload.measureIndex },
       };
     case ActionTypes.SET_DIMENSIONS:
       return {
@@ -255,6 +272,13 @@ export const setMenuItem = data => {
   };
 };
 
+export const setEditbutton = data => {
+  return {
+    type: ActionTypes.SET_EDITBUTTON,
+    payload: data,
+  };
+};
+
 export const setBool = () => {
   return {
     type: ActionTypes.SET_BOOLEAN,
@@ -274,6 +298,13 @@ export const setDropbox1 = value => {
   };
 };
 
+export const setCoordinates = value => {
+  return {
+    type: ActionTypes.SET_COORDINATES,
+    payload: value,
+  };
+};
+
 export const setDropbox2 = value => {
   return {
     type: ActionTypes.SET_DROPBOX2,
@@ -287,6 +318,14 @@ export const setDropbox3 = value => {
     payload: value,
   };
 };
+
+export const setDropbox4 = value => {
+  return {
+    type: ActionTypes.SET_DROPBOX4,
+    payload: value,
+  };
+};
+
 export const setDropMultBox = value => {
   return {
     type: ActionTypes.SET_DROPMULTBOX,
@@ -303,7 +342,7 @@ export const setLat = (latName, latIndex) => {
   } else {
     return {
       type: ActionTypes.SET_LAT,
-      payload: '',
+      payload: { latName: '', latIndex: null },
     };
   }
 };
@@ -317,7 +356,7 @@ export const setLon = (lonName, lonIndex) => {
   } else {
     return {
       type: ActionTypes.SET_LON,
-      payload: '',
+      payload: { lonName: '', lonIndex: null },
     };
   }
 };
@@ -336,15 +375,29 @@ export const setName = value => {
   };
 };
 
-export const setMeasure = (measureName, measureIndex) => {
+export const setMeasure0 = (measureName, measureIndex) => {
   if (measureName !== null) {
     return {
-      type: ActionTypes.SET_MEASURE,
+      type: ActionTypes.SET_MEASURE0,
       payload: { measureName, measureIndex },
     };
   } else {
     return {
-      type: ActionTypes.SET_MEASURE,
+      type: ActionTypes.SET_MEASURE0,
+      payload: '',
+    };
+  }
+};
+
+export const setMeasure1 = (measureName, measureIndex) => {
+  if (measureName !== null) {
+    return {
+      type: ActionTypes.SET_MEASURE1,
+      payload: { measureName, measureIndex },
+    };
+  } else {
+    return {
+      type: ActionTypes.SET_MEASURE1,
       payload: '',
     };
   }
