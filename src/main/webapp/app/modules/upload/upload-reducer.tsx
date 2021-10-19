@@ -2,7 +2,6 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { IDataset, defaultValue } from '../../shared/model/dataset.model';
 import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
-import { IField } from '../../shared/model/field.model';
 import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
 import axios from 'axios';
 
@@ -41,11 +40,11 @@ const initialState = {
   id: null,
   name: '',
   type: null as DatasetType,
-  measure0: null as IField,
-  measure1: null as IField,
-  lat: null as IField,
-  lon: null as IField,
-  dimensions: [] as IField[],
+  measure0: null as number,
+  measure1: null as number,
+  lat: null as number,
+  lon: null as number,
+  dimensions: [] as number[],
   xMin: 139.206,
   xMax: 140.268,
   yMin: 35.1285,
@@ -122,25 +121,25 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
 const displayReducer = (state: IDataset = initialState, action) => {
   switch (action.type) {
     case ActionTypes.SET_LAT:
-      return { ...state, lat: { ...state.lat, name: action.payload.latName, fieldIndex: action.payload.latIndex } };
+      return { ...state, lat: action.payload };
     case ActionTypes.SET_NAME:
       return { ...state, name: action.payload };
     case ActionTypes.SET_LON:
-      return { ...state, lon: { ...state.lon, name: action.payload.lonName, fieldIndex: action.payload.lonIndex } };
+      return { ...state, lon: action.payload };
     case ActionTypes.SET_MEASURE0:
       return {
         ...state,
-        measure0: { ...state.measure0, name: action.payload.measureName, fieldIndex: action.payload.measureIndex },
+        measure0: action.payload,
       };
     case ActionTypes.SET_MEASURE1:
       return {
         ...state,
-        measure1: { ...state.measure1, name: action.payload.measureName, fieldIndex: action.payload.measureIndex },
+        measure1: action.payload,
       };
     case ActionTypes.SET_DIMENSIONS:
       return {
         ...state,
-        dimensions: [...state.dimensions, { name: action.payload.dimensionName, fieldIndex: action.payload.dimensionIndex }],
+        dimensions: [...state.dimensions, action.payload.dimensionIndex],
       };
     case ActionTypes.EMPTY_DIMENSIONS:
       return { ...state, dimensions: [] };
@@ -333,33 +332,15 @@ export const setDropMultBox = value => {
   };
 };
 
-export const setLat = (latName, latIndex) => {
-  if (latName !== null) {
-    return {
-      type: ActionTypes.SET_LAT,
-      payload: { latName, latIndex },
-    };
-  } else {
-    return {
-      type: ActionTypes.SET_LAT,
-      payload: { latName: '', latIndex: null },
-    };
-  }
-};
+export const setLat = (latIndex) => ({
+  type: ActionTypes.SET_LAT,
+  payload: latIndex,
+});
 
-export const setLon = (lonName, lonIndex) => {
-  if (lonName !== null) {
-    return {
-      type: ActionTypes.SET_LON,
-      payload: { lonName, lonIndex },
-    };
-  } else {
-    return {
-      type: ActionTypes.SET_LON,
-      payload: { lonName: '', lonIndex: null },
-    };
-  }
-};
+export const setLon = (lonIndex) => ({
+  type: ActionTypes.SET_LON,
+  payload: lonIndex,
+});
 
 export const setOptionsState = value => {
   return {
@@ -375,38 +356,20 @@ export const setName = value => {
   };
 };
 
-export const setMeasure0 = (measureName, measureIndex) => {
-  if (measureName !== null) {
-    return {
-      type: ActionTypes.SET_MEASURE0,
-      payload: { measureName, measureIndex },
-    };
-  } else {
-    return {
-      type: ActionTypes.SET_MEASURE0,
-      payload: '',
-    };
-  }
-};
+export const setMeasure0 = (measureIndex) => ({
+  type: ActionTypes.SET_MEASURE0,
+  payload: measureIndex,
+});
 
-export const setMeasure1 = (measureName, measureIndex) => {
-  if (measureName !== null) {
-    return {
-      type: ActionTypes.SET_MEASURE1,
-      payload: { measureName, measureIndex },
-    };
-  } else {
-    return {
-      type: ActionTypes.SET_MEASURE1,
-      payload: '',
-    };
-  }
-};
+export const setMeasure1 = (measureIndex) => ({
+  type: ActionTypes.SET_MEASURE1,
+  payload: measureIndex,
+});
 
-export const setDimensions = (dimensionName, dimensionIndex) => {
+export const setDimensions = (dimensionIndex) => {
   return {
     type: ActionTypes.SET_DIMENSIONS,
-    payload: { dimensionName, dimensionIndex },
+    payload: dimensionIndex,
   };
 };
 
