@@ -60,7 +60,7 @@ public class RawDataService {
         schema.setCategoricalColumns(categoricalColumns);
         schema.setHasHeader(dataset.getHasHeader());
         schema.setDedupCols(dataset.getDedupCols());
-
+        schema.setBlockingCols(dataset.getBlockingCols());
         veti = new Veti(schema, 100000000, "binn", 100);
         this.indexes.put(dataset.getId(), veti);
         return veti;
