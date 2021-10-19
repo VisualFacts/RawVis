@@ -154,6 +154,13 @@ public class DatasetResource {
         return ResponseUtil.wrapOrNotFound(queryResultsOptional);
     }
 
+    @GetMapping("/datasets/{datasetId}/objects/{objectId}")
+    public ResponseEntity<String[]> getObject(@PathVariable String datasetId, @PathVariable Long objectId) throws IOException {
+        log.debug("REST request to retrieve object {} from dataset {}", objectId, datasetId);
+        Optional<String[]> optional = datasetRepository.findById(datasetId).map(dataset -> rawDataService.getObject(dataset, objectId));
+        return ResponseUtil.wrapOrNotFound(optional);
+    }
+
     @PostMapping(path = "/datasets/{id}/reset-index")
     public void resetIndex(@PathVariable String id) throws IOException {
         log.debug("REST request to reset index for dataset: {}", id);

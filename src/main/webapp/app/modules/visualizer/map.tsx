@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
-import {MapContainer, Marker, TileLayer, ZoomControl} from "react-leaflet";
 import {
   selectDuplicateCluster,
   unselectDuplicateCluster,
   updateDrawnRect,
-  updateMapBounds
+  updateMapBounds,
+  getRow
 } from "app/modules/visualizer/visualizer.reducer";
+import {MapContainer, Marker, Popup, TileLayer, ZoomControl} from "react-leaflet";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
-import {Icon} from "semantic-ui-react";
 
 
 export interface IMapProps {
@@ -26,14 +26,17 @@ export interface IMapProps {
   selectedDedupClusterIndex: number,
   selectDuplicateCluster: typeof selectDuplicateCluster,
   unselectDuplicateCluster: typeof unselectDuplicateCluster,
+  getRow: typeof getRow,
+  row: string[],
 }
 
 
 export const Map = (props: IMapProps) => {
 
-  const {clusters, dataset, duplicates, showDuplicates, selectedDedupClusterIndex} = props;
+  const {clusters, dataset, duplicates, showDuplicates, selectedDedupClusterIndex, row} = props;
 
   const [map, setMap] = useState(null);
+
   useEffect(() => {
     if (!map) return;
 
@@ -69,10 +72,6 @@ export const Map = (props: IMapProps) => {
     // @ts-ignore
     map.on(L.Draw.Event.DELETED, (e) => {
       props.updateDrawnRect(props.id, null);
-    });
-
-    map.on('popupclose', (e) => {
-      props.unselectDuplicateCluster();
     });
 
     map.on('moveend', (e) => {
@@ -117,12 +116,18 @@ export const Map = (props: IMapProps) => {
       // every cluster point has coordinates
       // the point may be either a cluster or a single point
       const {
-        totalCount
+        totalCount, pointIds
       } = cluster.properties;
       return (
-        <Marker key={`marker-${index}`}
+        <Marker key={totalCount === 1 ? pointIds[0] : "cluster" + pointIds[0]}
                 position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
-                icon={fetchIcon(totalCount)}/>
+                icon={fetchIcon(totalCount)}>
+          {totalCount === 1 ? (<Popup onOpen={() => {
+            props.getRow(dataset.id, pointIds[0]);
+          }}>
+              {row}
+          </Popup>) : null
+          }</Marker>
       );
     })}
     <Marker position={[40.75795780927519, -73.98551938996594]}
@@ -142,8 +147,7 @@ export const Map = (props: IMapProps) => {
                   },
 
                 }}
-        />
-      );
+        />);
     })}
     <ZoomControl position="topright"/>
   </MapContainer>;
