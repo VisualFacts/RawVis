@@ -69,7 +69,7 @@ const uploadPageInitial = {
   optionsState: [],
   trimData: [],
   data: [],
-  coordinates: [],
+  coordinates: null,
 };
 
 const initialStato = {
@@ -332,12 +332,12 @@ export const setDropMultBox = value => {
   };
 };
 
-export const setLat = (latIndex) => ({
+export const setLat = latIndex => ({
   type: ActionTypes.SET_LAT,
   payload: latIndex,
 });
 
-export const setLon = (lonIndex) => ({
+export const setLon = lonIndex => ({
   type: ActionTypes.SET_LON,
   payload: lonIndex,
 });
@@ -356,17 +356,17 @@ export const setName = value => {
   };
 };
 
-export const setMeasure0 = (measureIndex) => ({
+export const setMeasure0 = measureIndex => ({
   type: ActionTypes.SET_MEASURE0,
   payload: measureIndex,
 });
 
-export const setMeasure1 = (measureIndex) => ({
+export const setMeasure1 = measureIndex => ({
   type: ActionTypes.SET_MEASURE1,
   payload: measureIndex,
 });
 
-export const setDimensions = (dimensionIndex) => {
+export const setDimensions = dimensionIndex => {
   return {
     type: ActionTypes.SET_DIMENSIONS,
     payload: dimensionIndex,

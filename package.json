@@ -20,6 +20,7 @@
     "babel-preset-env": "^1.5.2",
     "babel-preset-react": "^6.24.1",
     "highcharts": "^8.2.2",
+    "highcharts-custom-events": "^3.0.10",
     "highcharts-react-official": "^3.0.0",
     "leaflet": "1.7.1",
     "leaflet-draw": "^1.0.4",

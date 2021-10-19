@@ -112,6 +112,18 @@ export const TablePagination = () => {
     dispatch(Actions.setBool());
   };
 
+  const getCoordinates = () => {
+    const coordinates = [];
+    if (displayInfo.lon !== null && displayInfo.lat !== null && uploadState.trimData !== []) {
+      for (let i = 0; i < uploadState.trimData.length; i++) {
+        coordinates.push([uploadState.trimData[i][displayInfo.lat], uploadState.trimData[i][displayInfo.lon]]);
+      }
+      dispatch(Actions.setCoordinates(coordinates));
+    } else {
+      dispatch(Actions.setCoordinates(coordinates));
+    }
+  };
+
   const dropdownLatChange = (name, choice) => {
     if (name) {
       const helpFind = element => {
@@ -119,13 +131,16 @@ export const TablePagination = () => {
       };
       if (choice) {
         const found = options.find(helpFind);
-        dispatch(Actions.setLat(name, found.key));
+        dispatch(Actions.setLat(found.key));
+        uploadState.rend === true && uploadState.coordinates === null && getCoordinates();
       } else {
         const found = options.find(helpFind);
-        dispatch(Actions.setLon(name, found.key));
+        dispatch(Actions.setLon(found.key));
+        uploadState.rend === true && uploadState.coordinates === null && getCoordinates();
       }
     } else {
-      choice ? dispatch(Actions.setLat(null, null)) : dispatch(Actions.setLon(null, null));
+      choice ? dispatch(Actions.setLat(null)) : dispatch(Actions.setLon(null));
+      uploadState.rend === true && uploadState.coordinates === null && getCoordinates();
     }
   };
 
@@ -136,9 +151,9 @@ export const TablePagination = () => {
       };
 
       const found = options.find(helpFind);
-      choice === 0 ? dispatch(Actions.setMeasure0(name, found.key)) : dispatch(Actions.setMeasure1(name, found.key));
+      choice === 0 ? dispatch(Actions.setMeasure0(found.key)) : dispatch(Actions.setMeasure1(found.key));
     } else {
-      choice === 0 ? dispatch(Actions.setMeasure0(null, null)) : dispatch(Actions.setMeasure1(null, null));
+      choice === 0 ? dispatch(Actions.setMeasure0(null)) : dispatch(Actions.setMeasure1(null));
     }
   };
 
@@ -150,20 +165,8 @@ export const TablePagination = () => {
       };
 
       const found = options.find(helpFind);
-      dispatch(Actions.setDimensions(nam, found.key));
+      dispatch(Actions.setDimensions(found.key));
     });
-  };
-
-  const getCoordinates = () => {
-    const coordinates = [];
-    if (displayInfo.lat.name !== '' && displayInfo.lon.name !== '' && uploadState.trimData !== []) {
-      for (let i = 0; i < uploadState.trimData.length; i++) {
-        coordinates.push([uploadState.trimData[i][displayInfo.lat.fieldIndex], uploadState.trimData[i][displayInfo.lon.fieldIndex]]);
-      }
-      dispatch(Actions.setCoordinates(coordinates));
-    } else {
-      dispatch(Actions.setCoordinates(coordinates));
-    }
   };
 
   // PRESELECTION OF LAT AND LON VALUES
@@ -175,7 +178,7 @@ export const TablePagination = () => {
       dropdownLatChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
       dispatch(Actions.setRend());
     }
-    if (uploadState.rend === true && uploadState.coordinates.length === 0) {
+    if (uploadState.rend === true && uploadState.coordinates === null) {
       getCoordinates();
     }
   }, []);
@@ -189,6 +192,7 @@ export const TablePagination = () => {
               dispatch(Actions.addData([]));
               dispatch(Actions.setData([]));
               dispatch(Actions.resetDropdowns());
+              dispatch(Actions.setCoordinates(null));
               uploadState.rend === true && dispatch(Actions.setRend());
             }}
           >
@@ -250,7 +254,6 @@ export const TablePagination = () => {
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox1(data.value));
                       dropdownLatChange(data.value, true);
-                      getCoordinates();
                     }}
                   />
                 </Form.Field>
@@ -267,7 +270,6 @@ export const TablePagination = () => {
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox2(data.value));
                       dropdownLatChange(data.value, false);
-                      getCoordinates();
                     }}
                   />
                 </Form.Field>
@@ -332,7 +334,7 @@ export const TablePagination = () => {
           </div>
         </Container>
         <Container>
-          <Map />
+          <Map Coordinates={uploadState.coordinates} />
         </Container>
       </Segment.Group>
     </div>
