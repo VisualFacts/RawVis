@@ -1,7 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
-import {MapContainer, Marker, TileLayer, ZoomControl} from "react-leaflet";
-import {updateDrawnRect, updateMapBounds} from "app/modules/visualizer/visualizer.reducer";
+import {
+  selectDuplicateCluster,
+  unselectDuplicateCluster,
+  updateDrawnRect,
+  updateMapBounds,
+  getRow
+} from "app/modules/visualizer/visualizer.reducer";
+import {MapContainer, Marker, Popup, TileLayer, ZoomControl} from "react-leaflet";
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
@@ -10,14 +16,24 @@ import {IDataset} from "app/shared/model/dataset.model";
 export interface IMapProps {
   id: any,
   clusters: any,
+  duplicates: any,
   dataset: IDataset,
+  showDuplicates: any,
+  zoom: any,
+  viewRect: any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
+  selectedDedupClusterIndex: number,
+  selectDuplicateCluster: typeof selectDuplicateCluster,
+  unselectDuplicateCluster: typeof unselectDuplicateCluster,
+  getRow: typeof getRow,
+  row: string[],
 }
 
 
 export const Map = (props: IMapProps) => {
-  const {clusters, dataset} = props;
+
+  const {clusters, dataset, duplicates, showDuplicates, selectedDedupClusterIndex, row} = props;
 
   const [map, setMap] = useState(null);
 
@@ -64,6 +80,7 @@ export const Map = (props: IMapProps) => {
     map.fitBounds([[dataset.queryYMin, dataset.queryXMin], [dataset.queryYMax, dataset.queryXMax]]);
   }, [map])
 
+
   const fetchIcon = count => {
     if (count === 1) return new L.Icon.Default();
     const size =
@@ -77,7 +94,20 @@ export const Map = (props: IMapProps) => {
     });
   };
 
-  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false}>
+  const fetchDedupIcon = (count, isSelected) => {
+    const size =
+      count < 10 ? 'small' :
+        count < 100 ? 'medium' : 'large';
+
+    return L.divIcon({
+      html: `<div><span>${count}</span></div>`,
+      className: `marker-cluster marker-cluster-${size} marker-duplicate ${isSelected ? "marker-cluster-selected" : ""}`,
+      iconSize: L.point(40, 40)
+    });
+  };
+
+
+  return <MapContainer scrollWheelZoom={true} whenCreated={setMap} zoomControl={false} maxZoom={17}>
     <TileLayer
       attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -86,11 +116,38 @@ export const Map = (props: IMapProps) => {
       // every cluster point has coordinates
       // the point may be either a cluster or a single point
       const {
-        totalCount
+        totalCount, pointIds
       } = cluster.properties;
       return (
-        <Marker key={`marker-${index}`} position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]} icon={fetchIcon(totalCount)}/>
+        <Marker key={totalCount === 1 ? pointIds[0] : "cluster" + pointIds[0]}
+                position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
+                icon={fetchIcon(totalCount)}>
+          {totalCount === 1 ? (<Popup onOpen={() => {
+            props.getRow(dataset.id, pointIds[0]);
+          }}>
+              {row}
+          </Popup>) : null
+          }</Marker>
       );
+    })}
+    <Marker position={[40.75795780927519, -73.98551938996594]}
+            icon={L.divIcon({
+              html: `<i class="star blue icon" style="font-size: 2.5em"></i>`,
+              className: `marker`,
+              iconSize: L.point(50, 50)
+            })}/>
+    {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
+      return (
+        <Marker key={`marker-${index}`}
+                position={[duplicate[1], duplicate[0]]}
+                icon={fetchDedupIcon(duplicate[2], index === selectedDedupClusterIndex)}
+                eventHandlers={{
+                  click(e) {
+                    props.selectDuplicateCluster(index);
+                  },
+
+                }}
+        />);
     })}
     <ZoomControl position="topright"/>
   </MapContainer>;

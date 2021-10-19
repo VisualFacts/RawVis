@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "defaultSchema": "all",
+  "schemas": [
+    {
+      "name": "all",
+      "type": "custom",
+      "factory": "org.imsi.queryEREngine.imsi.calcite.adapter.csv.CsvSchemaFactory",
+      "operand": {
+        "directory": "/Users/vasilisstamatopoulos/Documents/Works/ATHENA/Projects/ER/Code/dataViz/pois/hotel/synthetic/no",
+        "flavor": "translatable"
+      }
+    }
+  ]
+}
