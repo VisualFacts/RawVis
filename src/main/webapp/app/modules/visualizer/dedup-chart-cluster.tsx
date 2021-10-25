@@ -39,9 +39,8 @@ const createColumnValueData = (columnValues) => {
 
 const createChartColumnData = (columns) => {
   const data = [];
-  let i = 0;
-  for (const col in columns){
-    data.push({text: columns[i], value : col});
+  for (let i = 0; i < columns.length; i ++){
+    data.push({text: columns[i], value : i});
     i += 1;
   }
   return data;
