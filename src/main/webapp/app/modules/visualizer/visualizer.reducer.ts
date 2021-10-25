@@ -28,6 +28,7 @@ export const ACTION_TYPES = {
   UPDATE_QUERY_INFO: 'visualizer/UPDATE_QUERY_INFO',
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
   UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
+  UPDATE_DEDUP_COLUMN: 'visualizer/UPDATE_DEDUP_COLUMN',
   TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
   SELECT_DUPLICATE_CLUSTER: 'visualizer/SELECT_DUPLICATE_CLUSTER',
   UNSELECT_DUPLICATE_CLUSTER: 'visualizer/UNSELECT_DUPLICATE_CLUSTER',
@@ -69,6 +70,7 @@ const initialState = {
   selectedDedupClusterIndex: null,
   row: null,
   selectedPointId: null,
+  dedupColumn: 0,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -213,6 +215,11 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         row: action.payload.data,
       };
+    case ACTION_TYPES.UPDATE_DEDUP_COLUMN:
+      return {
+        ...state,
+        dedupColumn: action.payload,
+      };
     default:
       return state;
   }
@@ -272,8 +279,6 @@ const getDuplicateData = (data, dataset) => {
   const duplicateData = {
     dedupStats: {
       percentOfDups: data.VizStatistic.percentOfDups,
-      similarityMeasures: data.VizStatistic.similarityMeasures,
-      columnValues: data.VizStatistic.columnValues,
     },
 
     duplicates: data.VizDataset.map(d => {
@@ -289,7 +294,7 @@ const getDuplicateData = (data, dataset) => {
           lat = 0;
         }
       }
-      return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumnSimilarity, d.clusterColumns];
+      return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumns];
     }),
   };
   return duplicateData;
@@ -438,6 +443,13 @@ export const selectDuplicateCluster = duplicateClusterIndex => dispatch => {
 export const unselectDuplicateCluster = () => dispatch => {
   dispatch({
     type: ACTION_TYPES.UNSELECT_DUPLICATE_CLUSTER,
+  });
+};
+
+export const updateDedupColumn = column => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.UPDATE_DEDUP_COLUMN,
+    payload: column,
   });
 };
 

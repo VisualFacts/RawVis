@@ -23,8 +23,8 @@ spring:
   profiles:
     active: dev
     include:
-      # Uncomment to activate TLS for the dev profile
-      #- tls
+    # Uncomment to activate TLS for the dev profile
+    #- tls
   devtools:
     restart:
       enabled: true

@@ -238,16 +238,16 @@ public class Dataset implements Serializable {
         this.dedupCols = dedupCols;
     }
 
-    
+
     public Set<Integer> getBlockingCols() {
-		return blockingCols;
-	}
+        return blockingCols;
+    }
 
-	public void setBlockingCols(Set<Integer> blockingCols) {
-		this.blockingCols = blockingCols;
-	}
+    public void setBlockingCols(Set<Integer> blockingCols) {
+        this.blockingCols = blockingCols;
+    }
 
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

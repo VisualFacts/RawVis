@@ -20,11 +20,11 @@ public class InitialDataMigration {
         String initialDataPath = getClass().getClassLoader().getResource("initial-data").getPath();
 
         File workspaceDirectory = new File(applicationProperties.getWorkspacePath());
-        if (! workspaceDirectory.exists()){
+        if (!workspaceDirectory.exists()) {
             workspaceDirectory.mkdir();
         }
         log.debug(workspaceDirectory.toPath().toString());
-        for (File file : new File(initialDataPath).listFiles()){
+        for (File file : new File(initialDataPath).listFiles()) {
             log.debug("Copying metadata file " + file.getName() + " to workspace directory.");
             try {
                 Files.copy(file.toPath(), workspaceDirectory.toPath().resolve(file.getName()));

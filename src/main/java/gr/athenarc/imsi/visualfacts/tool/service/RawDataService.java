@@ -49,7 +49,6 @@ public class RawDataService {
         if (dataset.getMeasure0() != null) {
             measureCol0 = dataset.getMeasure0();
         }
-
         if (dataset.getMeasure1() != null) {
             measureCol1 = dataset.getMeasure1();
         }
@@ -104,6 +103,7 @@ public class RawDataService {
             if (results.getRectStats() != null) {
                 visQueryResults.setRectStats(new RectStats(results.getRectStats().snapshot()));
             }
+            
             visQueryResults.setSeries(results.getStats().entrySet().stream().map(e ->
                 new GroupedStats(e.getKey(), AggregateFunctionType.getAggValue(query.getAggType(),
                     query.getMeasureCol().equals(schema.getMeasureCol0()) ? e.getValue().xStats() : e.getValue().yStats()))).collect(Collectors.toList()));

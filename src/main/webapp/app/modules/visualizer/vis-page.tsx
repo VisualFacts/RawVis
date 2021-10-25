@@ -16,7 +16,8 @@ import {
   updateFilters,
   updateGroupBy,
   updateMapBounds,
-  updateMeasure
+  updateMeasure,
+  updateDedupColumn
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -49,7 +50,7 @@ export const VisPage = (props: IVisPageProps) => {
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
     totalPointCount, zoom, totalTileCount, totalTime, executionTime,
-    showDuplicates, selectedDedupClusterIndex, row
+    showDuplicates, selectedDedupClusterIndex, row, dedupColumn
   } = props;
 
   useEffect(() => {
@@ -108,7 +109,9 @@ export const VisPage = (props: IVisPageProps) => {
         {showDuplicates && selectedDedupClusterIndex !== null &&
         <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
                            duplicateCluster={duplicates[selectedDedupClusterIndex]}
-                           unselectDuplicateCluster={props.unselectDuplicateCluster}/>}
+                           dedupColumn={dedupColumn}
+                           unselectDuplicateCluster={props.unselectDuplicateCluster}
+                           updateDedupColumn = {props.updateDedupColumn}/>}
         {showDuplicates && selectedDedupClusterIndex === null &&
         <DedupChart dedupStats={dedupStats} dataset={dataset}/>}
       </>}
@@ -168,6 +171,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   allowDedup: visualizer.allowDedup,
   selectedDedupClusterIndex: visualizer.selectedDedupClusterIndex,
   row: visualizer.row,
+  dedupColumn: visualizer.dedupColumn
 });
 
 const mapDispatchToProps = {
@@ -185,6 +189,7 @@ const mapDispatchToProps = {
   selectDuplicateCluster,
   unselectDuplicateCluster,
   getRow,
+  updateDedupColumn,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

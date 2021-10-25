@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Highcharts from 'highcharts'
 import Piechart from 'highcharts/modules/heatmap.js';
-import {Button, Segment} from "semantic-ui-react";
+import { Segment, Label} from "semantic-ui-react";
 import {IDedupStats} from 'app/shared/model/rect-dedup-stats.model';
 import DedupChartPercentage from './dedup-chart-percentage';
 import DedupChartSimilarities from './dedup-chart-similarities';
@@ -31,13 +31,14 @@ export const DedupChart = (props: IDedupChartProps) => {
     }
   }
   return <Segment id='chart-container' raised textAlign='center'>
-    <Button.Group basic>
-      <Button onClick={handleChartChange('dedup')} active={chart === 'dedup'}>Dirtiness Ratio</Button>
-      <Button onClick={handleChartChange('similarities')} active={chart === 'similarities'}>Similarities</Button>
-    </Button.Group>
+    <Label attached='top' size='large'>Dirtiness Ratio</Label>
+    {/* <Button.Group basic>
+      <Button onClick={handleChartChange('dedup')} active={chart === 'dedup'}>Dirtiness Ratio</Button> 
+     <Button onClick={handleChartChange('similarities')} active={chart === 'similarities'}>Similarities</Button> 
+    </Button.Group> */}
     <br/><br/><br/>
     {chart === "dedup" && <DedupChartPercentage dedupStats={dedupStats}/>}
-    {chart === "similarities" && <DedupChartSimilarities dataset={dataset} dedupStats={dedupStats}/>}
+    {/* {chart === "similarities" && <DedupChartSimilarities dataset={dataset} dedupStats={dedupStats}/>} */}
   </Segment>
 };
 

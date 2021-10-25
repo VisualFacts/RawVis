@@ -10,6 +10,7 @@ import gr.athenarc.imsi.visualfacts.tool.service.RawDataService;
 import gr.athenarc.imsi.visualfacts.tool.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+
 import static gr.athenarc.imsi.visualfacts.config.IndexConfig.DELIMITER;
 
 import org.slf4j.Logger;
