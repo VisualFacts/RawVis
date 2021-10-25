@@ -1,9 +1,9 @@
 import React from 'react';
 import CSVReader from 'react-csv-reader';
-import { Button, Segment, Image, Header, Grid, Divider } from 'semantic-ui-react';
+import { Button, Segment, Image, Header, Grid, Divider, Input } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { addData, setData, store, RootState, setName } from './upload-reducer';
+import { addData, setData, store, RootState, setName, setOriginalFile } from './upload-reducer';
 import { TablePagination } from './Table';
 import LeftMenu from './LeftMenu';
 import DatasetsTable from './DatasetsTable';
@@ -21,11 +21,12 @@ const App = () => {
     transformHeader: header => header.toLowerCase().replace(/\W/g, '_'),
   };
 
-  const force = (data, fileInfo) => {
+  const force = (data, fileInfo, originalFile) => {
     if (data.length > 0) {
       dispatch(addData(data));
       dispatch(setData(data.slice(1, 51)));
       dispatch(setName(fileInfo.name));
+      dispatch(setOriginalFile(originalFile));
     }
   };
 
@@ -42,6 +43,7 @@ const App = () => {
               <CSVReader
                 cssClass="react-csv-input"
                 inputStyle={{ display: 'none' }}
+                inputName="input-name"
                 label="Select CSV file"
                 onFileLoaded={force}
                 parserOptions={papaparseOptions}

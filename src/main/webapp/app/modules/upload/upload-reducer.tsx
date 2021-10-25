@@ -31,6 +31,7 @@ export const ActionTypes = {
   SET_OPTIONS: 'setOptions',
   SET_ACTIVEMENU: 'setActiveMenu',
   SET_NAME: 'name',
+  SET_ORIGINALFILE: 'setOriginalFile',
   RESET_DROPDOWNS: 'resetDropdowns',
 };
 
@@ -69,6 +70,7 @@ const uploadPageInitial = {
   optionsState: [],
   trimData: [],
   data: [],
+  originalFile: null,
   coordinates: null,
 };
 
@@ -111,6 +113,8 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
       return { ...state, activeMenu: action.payload };
     case ActionTypes.SET_EDITBUTTON:
       return { ...state, editButton: action.payload };
+    case ActionTypes.SET_ORIGINALFILE:
+      return { ...state, originalFile: action.payload };
     case ActionTypes.RESET_DROPDOWNS:
       return { ...state, dropdown1: '', dropdown2: '', dropdown3: '', dropdown4: '', dropMultBox: [] };
     default:
@@ -331,6 +335,11 @@ export const setDropMultBox = value => {
     payload: value,
   };
 };
+
+export const setOriginalFile = value => ({
+  type: ActionTypes.SET_ORIGINALFILE,
+  payload: value,
+});
 
 export const setLat = latIndex => ({
   type: ActionTypes.SET_LAT,

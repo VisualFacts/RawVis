@@ -8,7 +8,7 @@ const Map = props => {
   return (
     <div>
       {props.Coordinates !== null && (
-        <MapContainer center={[props.Coordinates[0][0], props.Coordinates[0][1]]} zoom={2}>
+        <MapContainer className="leaflet-map" center={[props.Coordinates[0][0], props.Coordinates[0][1]]} zoom={2}>
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

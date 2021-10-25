@@ -5,12 +5,17 @@ import TableCellRowCreator from './TableCellRowCreator';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';
 import Map from './upmap';
+import axios from 'axios';
 
 export const TablePagination = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
   const displayInfo = useSelector((state: Actions.RootState) => state.displayInfo);
   const dataSet = useSelector((state: Actions.RootState) => state.dataSet);
   const dispatch = useDispatch();
+
+  const cap = {
+    array: uploadState.data,
+  };
 
   let options;
   if (uploadState.editButton.length === 0) {
@@ -169,6 +174,18 @@ export const TablePagination = () => {
     });
   };
 
+  const fileUpload = file => {
+    const url = 'api/importData';
+    const formData = new FormData();
+    formData.append('file', file);
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data',
+      },
+    };
+    return axios.post(url, formData, config);
+  };
+
   // PRESELECTION OF LAT AND LON VALUES
   useEffect(() => {
     if (uploadState.rend === false && uploadState.trimData.length !== 0) {
@@ -323,7 +340,7 @@ export const TablePagination = () => {
                 {uploadState.editButton.length === 0 && (
                   <Button
                     onClick={() => {
-                      dispatch(Actions.createEntity(displayInfo));
+                      fileUpload(uploadState.originalFile);
                     }}
                   >
                     Apply
@@ -333,9 +350,9 @@ export const TablePagination = () => {
             </div>
           </div>
         </Container>
-        <Container>
+        {/* <Container>
           <Map Coordinates={uploadState.coordinates} />
-        </Container>
+        </Container> */}
       </Segment.Group>
     </div>
   );

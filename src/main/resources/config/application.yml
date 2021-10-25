@@ -88,6 +88,12 @@ spring:
   output:
     ansi:
       console-available: true
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
 
 server:
   servlet:
