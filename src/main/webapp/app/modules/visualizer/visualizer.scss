@@ -91,6 +91,10 @@
   cursor: grab;
 }
 
+.leaflet-popup-content {
+  margin: 19px 19px 13px 10px;
+}
+
 #vis-control {
   z-index: 999;
   position: absolute;

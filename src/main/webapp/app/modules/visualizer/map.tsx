@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import L from "leaflet";
 import {
+  getRow,
   selectDuplicateCluster,
   unselectDuplicateCluster,
   updateDrawnRect,
-  updateMapBounds,
-  getRow
+  updateMapBounds
 } from "app/modules/visualizer/visualizer.reducer";
 import {MapContainer, Marker, Popup, TileLayer, ZoomControl} from "react-leaflet";
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -125,7 +125,22 @@ export const Map = (props: IMapProps) => {
           {totalCount === 1 ? (<Popup onOpen={() => {
             props.getRow(dataset.id, pointIds[0]);
           }}>
-              {row}
+            <div style={{
+              maxHeight: "200px",
+              overflowY: "scroll"
+            }}>{row && dataset.headers && dataset.headers.map((colName, colIndex) => {
+              let val = row[colIndex];
+
+              if (val == null) val = "";
+              return (
+                <div key={colIndex}>
+                    <span>
+                    <b>{colName}: </b>{val}
+                    </span>
+                  <br></br>
+                </div>
+              )
+            })}</div>
           </Popup>) : null
           }</Marker>
       );
