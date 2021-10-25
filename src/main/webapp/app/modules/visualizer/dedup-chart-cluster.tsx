@@ -41,7 +41,6 @@ const createChartColumnData = (columns) => {
   const data = [];
   for (let i = 0; i < columns.length; i ++){
     data.push({text: columns[i], value : i});
-    i += 1;
   }
   return data;
 }
