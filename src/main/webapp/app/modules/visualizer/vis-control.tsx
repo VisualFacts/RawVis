@@ -46,7 +46,7 @@ export const VisControl = (props: IVisControlProps) => {
           </h5>
           <Dropdown
             options={facets[dim].map((value, index) => ({key: index, value, text: value}))}
-            selection clearable upward fluid disabled={groupByCols.includes(dim)}
+            selection clearable upward fluid
             value={categoricalFilters[dim] || null}
             onChange={handleFilterChange(dim)}
           /></>)}</div>;

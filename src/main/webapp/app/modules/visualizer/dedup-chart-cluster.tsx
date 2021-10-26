@@ -63,7 +63,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   columnData = props.dedupColumn != null && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
   const changeChart = (id) => {
     // setChart("clusterCol");
-    //setColId(id);
+    // setColId(id);
   }
   const handleDedupColumnChange = (e, value) => {
     props.updateDedupColumn(value);
