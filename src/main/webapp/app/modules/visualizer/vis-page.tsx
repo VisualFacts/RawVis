@@ -17,7 +17,7 @@ import {
   updateGroupBy,
   updateMapBounds,
   updateMeasure,
-  updateDedupColumn
+  updateDedupColumn, updateExpandedClusterIndex
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -86,8 +86,9 @@ export const VisPage = (props: IVisPageProps) => {
          showDuplicates={showDuplicates}
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
          duplicates={duplicates} viewRect={viewRect} zoom={zoom} selectedDedupClusterIndex={selectedDedupClusterIndex}
-         selectDuplicateCluster={props.selectDuplicateCluster}
-         unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}/>
+         selectDuplicateCluster={props.selectDuplicateCluster} updateExpandedClusterIndex={props.updateExpandedClusterIndex}
+         unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}
+         expandedClusterIndex={props.expandedClusterIndex} />
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -171,7 +172,8 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   allowDedup: visualizer.allowDedup,
   selectedDedupClusterIndex: visualizer.selectedDedupClusterIndex,
   row: visualizer.row,
-  dedupColumn: visualizer.dedupColumn
+  dedupColumn: visualizer.dedupColumn,
+  expandedClusterIndex: visualizer.expandedClusterIndex,
 });
 
 const mapDispatchToProps = {
@@ -190,6 +192,7 @@ const mapDispatchToProps = {
   unselectDuplicateCluster,
   getRow,
   updateDedupColumn,
+  updateExpandedClusterIndex,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
