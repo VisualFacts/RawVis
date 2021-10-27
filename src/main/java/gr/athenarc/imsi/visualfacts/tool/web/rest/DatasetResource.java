@@ -65,8 +65,8 @@ public class DatasetResource {
     }
     Dataset result = datasetRepository.save(dataset);
     return ResponseEntity
-      .created(new URI("/api/datasets/" + result.getId()))
-      .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+      .created(new URI("/api/datasets/" + result.getName()))
+      .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getName().toString()))
       .body(result);
   }
 

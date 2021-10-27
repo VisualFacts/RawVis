@@ -109,12 +109,14 @@ export const TablePagination = () => {
     if (res.length === 0) {
       itemSearch === 'lat' ? res.push(headers[checkLatLon(matrix, 90)[0]]) : res.push(headers[checkLatLon(matrix, 180)[1]]);
     }
+    typeof matrix[0][headers.indexOf(res[0])] !== 'number' && (res[0] = '');
     res[0] === undefined && (res[0] = '');
     return res[0];
   };
 
   const handleChange = () => {
     dispatch(Actions.setBool());
+    dispatch(Actions.setHeader());
   };
 
   const getCoordinates = () => {
@@ -341,18 +343,19 @@ export const TablePagination = () => {
                   <Button
                     onClick={() => {
                       fileUpload(uploadState.originalFile);
+                      dispatch(Actions.createEntity(displayInfo));
                     }}
                   >
-                    Apply
+                    Save
                   </Button>
                 )}
               </Form>
             </div>
           </div>
         </Container>
-        {/* <Container>
+        <Container>
           <Map Coordinates={uploadState.coordinates} />
-        </Container> */}
+        </Container>
       </Segment.Group>
     </div>
   );

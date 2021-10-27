@@ -31,6 +31,7 @@ export const ActionTypes = {
   SET_OPTIONS: 'setOptions',
   SET_ACTIVEMENU: 'setActiveMenu',
   SET_NAME: 'name',
+  SET_HASHEADER: 'hasheader',
   SET_ORIGINALFILE: 'setOriginalFile',
   RESET_DROPDOWNS: 'resetDropdowns',
 };
@@ -41,6 +42,7 @@ const initialState = {
   id: null,
   name: '',
   type: null as DatasetType,
+  hasHeader: true,
   measure0: null as number,
   measure1: null as number,
   lat: null as number,
@@ -130,6 +132,8 @@ const displayReducer = (state: IDataset = initialState, action) => {
       return { ...state, name: action.payload };
     case ActionTypes.SET_LON:
       return { ...state, lon: action.payload };
+    case ActionTypes.SET_HASHEADER:
+      return { ...state, hasHeader: !state.hasHeader };
     case ActionTypes.SET_MEASURE0:
       return {
         ...state,
@@ -143,7 +147,7 @@ const displayReducer = (state: IDataset = initialState, action) => {
     case ActionTypes.SET_DIMENSIONS:
       return {
         ...state,
-        dimensions: [...state.dimensions, action.payload.dimensionIndex],
+        dimensions: [...state.dimensions, action.payload],
       };
     case ActionTypes.EMPTY_DIMENSIONS:
       return { ...state, dimensions: [] };
@@ -364,6 +368,10 @@ export const setName = value => {
     payload: value,
   };
 };
+
+export const setHeader = () => ({
+  type: ActionTypes.SET_HASHEADER,
+});
 
 export const setMeasure0 = measureIndex => ({
   type: ActionTypes.SET_MEASURE0,

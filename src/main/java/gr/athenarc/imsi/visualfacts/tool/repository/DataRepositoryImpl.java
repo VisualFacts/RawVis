@@ -63,10 +63,12 @@ public class DataRepositoryImpl implements DatasetRepository {
   @Override
   public Dataset save(Dataset dataset) throws IOException {
     Assert.notNull(dataset, "Dataset must not be null!");
+    dataset.setId(dataset.getName().substring(0, dataset.getName().indexOf(".")));
     ObjectMapper mapper = new ObjectMapper();
     File metadataFile = new File(applicationProperties.getWorkspacePath(), dataset.getId() + ".meta.json");
     FileWriter writer = new FileWriter(metadataFile);
-    mapper.writeValue(writer, Dataset.class);
+    mapper.writeValue(writer, dataset);
+    System.out.println();
     return dataset;
   }
 
