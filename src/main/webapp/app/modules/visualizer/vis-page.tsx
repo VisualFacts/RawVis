@@ -23,8 +23,8 @@ import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
 import DedupChartCluster from "app/modules/visualizer/dedup-chart-cluster";
 import StatsPanel from "app/modules/visualizer/stats-panel";
+import DedupStatsPanel from "app/modules/visualizer/dedup-stats-panel";
 import Chart from "app/modules/visualizer/chart";
-import DedupChart from "app/modules/visualizer/dedup-chart";
 import VisControl from "app/modules/visualizer/vis-control";
 import {Header, Modal, Progress} from "semantic-ui-react";
 import QueryInfoPanel from "app/modules/visualizer/query-info-panel";
@@ -42,8 +42,10 @@ export const VisPage = (props: IVisPageProps) => {
     duplicates,
     viewRect,
     series,
+    cleanSeries,
     rectStats,
     dedupStats,
+    cleanRectStats,
     groupByCols,
     aggType,
     measureCol,
@@ -114,7 +116,13 @@ export const VisPage = (props: IVisPageProps) => {
                            unselectDuplicateCluster={props.unselectDuplicateCluster}
                            updateDedupColumn = {props.updateDedupColumn}/>}
         {showDuplicates && selectedDedupClusterIndex === null &&
-        <DedupChart dedupStats={dedupStats} dataset={dataset}/>}
+        // <DedupChart dedupStats={dedupStats} dataset={dataset}/>
+        <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={rectStats}/>
+        }
+        {showDuplicates && selectedDedupClusterIndex === null &&
+        <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+               aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
+               updateMeasure={props.updateMeasure}/>}
       </>}
     </div>
     <Modal
@@ -149,6 +157,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   viewRect: visualizer.viewRect,
   drawnRect: visualizer.drawnRect,
   series: visualizer.series,
+  cleanSeries: visualizer.cleanSeries,
   rectStats: visualizer.rectStats,
   dedupStats: visualizer.dedupStats,
   clusters: visualizer.clusters,
@@ -174,6 +183,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   row: visualizer.row,
   dedupColumn: visualizer.dedupColumn,
   expandedClusterIndex: visualizer.expandedClusterIndex,
+  cleanRectStats: visualizer.cleanRectStats
 });
 
 const mapDispatchToProps = {
