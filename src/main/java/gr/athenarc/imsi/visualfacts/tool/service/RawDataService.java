@@ -100,14 +100,23 @@ public class RawDataService {
             visQueryResults.setTotalTileCount(veti.getLeafTileCount());
             visQueryResults.setDedupVizOutput(results.getDedupVizOutput());
 
-            if (results.getRectStats() != null) {
-                visQueryResults.setRectStats(new RectStats(results.getRectStats().snapshot()));
+            if (results.getStats() != null) {
+                visQueryResults.setRectStats(new RectStats(results.getStats().getRectStats().snapshot()));
             }
-            
-            visQueryResults.setSeries(results.getStats().entrySet().stream().map(e ->
+            if (results.getCleanedStats() != null) {
+                visQueryResults.setCleanedRectStats(new RectStats(results.getCleanedStats().getRectStats().snapshot()));
+            }
+
+            visQueryResults.setSeries(results.getStats().getGroupStats().entrySet().stream().map(e ->
                 new GroupedStats(e.getKey(), AggregateFunctionType.getAggValue(query.getAggType(),
                     query.getMeasureCol().equals(schema.getMeasureCol0()) ? e.getValue().xStats() : e.getValue().yStats()))).collect(Collectors.toList()));
+
+            visQueryResults.setCleanedSeries(results.getCleanedStats().getGroupStats().entrySet().stream().map(e ->
+                new GroupedStats(e.getKey(), AggregateFunctionType.getAggValue(query.getAggType(),
+                    query.getMeasureCol().equals(schema.getMeasureCol0()) ? e.getValue().xStats() : e.getValue().yStats()))).collect(Collectors.toList()));
+
             List<Point> points;
+
             if (results.getPoints() != null) {
                 points = results.getPoints();
             } else {
