@@ -10,16 +10,11 @@ import gr.athenarc.imsi.visualfacts.tool.service.RawDataService;
 import gr.athenarc.imsi.visualfacts.tool.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-
-import static gr.athenarc.imsi.visualfacts.config.IndexConfig.DELIMITER;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.validation.Valid;
 import java.io.File;
@@ -27,10 +22,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static gr.athenarc.imsi.visualfacts.config.IndexConfig.DELIMITER;
 
 
 /**
@@ -102,7 +98,15 @@ public class DatasetResource {
     @GetMapping("/datasets")
     public List<Dataset> getAllDatasets() throws IOException {
         log.debug("REST request to get all Datasets");
-        return datasetRepository.findAll();
+        List<Dataset> datasets = datasetRepository.findAll();
+        datasets.stream().forEach(dataset -> {
+            try {
+                fillHeader(dataset);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        });
+        return datasets;
     }
 
     /**
@@ -116,18 +120,12 @@ public class DatasetResource {
         log.debug("REST request to get Dataset : {}", id);
         Optional<Dataset> dataset = datasetRepository.findById(id);
         dataset.ifPresent(d -> {
-            CsvParserSettings parserSettings = new CsvParserSettings();
-            parserSettings.getFormat().setDelimiter(DELIMITER);
-            parserSettings.setIgnoreLeadingWhitespaces(false);
-            parserSettings.setIgnoreTrailingWhitespaces(false);
-            CsvParser parser = new CsvParser(parserSettings);
-            parser.beginParsing(new File(workspacePath, d.getName()), Charset.forName("US-ASCII"));
-            parser.parseNext();
-            d.setHeaders(parser.getContext().parsedHeaders());
-            log.debug("Headers: " + Arrays.toString(d.getHeaders()));
-            parser.stopParsing();
+            try {
+                fillHeader(d);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
         });
-
         log.debug(dataset.toString());
         return ResponseUtil.wrapOrNotFound(dataset);
     }
@@ -171,6 +169,19 @@ public class DatasetResource {
     @GetMapping("/datasets/{id}/status")
     public IndexStatus getIndexStatus(@PathVariable String id) {
         return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
+    }
+
+    private void fillHeader(Dataset dataset) {
+        CsvParserSettings parserSettings = new CsvParserSettings();
+        parserSettings.getFormat().setDelimiter(DELIMITER);
+        parserSettings.setIgnoreLeadingWhitespaces(false);
+        parserSettings.setIgnoreTrailingWhitespaces(false);
+        CsvParser parser = new CsvParser(parserSettings);
+        parser.beginParsing(new File(workspacePath, dataset.getName()), Charset.forName("US-ASCII"));
+        parser.parseNext();
+        dataset.setHeaders(parser.getContext().parsedHeaders());
+        log.debug("Headers: " + Arrays.toString(dataset.getHeaders()));
+        parser.stopParsing();
     }
 
 }
