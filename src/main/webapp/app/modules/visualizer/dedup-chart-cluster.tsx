@@ -60,7 +60,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   // similarityData = similarities[0];
   // similariyColumns = similarities[1];
   chartColumnData = createChartColumnData(dataset.headers);
-  columnData = props.dedupColumn != null && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
+  columnData = (props.dedupColumn != null && duplicateCluster != null) && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
   const changeChart = (id) => {
     // setChart("clusterCol");
     // setColId(id);
