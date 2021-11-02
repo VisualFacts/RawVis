@@ -12,7 +12,7 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public interface DatasetRepository {
 
-    List<Dataset> findAll();
+    List<Dataset> findAll() throws IOException;
 
     Optional<Dataset> findById(String id) throws IOException;
 
