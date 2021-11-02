@@ -42,10 +42,10 @@ export const VisPage = (props: IVisPageProps) => {
     duplicates,
     viewRect,
     series,
-    cleanSeries,
+    cleanedSeries,
     rectStats,
     dedupStats,
-    cleanRectStats,
+    cleanedRectStats,
     groupByCols,
     aggType,
     measureCol,
@@ -100,15 +100,14 @@ export const VisPage = (props: IVisPageProps) => {
     </div>
     <div className='right-panel-group'>
       {rectStats && <>
-        {(dataset.measure0 != null && showDuplicates === false) &&
+        {(dataset.measure0 != null && !showDuplicates) &&
         <StatsPanel dataset={dataset} rectStats={rectStats}/>}
         {showDuplicates === false &&
         <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
                updateMeasure={props.updateMeasure}/>}
       </>}
-      {rectStats && <>
-        {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
+      {cleanedRectStats && <>
         {showDuplicates && selectedDedupClusterIndex !== null &&
         <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
                            duplicateCluster={duplicates[selectedDedupClusterIndex]}
@@ -116,11 +115,10 @@ export const VisPage = (props: IVisPageProps) => {
                            unselectDuplicateCluster={props.unselectDuplicateCluster}
                            updateDedupColumn = {props.updateDedupColumn}/>}
         {showDuplicates && selectedDedupClusterIndex === null &&
-        // <DedupChart dedupStats={dedupStats} dataset={dataset}/>
-        <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={rectStats}/>
+        <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={cleanedRectStats}/>
         }
         {showDuplicates && selectedDedupClusterIndex === null &&
-        <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
                updateMeasure={props.updateMeasure}/>}
       </>}
@@ -157,7 +155,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   viewRect: visualizer.viewRect,
   drawnRect: visualizer.drawnRect,
   series: visualizer.series,
-  cleanSeries: visualizer.cleanSeries,
+  cleanedSeries: visualizer.cleanedSeries,
   rectStats: visualizer.rectStats,
   dedupStats: visualizer.dedupStats,
   clusters: visualizer.clusters,
@@ -183,7 +181,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   row: visualizer.row,
   dedupColumn: visualizer.dedupColumn,
   expandedClusterIndex: visualizer.expandedClusterIndex,
-  cleanRectStats: visualizer.cleanRectStats
+  cleanedRectStats: visualizer.cleanedRectStats
 });
 
 const mapDispatchToProps = {

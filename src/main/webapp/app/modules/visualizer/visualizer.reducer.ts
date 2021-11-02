@@ -52,11 +52,11 @@ const initialState = {
   viewRect: null as IRectangle,
   drawnRect: null as IRectangle,
   series: [] as IGroupedStats[],
-  cleanSeries: [] as IGroupedStats[],
+  cleanedSeries: [] as IGroupedStats[],
   facets: {},
   rectStats: null as IRectStats,
   dedupStats: null as IDedupStats,
-  cleanRectStats: null as IRectStats,
+  cleanedRectStats: null as IRectStats,
   clusters: [],
   fullyContainedTileCount: 0,
   tileCount: 0,
@@ -165,12 +165,16 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         series: action.payload.data.series,
         rectStats: action.payload.data.rectStats,
+        cleanedSeries: action.payload.data.cleanedSeries,
+        cleanedRectStats: action.payload.data.cleanedRectStats,
       };
     case ACTION_TYPES.UPDATE_ANALYSIS_RESULTS:
       return {
         ...state,
         series: action.payload.data.series,
         rectStats: action.payload.data.rectStats,
+        cleanedSeries: action.payload.data.cleanedSeries,
+        cleanedRectStats: action.payload.data.cleanedRectStats,
       };
     case ACTION_TYPES.UPDATE_QUERY_INFO:
       return {
