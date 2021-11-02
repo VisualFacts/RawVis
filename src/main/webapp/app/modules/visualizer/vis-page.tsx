@@ -16,14 +16,15 @@ import {
   updateFilters,
   updateGroupBy,
   updateMapBounds,
-  updateMeasure
+  updateMeasure,
+  updateDedupColumn, updateExpandedClusterIndex
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
 import DedupChartCluster from "app/modules/visualizer/dedup-chart-cluster";
 import StatsPanel from "app/modules/visualizer/stats-panel";
+import DedupStatsPanel from "app/modules/visualizer/dedup-stats-panel";
 import Chart from "app/modules/visualizer/chart";
-import DedupChart from "app/modules/visualizer/dedup-chart";
 import VisControl from "app/modules/visualizer/vis-control";
 import {Header, Modal, Progress} from "semantic-ui-react";
 import QueryInfoPanel from "app/modules/visualizer/query-info-panel";
@@ -41,15 +42,17 @@ export const VisPage = (props: IVisPageProps) => {
     duplicates,
     viewRect,
     series,
+    cleanedSeries,
     rectStats,
     dedupStats,
+    cleanedRectStats,
     groupByCols,
     aggType,
     measureCol,
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
     totalPointCount, zoom, totalTileCount, totalTime, executionTime,
-    showDuplicates, selectedDedupClusterIndex, row
+    showDuplicates, selectedDedupClusterIndex, row, dedupColumn
   } = props;
 
   useEffect(() => {
@@ -85,8 +88,9 @@ export const VisPage = (props: IVisPageProps) => {
          showDuplicates={showDuplicates}
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
          duplicates={duplicates} viewRect={viewRect} zoom={zoom} selectedDedupClusterIndex={selectedDedupClusterIndex}
-         selectDuplicateCluster={props.selectDuplicateCluster}
-         unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}/>
+         selectDuplicateCluster={props.selectDuplicateCluster} updateExpandedClusterIndex={props.updateExpandedClusterIndex}
+         unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}
+         expandedClusterIndex={props.expandedClusterIndex} />
     <div className='bottom-panel-group'>
       <QueryInfoPanel dataset={dataset}
                       fullyContainedTileCount={fullyContainedTileCount}
@@ -96,21 +100,27 @@ export const VisPage = (props: IVisPageProps) => {
     </div>
     <div className='right-panel-group'>
       {rectStats && <>
-        {(dataset.measure0 != null && showDuplicates === false) &&
+        {(dataset.measure0 != null && !showDuplicates) &&
         <StatsPanel dataset={dataset} rectStats={rectStats}/>}
         {showDuplicates === false &&
         <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
                updateMeasure={props.updateMeasure}/>}
       </>}
-      {rectStats && <>
-        {/* {(dataset.measure0 != null && showDuplicates === true) && <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats}/>} */}
+      {cleanedRectStats && <>
         {showDuplicates && selectedDedupClusterIndex !== null &&
         <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
                            duplicateCluster={duplicates[selectedDedupClusterIndex]}
-                           unselectDuplicateCluster={props.unselectDuplicateCluster}/>}
+                           dedupColumn={dedupColumn}
+                           unselectDuplicateCluster={props.unselectDuplicateCluster}
+                           updateDedupColumn = {props.updateDedupColumn}/>}
         {showDuplicates && selectedDedupClusterIndex === null &&
-        <DedupChart dedupStats={dedupStats} dataset={dataset}/>}
+        <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={cleanedRectStats}/>
+        }
+        {showDuplicates && selectedDedupClusterIndex === null &&
+        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+               aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
+               updateMeasure={props.updateMeasure}/>}
       </>}
     </div>
     <Modal
@@ -145,6 +155,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   viewRect: visualizer.viewRect,
   drawnRect: visualizer.drawnRect,
   series: visualizer.series,
+  cleanedSeries: visualizer.cleanedSeries,
   rectStats: visualizer.rectStats,
   dedupStats: visualizer.dedupStats,
   clusters: visualizer.clusters,
@@ -168,6 +179,9 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   allowDedup: visualizer.allowDedup,
   selectedDedupClusterIndex: visualizer.selectedDedupClusterIndex,
   row: visualizer.row,
+  dedupColumn: visualizer.dedupColumn,
+  expandedClusterIndex: visualizer.expandedClusterIndex,
+  cleanedRectStats: visualizer.cleanedRectStats
 });
 
 const mapDispatchToProps = {
@@ -185,6 +199,8 @@ const mapDispatchToProps = {
   selectDuplicateCluster,
   unselectDuplicateCluster,
   getRow,
+  updateDedupColumn,
+  updateExpandedClusterIndex,
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

@@ -3,10 +3,12 @@ import { IRectStats } from 'app/shared/model/rect-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 
 export interface IQueryResults {
+  rectStats?: IRectStats;
   series?: IGroupedStats[];
+  cleanedRectStats?: IRectStats;
+  cleanedSeries?: IGroupedStats[];
   points?: [][];
   facets?: any;
-  rectStats?: IRectStats;
   fullyContainedTileCount?: number;
   tileCount?: number;
   pointCount?: number;

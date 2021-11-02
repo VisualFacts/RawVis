@@ -21,3 +21,5 @@ export const APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT = '0,0.[00]';
 
 export const MIN_DEDUP_ZOOM_LEVEL = 15;
 
+export const MAX_ZOOM = 17;
+

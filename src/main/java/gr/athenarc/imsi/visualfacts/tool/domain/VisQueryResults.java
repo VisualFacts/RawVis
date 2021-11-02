@@ -10,13 +10,17 @@ public class VisQueryResults implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    List<GroupedStats> series;
-
     private List<Object[]> points;
 
     private Map<Integer, List<String>> facets;
 
+    List<GroupedStats> series;
+
     private RectStats rectStats;
+
+    List<GroupedStats> cleanedSeries;
+
+    private RectStats cleanedRectStats;
 
     private int fullyContainedTileCount;
     private int tileCount;
@@ -59,6 +63,22 @@ public class VisQueryResults implements Serializable {
 
     public void setRectStats(RectStats rectStats) {
         this.rectStats = rectStats;
+    }
+
+    public List<GroupedStats> getCleanedSeries() {
+        return cleanedSeries;
+    }
+
+    public void setCleanedSeries(List<GroupedStats> cleanedSeries) {
+        this.cleanedSeries = cleanedSeries;
+    }
+
+    public RectStats getCleanedRectStats() {
+        return cleanedRectStats;
+    }
+
+    public void setCleanedRectStats(RectStats cleanedRectStats) {
+        this.cleanedRectStats = cleanedRectStats;
     }
 
     public int getFullyContainedTileCount() {
@@ -120,7 +140,6 @@ public class VisQueryResults implements Serializable {
     @Override
     public String toString() {
         return "VisQueryResults{" +
-            "rectStats=" + rectStats +
             ", fullyContainedTileCount=" + fullyContainedTileCount +
             ", tileCount=" + tileCount +
             ", pointCount=" + pointCount +

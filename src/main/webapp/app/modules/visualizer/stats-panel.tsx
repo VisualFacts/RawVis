@@ -17,13 +17,7 @@ export const StatsPanel = (props: IStatsPanelProps) => {
   const formatStat = (stat) => stat != null ? stat.toFixed(2) : 'N/A';
 
   return <Segment id='stats-panel' textAlign='left' raised padded>
-    <Label attached='top' size='large'>Statistics</Label>
-    <Statistic.Group widths='5' className='field-stats'>
-      <Statistic>
-        <Statistic.Value>{rectStats.count}</Statistic.Value>
-        <Statistic.Label># Objects</Statistic.Label>
-      </Statistic>
-    </Statistic.Group>
+    <Label attached='top' size='large'>Statistics for <i>{rectStats.count}</i> objects</Label>
     <h5>Statistics for field: <Label><Dropdown
       options={[{text: dataset.headers[dataset.measure0], value: 0}, {
         text: dataset.headers[dataset.measure1],

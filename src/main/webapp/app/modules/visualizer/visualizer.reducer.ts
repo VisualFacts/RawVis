@@ -28,10 +28,12 @@ export const ACTION_TYPES = {
   UPDATE_QUERY_INFO: 'visualizer/UPDATE_QUERY_INFO',
   FETCH_INDEX_STATUS: 'visualizer/FETCH_INDEX_STATUS',
   UPDATE_DUPLICATES: 'visualizer/UPDATE_DUPLICATES',
+  UPDATE_DEDUP_COLUMN: 'visualizer/UPDATE_DEDUP_COLUMN',
   TOGGLE_DUPLICATES: 'visualizer/TOGGLE_DUPLICATES',
   SELECT_DUPLICATE_CLUSTER: 'visualizer/SELECT_DUPLICATE_CLUSTER',
   UNSELECT_DUPLICATE_CLUSTER: 'visualizer/UNSELECT_DUPLICATE_CLUSTER',
   UPDATE_CLUSTER_STATS: 'visualizer/UPDATE_CLUSTER_STATS',
+  UPDATE_EXPANDED_CLUSTER_INDEX: 'visualizer/UPDATE_EXPANDED_CLUSTER_INDEX',
   FETCH_ROW: 'visualizer/FETCH_ROW',
 };
 
@@ -50,9 +52,11 @@ const initialState = {
   viewRect: null as IRectangle,
   drawnRect: null as IRectangle,
   series: [] as IGroupedStats[],
+  cleanedSeries: [] as IGroupedStats[],
   facets: {},
   rectStats: null as IRectStats,
   dedupStats: null as IDedupStats,
+  cleanedRectStats: null as IRectStats,
   clusters: [],
   fullyContainedTileCount: 0,
   tileCount: 0,
@@ -67,8 +71,10 @@ const initialState = {
   showDuplicates: false,
   duplicates: [],
   selectedDedupClusterIndex: null,
+  expandedClusterIndex: null,
   row: null,
   selectedPointId: null,
+  dedupColumn: 0,
 };
 
 export type VisualizerState = Readonly<typeof initialState>;
@@ -101,6 +107,7 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
       return {
         ...state,
         clusters: action.payload,
+        expandedClusterIndex: null,
         totalTime: new Date().getTime() - action.meta.requestTime,
       };
     case ACTION_TYPES.UPDATE_DUPLICATES:
@@ -158,12 +165,16 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         series: action.payload.data.series,
         rectStats: action.payload.data.rectStats,
+        cleanedSeries: action.payload.data.cleanedSeries,
+        cleanedRectStats: action.payload.data.cleanedRectStats,
       };
     case ACTION_TYPES.UPDATE_ANALYSIS_RESULTS:
       return {
         ...state,
         series: action.payload.data.series,
         rectStats: action.payload.data.rectStats,
+        cleanedSeries: action.payload.data.cleanedSeries,
+        cleanedRectStats: action.payload.data.cleanedRectStats,
       };
     case ACTION_TYPES.UPDATE_QUERY_INFO:
       return {
@@ -192,6 +203,11 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         showDuplicates: !state.showDuplicates,
       };
+    case ACTION_TYPES.UPDATE_EXPANDED_CLUSTER_INDEX:
+      return {
+        ...state,
+        expandedClusterIndex: action.payload,
+      };
     case ACTION_TYPES.SELECT_DUPLICATE_CLUSTER:
       return {
         ...state,
@@ -212,6 +228,11 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
       return {
         ...state,
         row: action.payload.data,
+      };
+    case ACTION_TYPES.UPDATE_DEDUP_COLUMN:
+      return {
+        ...state,
+        dedupColumn: action.payload,
       };
     default:
       return state;
@@ -239,7 +260,7 @@ export const getRow = (datasetId, rowId) => {
 const prepareSupercluster = points => {
   const geoJsonPoints = points.map(point => ({
     type: 'Feature',
-    properties: { totalCount: point[2] || 1, pointIds: [point[3]] },
+    properties: { totalCount: point[2] || 1, points: [point] },
     geometry: {
       type: 'Point',
       coordinates: [point[1], point[0]],
@@ -252,7 +273,7 @@ const prepareSupercluster = points => {
     maxZoom: 18,
     reduce(accumulated, props) {
       accumulated.totalCount += props.totalCount;
-      accumulated.pointIds = accumulated.pointIds.concat(props.pointIds);
+      accumulated.points = accumulated.points.concat(props.points);
     },
   });
   supercluster.load(geoJsonPoints);
@@ -272,8 +293,6 @@ const getDuplicateData = (data, dataset) => {
   const duplicateData = {
     dedupStats: {
       percentOfDups: data.VizStatistic.percentOfDups,
-      similarityMeasures: data.VizStatistic.similarityMeasures,
-      columnValues: data.VizStatistic.columnValues,
     },
 
     duplicates: data.VizDataset.map(d => {
@@ -289,7 +308,7 @@ const getDuplicateData = (data, dataset) => {
           lat = 0;
         }
       }
-      return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumnSimilarity, d.clusterColumns];
+      return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumns];
     }),
   };
   return duplicateData;
@@ -441,6 +460,13 @@ export const unselectDuplicateCluster = () => dispatch => {
   });
 };
 
+export const updateDedupColumn = column => dispatch => {
+  dispatch({
+    type: ACTION_TYPES.UPDATE_DEDUP_COLUMN,
+    payload: column,
+  });
+};
+
 export const toggleDuplicates = id => dispatch => {
   dispatch({
     type: ACTION_TYPES.TOGGLE_DUPLICATES,
@@ -455,3 +481,8 @@ export const getIndexStatus = id => {
     payload: axios.get<IIndexStatus>(requestUrl),
   };
 };
+
+export const updateExpandedClusterIndex = index => ({
+  type: ACTION_TYPES.UPDATE_EXPANDED_CLUSTER_INDEX,
+  payload: index,
+});
