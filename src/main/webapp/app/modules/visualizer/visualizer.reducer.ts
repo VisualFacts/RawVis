@@ -115,6 +115,7 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         dedupStats: action.payload.dedupStats,
         duplicates: action.payload.duplicates,
+        selectedDedupClusterIndex: null,
       };
     case REQUEST(ACTION_TYPES.UPDATE_DUPLICATES):
       return {

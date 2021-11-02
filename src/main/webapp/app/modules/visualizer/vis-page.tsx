@@ -108,16 +108,16 @@ export const VisPage = (props: IVisPageProps) => {
                updateMeasure={props.updateMeasure}/>}
       </>}
       {cleanedRectStats && <>
-        {showDuplicates && selectedDedupClusterIndex !== null &&
+        {(showDuplicates && selectedDedupClusterIndex !== null) &&
         <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
                            duplicateCluster={duplicates[selectedDedupClusterIndex]}
                            dedupColumn={dedupColumn}
                            unselectDuplicateCluster={props.unselectDuplicateCluster}
                            updateDedupColumn = {props.updateDedupColumn}/>}
-        {showDuplicates && selectedDedupClusterIndex === null &&
+        {(showDuplicates && selectedDedupClusterIndex === null) &&
         <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={cleanedRectStats}/>
         }
-        {showDuplicates && selectedDedupClusterIndex === null &&
+        {(showDuplicates && selectedDedupClusterIndex === null) &&
         <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
                updateMeasure={props.updateMeasure}/>}
