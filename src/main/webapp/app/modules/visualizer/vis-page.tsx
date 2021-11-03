@@ -17,7 +17,7 @@ import {
   updateGroupBy,
   updateMapBounds,
   updateMeasure,
-  updateDedupColumn, updateExpandedClusterIndex
+  updateDedupColumn, updateExpandedClusterIndex, getDatasets
 } from './visualizer.reducer';
 import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
@@ -35,6 +35,7 @@ export interface IVisPageProps extends StateProps, DispatchProps, RouteComponent
 export const VisPage = (props: IVisPageProps) => {
   const {
     dataset,
+    datasets,
     loading,
     loadingDups,
     indexStatus,
@@ -57,6 +58,7 @@ export const VisPage = (props: IVisPageProps) => {
 
   useEffect(() => {
     props.getDataset(props.match.params.id);
+    props.getDatasets();
     props.getIndexStatus(props.match.params.id);
   }, [props.match.params.id]);
 
@@ -81,7 +83,7 @@ export const VisPage = (props: IVisPageProps) => {
       </Grid.Column>
     </Grid>;*/
   return !loading && <div>
-    <VisControl dataset={dataset} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
+    <VisControl dataset={dataset} datasets={datasets} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
                 updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates={props.toggleDuplicates}
                 showDuplicates={showDuplicates} allowDedup={props.allowDedup}/>
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
@@ -152,6 +154,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   loading: visualizer.loading,
   loadingDups: visualizer.loadingDups,
   dataset: visualizer.dataset,
+  datasets: visualizer.datasets,
   viewRect: visualizer.viewRect,
   drawnRect: visualizer.drawnRect,
   series: visualizer.series,
@@ -186,6 +189,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
 
 const mapDispatchToProps = {
   getDataset,
+  getDatasets,
   updateMapBounds,
   updateAggType,
   updateDrawnRect,

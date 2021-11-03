@@ -7,6 +7,7 @@ import {NavLink as Link} from 'react-router-dom';
 
 export interface IVisControlProps {
   dataset: IDataset,
+  datasets: IDataset[],
   facets: any,
   groupByCols: number[],
   categoricalFilters: any,
@@ -19,7 +20,7 @@ export interface IVisControlProps {
 
 
 export const VisControl = (props: IVisControlProps) => {
-  const {dataset, categoricalFilters, facets, groupByCols} = props;
+  const {dataset, datasets, categoricalFilters, facets} = props;
 
   const handleFilterChange = (dimIndex) => (e, {value}) => {
     const filters = {...categoricalFilters};
@@ -51,8 +52,7 @@ export const VisControl = (props: IVisControlProps) => {
             onChange={handleFilterChange(dim)}
           /></>)}</div>;
 
-
-  return <Segment id='vis-control' padded='very' raised>
+  return datasets && <Segment id='vis-control' padded='very' raised>
     <Image href='/' src='./content/images/logo.png' style={{width: 100}}/>
     <h5>
       Dataset <Popup content='Reinitialize Dataset Index' trigger={<Button circular compact icon='refresh' size='mini'
@@ -61,8 +61,8 @@ export const VisControl = (props: IVisControlProps) => {
     <Label size='medium' color='blue'>
       <Dropdown text={dataset.name}>
         <Dropdown.Menu>
-          <Dropdown.Item as={Link} to="/visualize/taxi" text='taxi.csv'/>
-          <Dropdown.Item as={Link} to="/visualize/network" text='network_data.csv'/>
+          {datasets.map((d, index) => <Dropdown.Item key={index} as={Link} to={`/visualize/${d.id}`}
+                                                     text={d.name}/>)}
         </Dropdown.Menu>
       </Dropdown>
     </Label>
