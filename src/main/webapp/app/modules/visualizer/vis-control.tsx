@@ -41,7 +41,7 @@ export const VisControl = (props: IVisControlProps) => {
         </Header>
       </Divider>
       {dataset.dimensions.map((dim, i) => facets[dim] &&
-        <div key={i}>
+        <div key={i} className="dimension-filter">
           <h5>
             <span>{dataset.headers[dim]}</span>
           </h5>
