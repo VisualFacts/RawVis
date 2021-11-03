@@ -40,8 +40,8 @@ export const VisControl = (props: IVisControlProps) => {
           Filtering
         </Header>
       </Divider>
-      {dataset.dimensions.map(dim => facets[dim] &&
-        <>
+      {dataset.dimensions.map((dim, i) => facets[dim] &&
+        <div key={i}>
           <h5>
             <span>{dataset.headers[dim]}</span>
           </h5>
@@ -50,7 +50,7 @@ export const VisControl = (props: IVisControlProps) => {
             selection clearable upward fluid
             value={categoricalFilters[dim] || null}
             onChange={handleFilterChange(dim)}
-          /></>)}</div>;
+          /></div>)}</div>;
 
   return datasets && <Segment id='vis-control' padded='very' raised>
     <Image href='/' src='./content/images/logo.png' style={{width: 100}}/>
