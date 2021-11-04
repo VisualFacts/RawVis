@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.athenarc.imsi.visualfacts.tool.config.ApplicationProperties;
 import gr.athenarc.imsi.visualfacts.tool.domain.Dataset;
 import gr.athenarc.imsi.visualfacts.tool.web.rest.errors.StorageException;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -46,6 +47,31 @@ public class DataRepositoryImpl implements DatasetRepository {
   }
 
   @Override
+  public String findFile(String id) throws IOException {
+    BufferedReader reader;
+    String filedata = "";
+    try {
+      reader = new BufferedReader(new FileReader(Paths.get(applicationProperties.getWorkspacePath() + "/" + id).toString()));
+      String line = reader.readLine();
+      Integer i = 0;
+      while (i != 50) {
+        System.out.println(line);
+        if (i == 0) {
+          filedata = line;
+        } else {
+          filedata = filedata + "\n" + line;
+        }
+        line = reader.readLine();
+        i++;
+      }
+      reader.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return filedata;
+  }
+
+  @Override
   public Optional<Dataset> findById(String id) throws IOException {
     Assert.notNull(id, "Id must not be null!");
     ObjectMapper mapper = new ObjectMapper();
@@ -75,13 +101,16 @@ public class DataRepositoryImpl implements DatasetRepository {
   @Override
   public void saveFile(MultipartFile file) {
     Path rootLocation = Paths.get(applicationProperties.getWorkspacePath());
-    try {
-      if (file.isEmpty()) {
-        throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
+    File f = new File(rootLocation.toString() + '/' + file.getOriginalFilename());
+    if (f.exists() == false) {
+      try {
+        if (file.isEmpty()) {
+          throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
+        }
+        Files.copy(file.getInputStream(), rootLocation.resolve(file.getOriginalFilename()));
+      } catch (IOException e) {
+        throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
       }
-      Files.copy(file.getInputStream(), rootLocation.resolve(file.getOriginalFilename()));
-    } catch (IOException e) {
-      throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
     }
   }
 

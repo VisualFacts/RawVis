@@ -15,6 +15,8 @@ const LeftMenu = () => {
           active={activeItem === 'New Dataset'}
           onClick={() => {
             dispatch(Actions.setMenuItem('New Dataset'));
+            activeItem !== 'New Dataset' && dispatch(Actions.addData([]));
+            dispatch(Actions.setEditbutton(false));
           }}
         />
         <Menu.Item
@@ -22,6 +24,7 @@ const LeftMenu = () => {
           active={activeItem === 'Open Dataset'}
           onClick={() => {
             dispatch(Actions.setMenuItem('Open Dataset'));
+            activeItem !== 'Open Dataset' && dispatch(Actions.addData([]));
             dispatch(Actions.fetchEntitiesList());
           }}
         />

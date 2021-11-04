@@ -25,11 +25,11 @@ export const ActionTypes = {
   ADD_DATA: 'addData',
   SET_MEASURE0: 'setMeasure0',
   SET_MEASURE1: 'setMeasure1',
-  SET_COORDINATES: 'setCoordinates',
   SET_DIMENSIONS: 'setDimensions',
   EMPTY_DIMENSIONS: 'emptyDimensions',
   SET_OPTIONS: 'setOptions',
   SET_ACTIVEMENU: 'setActiveMenu',
+  SET_DISPLAY: 'setDisplay',
   SET_NAME: 'name',
   SET_HASHEADER: 'hasheader',
   SET_ORIGINALFILE: 'setOriginalFile',
@@ -62,18 +62,17 @@ const initialState = {
 const uploadPageInitial = {
   checkbox: false,
   rend: false,
+  editButton: false,
   dropdown1: '',
   dropdown2: '',
   dropdown3: '',
   dropdown4: '',
   activeMenu: 'New Dataset',
-  editButton: [],
   dropMultBox: [],
   optionsState: [],
   trimData: [],
   data: [],
   originalFile: null,
-  coordinates: null,
 };
 
 const initialStato = {
@@ -103,8 +102,6 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
       return { ...state, dropdown4: `${action.payload}` };
     case ActionTypes.SET_DROPMULTBOX:
       return { ...state, dropMultBox: action.payload };
-    case ActionTypes.SET_COORDINATES:
-      return { ...state, coordinates: action.payload };
     case ActionTypes.SET_DATA:
       return { ...state, trimData: action.payload };
     case ActionTypes.ADD_DATA:
@@ -151,6 +148,16 @@ const displayReducer = (state: IDataset = initialState, action) => {
       };
     case ActionTypes.EMPTY_DIMENSIONS:
       return { ...state, dimensions: [] };
+    case ActionTypes.SET_DISPLAY:
+      return {
+        ...state,
+        lat: action.payload.lat,
+        lon: action.payload.lon,
+        measure0: action.payload.measure0,
+        measure1: action.payload.measure1,
+        dimensions: action.payload.dimensions,
+        name: action.payload.name,
+      };
     default:
       return state;
   }
@@ -279,10 +286,10 @@ export const setMenuItem = data => {
   };
 };
 
-export const setEditbutton = data => {
+export const setEditbutton = value => {
   return {
     type: ActionTypes.SET_EDITBUTTON,
-    payload: data,
+    payload: value,
   };
 };
 
@@ -301,13 +308,6 @@ export const resetDropdowns = () => {
 export const setDropbox1 = value => {
   return {
     type: ActionTypes.SET_DROPBOX1,
-    payload: value,
-  };
-};
-
-export const setCoordinates = value => {
-  return {
-    type: ActionTypes.SET_COORDINATES,
     payload: value,
   };
 };
@@ -355,6 +355,11 @@ export const setLon = lonIndex => ({
   payload: lonIndex,
 });
 
+export const setDisplay = value => ({
+  type: ActionTypes.SET_DISPLAY,
+  payload: value,
+});
+
 export const setOptionsState = value => {
   return {
     type: ActionTypes.SET_OPTIONS,
@@ -369,7 +374,7 @@ export const setName = value => {
   };
 };
 
-export const setHeader = () => ({
+export const setHasHeader = () => ({
   type: ActionTypes.SET_HASHEADER,
 });
 

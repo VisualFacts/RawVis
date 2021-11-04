@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';

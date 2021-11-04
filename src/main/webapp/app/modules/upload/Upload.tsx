@@ -22,16 +22,14 @@ const App = () => {
   };
 
   const force = (data, fileInfo, originalFile) => {
-    if (data.length > 0) {
-      dispatch(addData(data));
-      dispatch(setData(data.slice(1, 51)));
-      dispatch(setName(fileInfo.name));
-      dispatch(setOriginalFile(originalFile));
-    }
+    dispatch(setData(data.slice(1, 51)));
+    dispatch(setName(fileInfo.name));
+    dispatch(setOriginalFile(originalFile));
+    dispatch(addData(data));
   };
 
   const HandleForce = () => {
-    return <div>{Object.keys(storeState.uploadState.data).length === 0 ? <h1>No data yet</h1> : <TablePagination />}</div>;
+    return <div>{storeState.uploadState.data.length === 0 ? <h1>No data yet</h1> : <TablePagination />}</div>;
   };
 
   if (storeState.uploadState.activeMenu === 'New Dataset') {

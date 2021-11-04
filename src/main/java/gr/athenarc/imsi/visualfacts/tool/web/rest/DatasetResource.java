@@ -12,13 +12,6 @@ import gr.athenarc.imsi.visualfacts.tool.service.RawDataService;
 import gr.athenarc.imsi.visualfacts.tool.web.rest.errors.BadRequestAlertException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -27,9 +20,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static gr.athenarc.imsi.visualfacts.config.IndexConfig.DELIMITER;
-
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,45 +106,57 @@ public class DatasetResource {
       .body(result);
   }
 
-    /**
-     * {@code GET  /datasets} : get all the datasets.
-     *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of datasets in body.
-     */
-    @GetMapping("/datasets")
-    public List<Dataset> getAllDatasets() throws IOException {
-        log.debug("REST request to get all Datasets");
-        List<Dataset> datasets = datasetRepository.findAll();
-        datasets.stream().forEach(dataset -> {
-            try {
-                fillHeader(dataset);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        });
-        return datasets;
-    }
+  /**
+   * {@code GET  /datasets} : get all the datasets.
+   *
+   * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of datasets in body.
+   */
+  @GetMapping("/datasets")
+  public List<Dataset> getAllDatasets() throws IOException {
+    log.debug("REST request to get all Datasets");
+    List<Dataset> datasets = datasetRepository.findAll();
+    datasets
+      .stream()
+      .forEach(
+        dataset -> {
+          try {
+            fillHeader(dataset);
+          } catch (Exception e) {
+            log.error(e.getMessage());
+          }
+        }
+      );
+    return datasets;
+  }
 
-    /**
-     * {@code GET  /datasets/:id} : get the "id" dataset.
-     *
-     * @param id the id of the dataset to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the dataset, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/datasets/{id}")
-    public ResponseEntity<Dataset> getDataset(@PathVariable String id) throws IOException {
-        log.debug("REST request to get Dataset : {}", id);
-        Optional<Dataset> dataset = datasetRepository.findById(id);
-        dataset.ifPresent(d -> {
-            try {
-                fillHeader(d);
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        });
-        log.debug(dataset.toString());
-        return ResponseUtil.wrapOrNotFound(dataset);
-    }
+  @GetMapping("/getMeta/{id}")
+  public String getFileDataset(@PathVariable String id) throws IOException {
+    log.debug("REST request to get FILE Dataset");
+    return datasetRepository.findFile(id);
+  }
+
+  /**
+   * {@code GET  /datasets/:id} : get the "id" dataset.
+   *
+   * @param id the id of the dataset to retrieve.
+   * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the dataset, or with status {@code 404 (Not Found)}.
+   */
+  @GetMapping("/datasets/{id}")
+  public ResponseEntity<Dataset> getDataset(@PathVariable String id) throws IOException {
+    log.debug("REST request to get Dataset : {}", id);
+    Optional<Dataset> dataset = datasetRepository.findById(id);
+    dataset.ifPresent(
+      d -> {
+        try {
+          fillHeader(d);
+        } catch (Exception e) {
+          log.error(e.getMessage());
+        }
+      }
+    );
+    log.debug(dataset.toString());
+    return ResponseUtil.wrapOrNotFound(dataset);
+  }
 
   /**
    * {@code DELETE  /datasets/:id} : delete the "id" dataset.
@@ -197,24 +199,23 @@ public class DatasetResource {
     datasetRepository.findById(id).ifPresent(dataset -> rawDataService.removeIndex(dataset));
   }
 
-    @GetMapping("/datasets/{id}/status")
-    public IndexStatus getIndexStatus(@PathVariable String id) {
-        return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
-    }
+  @GetMapping("/datasets/{id}/status")
+  public IndexStatus getIndexStatus(@PathVariable String id) {
+    return new IndexStatus(rawDataService.isIndexInitialized(id), rawDataService.getObjectsIndexed(id));
+  }
 
-    private void fillHeader(Dataset dataset) {
-        CsvParserSettings parserSettings = new CsvParserSettings();
-        parserSettings.getFormat().setDelimiter(DELIMITER);
-        parserSettings.setIgnoreLeadingWhitespaces(false);
-        parserSettings.setIgnoreTrailingWhitespaces(false);
-        CsvParser parser = new CsvParser(parserSettings);
-        parser.beginParsing(new File(workspacePath, dataset.getName()), Charset.forName("US-ASCII"));
-        parser.parseNext();
-        dataset.setHeaders(parser.getContext().parsedHeaders());
-        log.debug("Headers: " + Arrays.toString(dataset.getHeaders()));
-        parser.stopParsing();
-    }
-
+  private void fillHeader(Dataset dataset) {
+    CsvParserSettings parserSettings = new CsvParserSettings();
+    parserSettings.getFormat().setDelimiter(DELIMITER);
+    parserSettings.setIgnoreLeadingWhitespaces(false);
+    parserSettings.setIgnoreTrailingWhitespaces(false);
+    CsvParser parser = new CsvParser(parserSettings);
+    parser.beginParsing(new File(workspacePath, dataset.getName()), Charset.forName("US-ASCII"));
+    parser.parseNext();
+    dataset.setHeaders(parser.getContext().parsedHeaders());
+    log.debug("Headers: " + Arrays.toString(dataset.getHeaders()));
+    parser.stopParsing();
+  }
 }
 
 class IndexStatus {

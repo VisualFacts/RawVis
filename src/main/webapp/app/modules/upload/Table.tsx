@@ -1,24 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import HeadersCreator from './HeadersCreator';
-import { Table, Checkbox, Dropdown, Form, Segment, Button, Container } from 'semantic-ui-react';
+import { Table, Checkbox, Dropdown, Form, Segment, Button, Container, Loader } from 'semantic-ui-react';
 import TableCellRowCreator from './TableCellRowCreator';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';
 import Map from './upmap';
 import axios from 'axios';
 
+// FIXME: no preselection on EDIT
+
 export const TablePagination = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
   const displayInfo = useSelector((state: Actions.RootState) => state.displayInfo);
-  const dataSet = useSelector((state: Actions.RootState) => state.dataSet);
   const dispatch = useDispatch();
-
-  const cap = {
-    array: uploadState.data,
-  };
-
+  const coordinates = [];
   let options;
-  if (uploadState.editButton.length === 0) {
+  if (uploadState.data.length !== 0) {
     options = !uploadState.checkbox
       ? uploadState.data[0].map((header, index) => ({ key: index, value: header, text: header }))
       : uploadState.data[0].map((header, index) => ({ key: index, value: `col(${index})`, text: `col(${index})` }));
@@ -115,19 +112,24 @@ export const TablePagination = () => {
   };
 
   const handleChange = () => {
+    dispatch(Actions.setHasHeader());
     dispatch(Actions.setBool());
-    dispatch(Actions.setHeader());
   };
 
   const getCoordinates = () => {
-    const coordinates = [];
-    if (displayInfo.lon !== null && displayInfo.lat !== null && uploadState.trimData !== []) {
+    if (
+      displayInfo.lon !== null &&
+      displayInfo.lat !== null &&
+      uploadState.trimData !== [] &&
+      typeof uploadState.trimData[0][displayInfo.lat] === 'number' &&
+      typeof uploadState.trimData[0][displayInfo.lon] === 'number'
+    ) {
       for (let i = 0; i < uploadState.trimData.length; i++) {
         coordinates.push([uploadState.trimData[i][displayInfo.lat], uploadState.trimData[i][displayInfo.lon]]);
       }
-      dispatch(Actions.setCoordinates(coordinates));
+      return coordinates;
     } else {
-      dispatch(Actions.setCoordinates(coordinates));
+      return coordinates;
     }
   };
 
@@ -139,15 +141,12 @@ export const TablePagination = () => {
       if (choice) {
         const found = options.find(helpFind);
         dispatch(Actions.setLat(found.key));
-        uploadState.rend === true && uploadState.coordinates === null && getCoordinates();
       } else {
         const found = options.find(helpFind);
         dispatch(Actions.setLon(found.key));
-        uploadState.rend === true && uploadState.coordinates === null && getCoordinates();
       }
     } else {
       choice ? dispatch(Actions.setLat(null)) : dispatch(Actions.setLon(null));
-      uploadState.rend === true && uploadState.coordinates === null && getCoordinates();
     }
   };
 
@@ -189,37 +188,35 @@ export const TablePagination = () => {
   };
 
   // PRESELECTION OF LAT AND LON VALUES
-  useEffect(() => {
-    if (uploadState.rend === false && uploadState.trimData.length !== 0) {
-      dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
-      dropdownLatChange(filterItems('lat', uploadState.data[0], uploadState.trimData), true);
-      dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
-      dropdownLatChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
-      dispatch(Actions.setRend());
-    }
-    if (uploadState.rend === true && uploadState.coordinates === null) {
-      getCoordinates();
-    }
-  }, []);
+  if (uploadState.rend === false && uploadState.data.length !== 0 && uploadState.trimData.length !== 0) {
+    dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
+    dropdownLatChange(filterItems('lat', uploadState.data[0], uploadState.trimData), true);
+    dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
+    dropdownLatChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
+    dispatch(Actions.setRend());
+  }
+
+  if (uploadState.rend === true) {
+    getCoordinates();
+  }
 
   return (
     <div>
       <Container fluid textAlign="left">
-        {uploadState.editButton.length === 0 && (
-          <Button
-            onClick={() => {
-              dispatch(Actions.addData([]));
-              dispatch(Actions.setData([]));
-              dispatch(Actions.resetDropdowns());
-              dispatch(Actions.setCoordinates(null));
-              uploadState.rend === true && dispatch(Actions.setRend());
-            }}
-          >
-            Back
-          </Button>
-        )}
+        <Button
+          onClick={() => {
+            dispatch(Actions.addData([]));
+            dispatch(Actions.setData([]));
+            dispatch(Actions.resetDropdowns());
+            dispatch(Actions.fetchEntitiesList());
+            dispatch(Actions.setEditbutton(false));
+            uploadState.rend === true && dispatch(Actions.setRend());
+          }}
+        >
+          Back
+        </Button>
       </Container>
-      {uploadState.editButton.length === 0 ? (
+      {uploadState.data.length !== 0 ? (
         <Segment vertical>
           <div className="table_over">
             <Table celled>
@@ -240,7 +237,7 @@ export const TablePagination = () => {
           </div>
         </Segment>
       ) : (
-        <h1>No data available for table preview</h1>
+        <Loader active inline="centered" size="massive" />
       )}
       <Segment.Group horizontal>
         <Container>
@@ -248,17 +245,13 @@ export const TablePagination = () => {
             <div className="dropdowns">
               <Form size="large">
                 <Form.Field>
-                  {uploadState.editButton.length !== 0 ? (
-                    <Checkbox className="checkbox" toggle label="File without header?" disabled />
-                  ) : (
-                    <Checkbox
-                      className="checkbox"
-                      toggle
-                      label="File without header?"
-                      checked={uploadState.checkbox}
-                      onClick={handleChange}
-                    />
-                  )}
+                  <Checkbox
+                    className="checkbox"
+                    toggle
+                    label="File without header?"
+                    checked={uploadState.checkbox}
+                    onChange={handleChange}
+                  />
                 </Form.Field>
                 <Form.Field>
                   <label>Latitude</label>
@@ -268,7 +261,7 @@ export const TablePagination = () => {
                     search
                     clearable
                     selection
-                    options={uploadState.editButton.length !== 0 ? [] : filterOptions(null)}
+                    options={uploadState.data.length === 0 ? [] : filterOptions(null)}
                     value={uploadState.dropdown1}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox1(data.value));
@@ -284,7 +277,7 @@ export const TablePagination = () => {
                     search
                     clearable
                     selection
-                    options={uploadState.editButton.length !== 0 ? [] : filterOptions(null)}
+                    options={uploadState.data.length === 0 ? [] : filterOptions(null)}
                     value={uploadState.dropdown2}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox2(data.value));
@@ -300,7 +293,7 @@ export const TablePagination = () => {
                     search
                     clearable
                     selection
-                    options={uploadState.editButton.length !== 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 51), null))}
+                    options={uploadState.data.length === 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 50), null))}
                     value={uploadState.dropdown3}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox3(data.value));
@@ -316,7 +309,7 @@ export const TablePagination = () => {
                     search
                     clearable
                     selection
-                    options={uploadState.editButton.length !== 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 51), null))}
+                    options={uploadState.data.length === 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 50), null))}
                     value={uploadState.dropdown4}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox4(data.value));
@@ -329,32 +322,31 @@ export const TablePagination = () => {
                   <Dropdown
                     className="dropdown"
                     multiple
+                    placeholder={uploadState.dropMultBox.toString()}
                     search
                     selection
-                    options={uploadState.editButton.length !== 0 ? uploadState.dropMultBox : options}
-                    defaultValue={uploadState.editButton.length !== 0 ? ['0', '1', '2', '3'] : uploadState.dropMultBox}
+                    value={uploadState.data.length === 0 ? [] : uploadState.dropMultBox}
+                    options={uploadState.data.length === 0 ? [] : options}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropMultBox(data.value));
                       multDropboxChange(data.value);
                     }}
                   />
                 </Form.Field>
-                {uploadState.editButton.length === 0 && (
-                  <Button
-                    onClick={() => {
-                      fileUpload(uploadState.originalFile);
-                      dispatch(Actions.createEntity(displayInfo));
-                    }}
-                  >
-                    Save
-                  </Button>
-                )}
+                <Button
+                  onClick={() => {
+                    fileUpload(uploadState.originalFile);
+                    dispatch(Actions.createEntity(displayInfo));
+                  }}
+                >
+                  Save
+                </Button>
               </Form>
             </div>
           </div>
         </Container>
         <Container>
-          <Map Coordinates={uploadState.coordinates} />
+          <Map Coordinates={coordinates} />
         </Container>
       </Segment.Group>
     </div>

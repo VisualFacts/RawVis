@@ -1,31 +1,40 @@
 import React from 'react';
-import { Header, Table, Button, Container, DimmerDimmableProps } from 'semantic-ui-react';
+import { Header, Table, Button } from 'semantic-ui-react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as Actions from './upload-reducer';
 import { TablePagination } from './Table';
+import { readString } from 'react-papaparse';
+import axios from 'axios';
 
 const DatasetCellRowCreator = props => (
   <Table.Row verticalAlign="middle">
     <Table.Cell collapsing>{props.EntityRow.name}</Table.Cell>
-    <Table.Cell collapsing>{props.EntityRow.lat.name}</Table.Cell>
-    <Table.Cell collapsing>{props.EntityRow.lon.name}</Table.Cell>
-    <Table.Cell collapsing>
-      <DatasetCellDimCreator measure0={props.EntityRow.measure0} measure1={props.EntityRow.measure1} />
-    </Table.Cell>
-    <Table.Cell collapsing>
-      <DatasetCellDimCreator dimensions={props.EntityRow.dimensions} />
-    </Table.Cell>
-    <Table.Cell collapsing>
-      <EditButton Entity={props.EntityRow} />
-    </Table.Cell>
+    {props.EntityRow.headers !== null && (
+      <>
+        <Table.Cell collapsing>{props.EntityRow.headers[props.EntityRow.lat] || '-'}</Table.Cell>
+        <Table.Cell collapsing>{props.EntityRow.headers[props.EntityRow.lon] || '-'}</Table.Cell>
+        <Table.Cell collapsing>
+          <DatasetCellDimCreator
+            measure0={props.EntityRow.headers[props.EntityRow.measure0] || '-'}
+            measure1={props.EntityRow.headers[props.EntityRow.measure1] || '-'}
+          />
+        </Table.Cell>
+        <Table.Cell collapsing>
+          <DatasetCellDimCreator dimensions={props.EntityRow.dimensions || '-'} headers={props.EntityRow.headers} />
+        </Table.Cell>
+        <Table.Cell collapsing>
+          <EditButton Entity={props.EntityRow} />
+        </Table.Cell>
+      </>
+    )}
     <Table.Cell collapsing>
       <Button compact>explore</Button>
     </Table.Cell>
   </Table.Row>
 );
 
-const getDimensions = dimensions => {
-  const nameClear = dimensions.map((dim, index) => ({ key: `${index}`, value: `${index}`, text: `${dim.name}` }));
+const getDimensions = entity => {
+  const nameClear = entity.dimensions.map((dim, index) => `${entity.headers[dim]}`);
   return nameClear;
 };
 
@@ -35,12 +44,34 @@ const EditButton = props => {
     <Button
       compact
       onClick={() => {
-        dispatch(Actions.setEditbutton(props.Entity));
-        dispatch(Actions.setDropbox1(props.Entity.lat.name));
-        dispatch(Actions.setDropbox2(props.Entity.lon.name));
-        dispatch(Actions.setDropbox3(props.Entity.measure0.name));
-        dispatch(Actions.setDropbox4(props.Entity.measure1.name));
-        dispatch(Actions.setDropMultBox(getDimensions(props.Entity.dimensions)));
+        dispatch(Actions.setEditbutton(true));
+        dispatch(Actions.setDropbox1(props.Entity.headers[props.Entity.lat]));
+        dispatch(Actions.setDropbox2(props.Entity.headers[props.Entity.lon]));
+        dispatch(Actions.setDropbox3(props.Entity.headers[props.Entity.measure0]));
+        dispatch(Actions.setDropbox4(props.Entity.headers[props.Entity.measure1]));
+        dispatch(Actions.setDropMultBox(getDimensions(props.Entity)));
+        dispatch(Actions.setDisplay(props.Entity));
+
+        axios.get(`api/getMeta/${props.Entity.name}`).then(res => {
+          dispatch(
+            Actions.addData(
+              readString(res.data, {
+                header: false,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+              }).data
+            )
+          ),
+            dispatch(
+              Actions.setData(
+                readString(res.data, {
+                  header: false,
+                  dynamicTyping: true,
+                  skipEmptyLines: true,
+                }).data.slice(1, 50)
+              )
+            );
+        });
       }}
     >
       Edit
@@ -52,16 +83,18 @@ const DatasetCellDimCreator = props => {
   if (props.measure0) {
     return (
       <Header.Content>
-        <Header.Subheader key={0}>{props.measure0.name}</Header.Subheader>
-        <Header.Subheader key={1}>{props.measure1.name}</Header.Subheader>
+        <Header.Subheader key={0}>{props.measure0}</Header.Subheader>
+        <Header.Subheader key={1}>{props.measure1}</Header.Subheader>
       </Header.Content>
     );
   } else {
     return (
       <Header.Content>
-        {props.dimensions.map((dimension, index) => (
-          <Header.Subheader key={index}>{dimension.name}</Header.Subheader>
-        ))}
+        {props.dimensions.length !== 0 ? (
+          props.dimensions.map((dimension, index) => <Header.Subheader key={index}>{props.headers[dimension]}</Header.Subheader>)
+        ) : (
+          <Header.Subheader key={0}>{'null'}</Header.Subheader>
+        )}
       </Header.Content>
     );
   }
@@ -72,7 +105,7 @@ const DatasetsTable = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
   const dispatch = useDispatch();
 
-  if (uploadState.editButton.length === 0) {
+  if (uploadState.editButton === false && uploadState.data.length === 0) {
     return (
       <div>
         <Table basic="very" size="large">
@@ -92,22 +125,9 @@ const DatasetsTable = () => {
       </div>
     );
   } else {
-    const dropvalues = [];
-    dropvalues.push(uploadState.editButton.dimensions.map(dim => dim.name));
     return (
       <div>
-        <Container fluid textAlign="left">
-          <Button
-            onClick={() => {
-              dispatch(Actions.setEditbutton([]));
-              dispatch(Actions.resetDropdowns());
-            }}
-          >
-            Back
-          </Button>
-        </Container>
         <TablePagination />
-        <Button floated="left">Save</Button>
       </div>
     );
   }
