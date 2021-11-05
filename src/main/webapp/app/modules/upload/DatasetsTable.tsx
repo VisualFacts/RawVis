@@ -4,13 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import * as Actions from './upload-reducer';
 import { TablePagination } from './Table';
 import { readString } from 'react-papaparse';
+import { NavLink as Link } from 'react-router-dom';
 import axios from 'axios';
 
 const DatasetCellRowCreator = props => (
-  <Table.Row verticalAlign="middle">
-    <Table.Cell collapsing>{props.EntityRow.name}</Table.Cell>
+  <>
     {props.EntityRow.headers !== null && (
-      <>
+      <Table.Row verticalAlign="middle">
+        <Table.Cell collapsing>{props.EntityRow.name}</Table.Cell>
         <Table.Cell collapsing>{props.EntityRow.headers[props.EntityRow.lat] || '-'}</Table.Cell>
         <Table.Cell collapsing>{props.EntityRow.headers[props.EntityRow.lon] || '-'}</Table.Cell>
         <Table.Cell collapsing>
@@ -25,12 +26,14 @@ const DatasetCellRowCreator = props => (
         <Table.Cell collapsing>
           <EditButton Entity={props.EntityRow} />
         </Table.Cell>
-      </>
+        <Table.Cell collapsing>
+          <Link to={`/visualize/${props.EntityRow.id}`}>
+            <Button compact>explore</Button>
+          </Link>
+        </Table.Cell>
+      </Table.Row>
     )}
-    <Table.Cell collapsing>
-      <Button compact>explore</Button>
-    </Table.Cell>
-  </Table.Row>
+  </>
 );
 
 const getDimensions = entity => {
@@ -44,7 +47,6 @@ const EditButton = props => {
     <Button
       compact
       onClick={() => {
-        dispatch(Actions.setEditbutton(true));
         dispatch(Actions.setDropbox1(props.Entity.headers[props.Entity.lat]));
         dispatch(Actions.setDropbox2(props.Entity.headers[props.Entity.lon]));
         dispatch(Actions.setDropbox3(props.Entity.headers[props.Entity.measure0]));
@@ -72,6 +74,7 @@ const EditButton = props => {
               )
             );
         });
+        dispatch(Actions.setEditbutton(true));
       }}
     >
       Edit
@@ -105,7 +108,7 @@ const DatasetsTable = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
   const dispatch = useDispatch();
 
-  if (uploadState.editButton === false && uploadState.data.length === 0) {
+  if (uploadState.editButton === false) {
     return (
       <div>
         <Table basic="very" size="large">

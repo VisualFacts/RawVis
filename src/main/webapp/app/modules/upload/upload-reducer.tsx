@@ -30,6 +30,8 @@ export const ActionTypes = {
   SET_OPTIONS: 'setOptions',
   SET_ACTIVEMENU: 'setActiveMenu',
   SET_DISPLAY: 'setDisplay',
+  SET_XQUERY: 'setXQuery',
+  SET_YQUERY: 'setYQuery',
   SET_NAME: 'name',
   SET_HASHEADER: 'hasheader',
   SET_ORIGINALFILE: 'setOriginalFile',
@@ -48,14 +50,14 @@ const initialState = {
   lat: null as number,
   lon: null as number,
   dimensions: [] as number[],
-  xMin: 139.206,
-  xMax: 140.268,
-  yMin: 35.1285,
-  yMax: 36.1705,
-  queryXMin: 139.743,
-  queryXMax: 139.795,
-  queryYMin: 35.637,
-  queryYMax: 35.63,
+  xMin: -180,
+  xMax: 180,
+  yMin: -90,
+  yMax: 90,
+  queryXMin: null as number,
+  queryXMax: null as number,
+  queryYMin: null as number,
+  queryYMax: null as number,
   objectCount: 1516029,
 };
 
@@ -148,6 +150,10 @@ const displayReducer = (state: IDataset = initialState, action) => {
       };
     case ActionTypes.EMPTY_DIMENSIONS:
       return { ...state, dimensions: [] };
+    case ActionTypes.SET_XQUERY:
+      return { ...state, queryXMax: action.payload.max, queryXMin: action.payload.min };
+    case ActionTypes.SET_YQUERY:
+      return { ...state, queryYMax: action.payload.max, queryYMin: action.payload.min };
     case ActionTypes.SET_DISPLAY:
       return {
         ...state,
@@ -157,6 +163,7 @@ const displayReducer = (state: IDataset = initialState, action) => {
         measure1: action.payload.measure1,
         dimensions: action.payload.dimensions,
         name: action.payload.name,
+        hasHeader: action.payload.hasHeader,
       };
     default:
       return state;
@@ -339,6 +346,16 @@ export const setDropMultBox = value => {
     payload: value,
   };
 };
+
+export const setXQuery = value => ({
+  type: ActionTypes.SET_XQUERY,
+  payload: value,
+});
+
+export const setYQuery = value => ({
+  type: ActionTypes.SET_YQUERY,
+  payload: value,
+});
 
 export const setOriginalFile = value => ({
   type: ActionTypes.SET_ORIGINALFILE,

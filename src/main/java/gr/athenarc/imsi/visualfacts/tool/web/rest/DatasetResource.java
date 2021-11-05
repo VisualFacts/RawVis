@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -210,11 +211,23 @@ public class DatasetResource {
     parserSettings.setIgnoreLeadingWhitespaces(false);
     parserSettings.setIgnoreTrailingWhitespaces(false);
     CsvParser parser = new CsvParser(parserSettings);
-    parser.beginParsing(new File(workspacePath, dataset.getName()), Charset.forName("US-ASCII"));
-    parser.parseNext();
-    dataset.setHeaders(parser.getContext().parsedHeaders());
-    log.debug("Headers: " + Arrays.toString(dataset.getHeaders()));
-    parser.stopParsing();
+    if (dataset.getHasHeader() == true) {
+      parser.beginParsing(new File(workspacePath, dataset.getName()), Charset.forName("US-ASCII"));
+      parser.parseNext();
+      dataset.setHeaders(parser.getContext().parsedHeaders());
+      log.debug("Headers: " + Arrays.toString(dataset.getHeaders()));
+      parser.stopParsing();
+    } else {
+      List<String> headers = new ArrayList<String>();
+      parser.beginParsing(new File(workspacePath, dataset.getName()), Charset.forName("US-ASCII"));
+      parser.parseNext();
+      for (int i = 0; i <= parser.getContext().parsedHeaders().length; i++) {
+        headers.add("col(" + i + ")");
+      }
+      dataset.setHeaders(headers.toArray(new String[0]));
+      log.debug("Headers: " + Arrays.toString(dataset.getHeaders()));
+      parser.stopParsing();
+    }
   }
 }
 

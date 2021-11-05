@@ -133,7 +133,15 @@ export const TablePagination = () => {
     }
   };
 
-  const dropdownLatChange = (name, choice) => {
+  const maxMinQuerryValues = (index, choice) => {
+    const maxQuerry = Math.max(...uploadState.trimData.map(v => v[index]));
+    const minQuerry = Math.min(...uploadState.trimData.map(v => v[index]));
+    choice
+      ? dispatch(Actions.setYQuery({ max: maxQuerry, min: minQuerry }))
+      : dispatch(Actions.setXQuery({ max: maxQuerry, min: minQuerry }));
+  };
+
+  const dropdownLatLonChange = (name, choice) => {
     if (name) {
       const helpFind = element => {
         return element.value === name;
@@ -141,9 +149,11 @@ export const TablePagination = () => {
       if (choice) {
         const found = options.find(helpFind);
         dispatch(Actions.setLat(found.key));
+        maxMinQuerryValues(found.key, true);
       } else {
         const found = options.find(helpFind);
         dispatch(Actions.setLon(found.key));
+        maxMinQuerryValues(found.key, false);
       }
     } else {
       choice ? dispatch(Actions.setLat(null)) : dispatch(Actions.setLon(null));
@@ -190,9 +200,10 @@ export const TablePagination = () => {
   // PRESELECTION OF LAT AND LON VALUES
   if (uploadState.rend === false && uploadState.data.length !== 0 && uploadState.trimData.length !== 0) {
     dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
-    dropdownLatChange(filterItems('lat', uploadState.data[0], uploadState.trimData), true);
+    dropdownLatLonChange(filterItems('lat', uploadState.data[0], uploadState.trimData), true);
     dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
-    dropdownLatChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
+    dropdownLatLonChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
+    displayInfo.hasHeader === false && dispatch(Actions.setBool());
     dispatch(Actions.setRend());
   }
 
@@ -265,7 +276,7 @@ export const TablePagination = () => {
                     value={uploadState.dropdown1}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox1(data.value));
-                      dropdownLatChange(data.value, true);
+                      dropdownLatLonChange(data.value, true);
                     }}
                   />
                 </Form.Field>
@@ -281,7 +292,7 @@ export const TablePagination = () => {
                     value={uploadState.dropdown2}
                     onChange={(e, data) => {
                       dispatch(Actions.setDropbox2(data.value));
-                      dropdownLatChange(data.value, false);
+                      dropdownLatLonChange(data.value, false);
                     }}
                   />
                 </Form.Field>
@@ -335,7 +346,7 @@ export const TablePagination = () => {
                 </Form.Field>
                 <Button
                   onClick={() => {
-                    fileUpload(uploadState.originalFile);
+                    uploadState.editButton === false && fileUpload(uploadState.originalFile);
                     dispatch(Actions.createEntity(displayInfo));
                   }}
                 >
@@ -348,6 +359,7 @@ export const TablePagination = () => {
         <Container>
           <Map Coordinates={coordinates} />
         </Container>
+        {console.log(displayInfo)}
       </Segment.Group>
     </div>
   );
