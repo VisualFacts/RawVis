@@ -52,7 +52,7 @@ const EditButton = props => {
         dispatch(Actions.setDropMultBox(getDimensions(props.Entity)));
         dispatch(Actions.setDisplay(props.Entity));
 
-        axios.get(`api/getMeta/${props.Entity.name}`).then(res => {
+        axios.get(`api/readData/${props.Entity.name}`).then(res => {
           dispatch(
             Actions.addData(
               readString(res.data, {

@@ -129,7 +129,7 @@ public class DatasetResource {
     return datasets;
   }
 
-  @GetMapping("/getMeta/{id}")
+  @GetMapping("/readData/{id}")
   public String getFileDataset(@PathVariable String id) throws IOException {
     log.debug("REST request to get FILE Dataset");
     return datasetRepository.findFile(id);
