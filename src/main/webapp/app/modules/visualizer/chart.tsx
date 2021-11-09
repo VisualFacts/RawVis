@@ -17,6 +17,7 @@ export interface IChartProps {
   groupByCols: number[],
   measureCol: number,
   aggType: AggregateFunctionType,
+  dataSource: number,
   updateGroupBy: typeof updateGroupBy,
   updateAggType: typeof updateAggType,
   updateMeasure: typeof updateMeasure

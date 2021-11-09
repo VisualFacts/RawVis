@@ -81,7 +81,8 @@ export const VisPage = (props: IVisPageProps) => {
         <Divider hidden/>
         {query && query.groupByCol != null && <Chart dataset={dataset} query={query} queryResults={queryResults}/>}
       </Grid.Column>
-    </Grid>;*/
+</Grid>;*/
+
   return !loading && <div>
     <VisControl dataset={dataset} datasets={datasets} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
                 updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates={props.toggleDuplicates}
@@ -107,7 +108,7 @@ export const VisPage = (props: IVisPageProps) => {
         {showDuplicates === false &&
         <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure}/>}
+               updateMeasure={props.updateMeasure} dataSource = {null}/>}
       </>}
       {cleanedRectStats && <>
         {(showDuplicates && selectedDedupClusterIndex !== null) &&
@@ -120,9 +121,10 @@ export const VisPage = (props: IVisPageProps) => {
         <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={cleanedRectStats}/>
         }
         {(showDuplicates && selectedDedupClusterIndex === null) &&
-        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} 
+               groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure}/>}
+               updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource}/>}
       </>}
     </div>
     <Modal

@@ -11,6 +11,7 @@ import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import { MIN_DEDUP_ZOOM_LEVEL } from 'app/config/constants';
+import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
@@ -325,7 +326,7 @@ const getDuplicateData = (data, dataset) => {
         }
       }
       return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumns];
-    }),
+    }).filter(d => d[2] < 8),
   };
   return duplicateData;
 };

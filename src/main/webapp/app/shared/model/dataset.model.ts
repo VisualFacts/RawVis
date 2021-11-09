@@ -1,4 +1,4 @@
-import {DatasetType} from 'app/shared/model/enumerations/dataset-type.model';
+import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 
 export interface IDataset {
   id?: string;
@@ -9,6 +9,7 @@ export interface IDataset {
   measure1?: number;
   lat?: number;
   lon?: number;
+  dataSource?: number;
   dimensions?: number[];
   xMin?: number;
   xMax?: number;
