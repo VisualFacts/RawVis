@@ -1,6 +1,6 @@
 import React from 'react';
 import HeadersCreator from './HeadersCreator';
-import { Table, Checkbox, Dropdown, Form, Segment, Button, Container, Loader } from 'semantic-ui-react';
+import { Table, Checkbox, Dropdown, Form, Segment, Button, Loader, Grid, Divider, Icon } from 'semantic-ui-react';
 import TableCellRowCreator from './TableCellRowCreator';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Actions from './upload-reducer';
@@ -213,154 +213,174 @@ export const TablePagination = () => {
 
   return (
     <div>
-      <Container fluid textAlign="left">
-        <Button
-          onClick={() => {
-            dispatch(Actions.addData([]));
-            dispatch(Actions.setData([]));
-            dispatch(Actions.resetDropdowns());
-            dispatch(Actions.fetchEntitiesList());
-            dispatch(Actions.setEditbutton(false));
-            uploadState.rend === true && dispatch(Actions.setRend());
-          }}
-        >
-          Back
-        </Button>
-      </Container>
       {uploadState.data.length !== 0 ? (
-        <Segment vertical>
-          <div className="table_over">
-            <Table celled>
-              <Table.Header>
-                <Table.Row>
-                  {uploadState.checkbox === false
-                    ? uploadState.data[0].map((header, index) => <HeadersCreator header={header} key={index} />)
-                    : uploadState.data[0].map((header, index) => <Table.HeaderCell key={index}>{`col(${index})`}</Table.HeaderCell>)}
-                </Table.Row>
-              </Table.Header>
-
-              <Table.Body>
-                {uploadState.trimData.map((cellRow, index) => (
-                  <TableCellRowCreator cellRow={cellRow} key={index} />
-                ))}
-              </Table.Body>
-            </Table>
-          </div>
-        </Segment>
-      ) : (
-        <Loader active inline="centered" size="massive" />
-      )}
-      <Segment.Group horizontal>
-        <Container>
-          <div className="menu-content">
-            <div className="dropdowns">
-              <Form size="large">
-                <Form.Field>
-                  <Checkbox
-                    className="checkbox"
-                    toggle
-                    label="File without header?"
-                    checked={uploadState.checkbox}
-                    onChange={handleChange}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <label>Latitude</label>
-                  <Dropdown
-                    className="dropdown"
-                    placeholder={uploadState.dropdown1}
-                    search
-                    clearable
-                    selection
-                    options={uploadState.data.length === 0 ? [] : filterOptions(null)}
-                    value={uploadState.dropdown1}
-                    onChange={(e, data) => {
-                      dispatch(Actions.setDropbox1(data.value));
-                      dropdownLatLonChange(data.value, true);
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <label>Longitude</label>
-                  <Dropdown
-                    className="dropdown"
-                    placeholder={uploadState.dropdown2}
-                    search
-                    clearable
-                    selection
-                    options={uploadState.data.length === 0 ? [] : filterOptions(null)}
-                    value={uploadState.dropdown2}
-                    onChange={(e, data) => {
-                      dispatch(Actions.setDropbox2(data.value));
-                      dropdownLatLonChange(data.value, false);
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <label>Measure0</label>
-                  <Dropdown
-                    className="dropdown"
-                    placeholder={uploadState.dropdown3}
-                    search
-                    clearable
-                    selection
-                    options={uploadState.data.length === 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 50), null))}
-                    value={uploadState.dropdown3}
-                    onChange={(e, data) => {
-                      dispatch(Actions.setDropbox3(data.value));
-                      dropdownMeasureChange(data.value, 0);
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <label>Measure1</label>
-                  <Dropdown
-                    className="dropdown"
-                    placeholder={uploadState.dropdown4}
-                    search
-                    clearable
-                    selection
-                    options={uploadState.data.length === 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 50), null))}
-                    value={uploadState.dropdown4}
-                    onChange={(e, data) => {
-                      dispatch(Actions.setDropbox4(data.value));
-                      dropdownMeasureChange(data.value, 1);
-                    }}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <label>Dimensions</label>
-                  <Dropdown
-                    className="dropdown"
-                    multiple
-                    placeholder={uploadState.dropMultBox.toString()}
-                    search
-                    selection
-                    value={uploadState.data.length === 0 ? [] : uploadState.dropMultBox}
-                    options={uploadState.data.length === 0 ? [] : options}
-                    onChange={(e, data) => {
-                      dispatch(Actions.setDropMultBox(data.value));
-                      multDropboxChange(data.value);
-                    }}
-                  />
-                </Form.Field>
+        <>
+          <Grid centered padded stackable>
+            <Grid.Row>
+              <Grid.Column floated="left">
                 <Button
+                  color="black"
                   onClick={() => {
-                    uploadState.editButton === false && fileUpload(uploadState.originalFile);
-                    dispatch(Actions.createEntity(displayInfo));
+                    dispatch(Actions.addData([]));
+                    dispatch(Actions.setData([]));
+                    dispatch(Actions.resetDropdowns());
+                    dispatch(Actions.fetchEntitiesList());
+                    dispatch(Actions.setEditbutton(false));
+                    uploadState.rend === true && dispatch(Actions.setRend());
                   }}
                 >
-                  Save
+                  Back
                 </Button>
-              </Form>
-            </div>
-          </div>
-        </Container>
-        <Container>
-          <Map Coordinates={coordinates} />
-        </Container>
-        {console.log(displayInfo)}
-      </Segment.Group>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column>
+                <div className="table_over">
+                  <Table celled compact>
+                    <Table.Header>
+                      <Table.Row>
+                        {uploadState.checkbox === false
+                          ? uploadState.data[0].map((header, index) => <HeadersCreator header={header} key={index} />)
+                          : uploadState.data[0].map((header, index) => <Table.HeaderCell key={index}>{`col(${index})`}</Table.HeaderCell>)}
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {uploadState.trimData.map((cellRow, index) => (
+                        <TableCellRowCreator cellRow={cellRow} key={index} />
+                      ))}
+                    </Table.Body>
+                  </Table>
+                </div>
+              </Grid.Column>
+            </Grid.Row>
+            <Divider />
+            <Grid.Row columns="2">
+              <Grid.Column width="5" textAlign="center">
+                <div className="menu-content">
+                  <div className="dropdowns">
+                    <Form size="medium">
+                      <Form.Field>
+                        <Checkbox
+                          className="checkbox"
+                          slider
+                          label="File without header?"
+                          checked={uploadState.checkbox}
+                          onChange={handleChange}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Latitude</label>
+                        <Dropdown
+                          className="dropdown"
+                          placeholder={uploadState.dropdown1}
+                          search
+                          clearable
+                          selection
+                          options={uploadState.data.length === 0 ? [] : filterOptions(null)}
+                          value={uploadState.dropdown1}
+                          onChange={(e, data) => {
+                            dispatch(Actions.setDropbox1(data.value));
+                            dropdownLatLonChange(data.value, true);
+                          }}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Longitude</label>
+                        <Dropdown
+                          className="dropdown"
+                          placeholder={uploadState.dropdown2}
+                          search
+                          clearable
+                          selection
+                          options={uploadState.data.length === 0 ? [] : filterOptions(null)}
+                          value={uploadState.dropdown2}
+                          onChange={(e, data) => {
+                            dispatch(Actions.setDropbox2(data.value));
+                            dropdownLatLonChange(data.value, false);
+                          }}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Measure0</label>
+                        <Dropdown
+                          className="dropdown"
+                          placeholder={uploadState.dropdown3}
+                          search
+                          clearable
+                          selection
+                          options={uploadState.data.length === 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 50), null))}
+                          value={uploadState.dropdown3}
+                          onChange={(e, data) => {
+                            dispatch(Actions.setDropbox3(data.value));
+                            dropdownMeasureChange(data.value, 0);
+                          }}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Measure1</label>
+                        <Dropdown
+                          className="dropdown"
+                          placeholder={uploadState.dropdown4}
+                          search
+                          clearable
+                          selection
+                          options={uploadState.data.length === 0 ? [] : filterOptions(checkLatLon(uploadState.data.slice(1, 50), null))}
+                          value={uploadState.dropdown4}
+                          onChange={(e, data) => {
+                            dispatch(Actions.setDropbox4(data.value));
+                            dropdownMeasureChange(data.value, 1);
+                          }}
+                        />
+                      </Form.Field>
+                      <Form.Field>
+                        <label>Dimensions</label>
+                        <Dropdown
+                          className="dropdown"
+                          multiple
+                          placeholder={uploadState.dropMultBox.toString()}
+                          search
+                          selection
+                          value={uploadState.data.length === 0 ? [] : uploadState.dropMultBox}
+                          options={uploadState.data.length === 0 ? [] : options}
+                          onChange={(e, data) => {
+                            dispatch(Actions.setDropMultBox(data.value));
+                            multDropboxChange(data.value);
+                          }}
+                        />
+                      </Form.Field>
+                      <Button
+                        color="blue"
+                        onClick={() => {
+                          uploadState.editButton === false && fileUpload(uploadState.originalFile);
+                          dispatch(Actions.createEntity(displayInfo));
+                        }}
+                      >
+                        <Icon name="save outline" />
+                        Save
+                      </Button>
+                    </Form>
+                  </div>
+                </div>
+              </Grid.Column>
+              <Grid.Column width="7" stretched>
+                <Segment piled basic>
+                  <Map Coordinates={coordinates} />
+                </Segment>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </>
+      ) : (
+        <>
+          <Grid centered>
+            <Segment vertical>
+              <Loader active inline="centered" size="massive">
+                Fetching Data
+              </Loader>
+            </Segment>
+          </Grid>
+        </>
+      )}
     </div>
   );
 };

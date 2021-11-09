@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Table, Button } from 'semantic-ui-react';
+import { Header, Table, Button, Segment, Grid, GridColumn, Divider } from 'semantic-ui-react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as Actions from './upload-reducer';
 import { TablePagination } from './Table';
@@ -28,7 +28,9 @@ const DatasetCellRowCreator = props => (
         </Table.Cell>
         <Table.Cell collapsing>
           <Link to={`/visualize/${props.EntityRow.id}`}>
-            <Button compact>explore</Button>
+            <Button color="black" compact>
+              explore
+            </Button>
           </Link>
         </Table.Cell>
       </Table.Row>
@@ -45,6 +47,7 @@ const EditButton = props => {
   const dispatch = useDispatch();
   return (
     <Button
+      color="grey"
       compact
       onClick={() => {
         dispatch(Actions.setDropbox1(props.Entity.headers[props.Entity.lat]));
@@ -111,20 +114,28 @@ const DatasetsTable = () => {
   if (uploadState.editButton === false) {
     return (
       <div>
-        <Table basic="very" size="large">
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Latitude</Table.HeaderCell>
-              <Table.HeaderCell>Longtitude</Table.HeaderCell>
-              <Table.HeaderCell>Measures</Table.HeaderCell>
-              <Table.HeaderCell>Dimensions</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {dataSet.entities.length && dataSet.entities.map((entity, index) => <DatasetCellRowCreator EntityRow={entity} key={index} />)}
-          </Table.Body>
-        </Table>
+        <Divider hidden />
+        <Grid centered>
+          <GridColumn width="10">
+            <Table basic="very" size="large">
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Name</Table.HeaderCell>
+                  <Table.HeaderCell>Latitude</Table.HeaderCell>
+                  <Table.HeaderCell>Longtitude</Table.HeaderCell>
+                  <Table.HeaderCell>Measures</Table.HeaderCell>
+                  <Table.HeaderCell>Dimensions</Table.HeaderCell>
+                  <Table.HeaderCell></Table.HeaderCell>
+                  <Table.HeaderCell></Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {dataSet.entities.length &&
+                  dataSet.entities.map((entity, index) => <DatasetCellRowCreator EntityRow={entity} key={index} />)}
+              </Table.Body>
+            </Table>
+          </GridColumn>
+        </Grid>
       </div>
     );
   } else {

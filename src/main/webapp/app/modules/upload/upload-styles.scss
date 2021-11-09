@@ -1,17 +1,10 @@
 #root {
   height: 100%;
 }
-table {
-  display: block;
-  height: auto;
-}
 
 .table_over {
-  margin: auto;
-  text-align: center;
   max-height: 35rem;
-  overflow-x: scroll;
-  overflow-y: scroll;
+  overflow: scroll;
 }
 
 .app_content {
@@ -68,5 +61,5 @@ table {
 
 .leaflet-map.leaflet-container {
   width: 100%;
-  height: 45vh;
+  height: 50vh;
 }
