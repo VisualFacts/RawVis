@@ -79,7 +79,7 @@ export const VisControl = (props: IVisControlProps) => {
        checked = {props.showAll}
        onChange={handleShowAllToggleChange}
     /> */}
-    <Header as='h5'>Show Duplicates</Header>
+    <Header as='h5'>Merge Duplicates</Header>
     <Checkbox className="toggle" disabled={!props.allowDedup}
               checked={props.showDuplicates}
               onChange={handleDuplicateToggleChange}

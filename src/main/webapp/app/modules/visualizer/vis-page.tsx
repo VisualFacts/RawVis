@@ -23,7 +23,6 @@ import Map from "app/modules/visualizer/map";
 import './visualizer.scss';
 import DedupChartCluster from "app/modules/visualizer/dedup-chart-cluster";
 import StatsPanel from "app/modules/visualizer/stats-panel";
-import DedupStatsPanel from "app/modules/visualizer/dedup-stats-panel";
 import Chart from "app/modules/visualizer/chart";
 import VisControl from "app/modules/visualizer/vis-control";
 import {Header, Modal, Progress} from "semantic-ui-react";
@@ -71,7 +70,6 @@ export const VisPage = (props: IVisPageProps) => {
       props.updateClusters(props.match.params.id);
     }*/
   }, [indexStatus]);
-
   /*  return !loading && <Grid>
       <Grid.Column width={4}>
         <VisControl dataset={dataset} query={query} queryResults={queryResults} executeQuery={props.executeQuery}/>
@@ -104,11 +102,11 @@ export const VisPage = (props: IVisPageProps) => {
     <div className='right-panel-group'>
       {rectStats && <>
         {(dataset.measure0 != null && !showDuplicates) &&
-        <StatsPanel dataset={dataset} rectStats={rectStats}/>}
+        <StatsPanel dataset={dataset} rectStats={rectStats} dedupStats = {null}/>}
         {showDuplicates === false &&
         <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure} dataSource = {null}/>}
+               updateMeasure={props.updateMeasure} dataSource = {null} showDuplicates = {showDuplicates}/>}
       </>}
       {cleanedRectStats && <>
         {(showDuplicates && selectedDedupClusterIndex !== null) &&
@@ -118,13 +116,13 @@ export const VisPage = (props: IVisPageProps) => {
                            unselectDuplicateCluster={props.unselectDuplicateCluster}
                            updateDedupColumn = {props.updateDedupColumn}/>}
         {(showDuplicates && selectedDedupClusterIndex === null) &&
-        <DedupStatsPanel dataset={dataset} dedupStats = {dedupStats} cleanRectStats={cleanedRectStats}/>
+        <StatsPanel dataset={dataset} dedupStats = {dedupStats} rectStats={cleanedRectStats}/>
         }
         {(showDuplicates && selectedDedupClusterIndex === null) &&
         <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} 
                groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource}/>}
+               updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>}
       </>}
     </div>
     <Modal
