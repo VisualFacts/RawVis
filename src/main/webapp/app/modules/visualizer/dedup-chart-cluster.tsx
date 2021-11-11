@@ -6,9 +6,9 @@ import {Header, Icon, Label, Segment, Dropdown} from 'semantic-ui-react'
 import './visualizer.scss';
 import {IDataset} from "app/shared/model/dataset.model";
 import {unselectDuplicateCluster, updateDedupColumn} from "app/modules/visualizer/visualizer.reducer";
-import drilldown from "highcharts/modules/drilldown";
+import { forIn } from 'lodash';
 
-drilldown(Highcharts)
+
 
 export interface IDedupChartClusterProps {
   duplicateCluster: any,
@@ -26,13 +26,13 @@ const createColumnValueData = (columnValues) => {
   const columnData = []
   for (const colVal in columnValues) {
     if (colVal in columnValues){
-      columnData.push({name: colVal, y: columnValues[colVal].length, drilldown: true})
+      columnData.push({name: colVal, y: columnValues[colVal].length})
       let data = [];
       const len = columnValues[colVal].length;
       for (let i = 0; i < len; i++){
-        data.push([columnValues[colVal][i], 1 / len]);
+        data.push(columnValues[colVal][i]);
       }
-      drilldown[colVal] = {data};
+      drilldown[colVal] = data;
       }
   }
   
@@ -59,13 +59,9 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   colDic = (props.dedupColumn != null && duplicateCluster != null) && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
   columnData = colDic["columnData"];
   drilldown = colDic["drilldown"];
-  console.log(drilldown)
   const handleDedupColumnChange = (e, value) => {
     props.updateDedupColumn(value);
   }
-
-  
-
   const colOptions = {
     chart: {
       type: 'pie',
@@ -75,20 +71,20 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
       marginBottom: 50,
       paddingBottom: 20,
       plotBorderWidth: 1,
-      events: {
-        drilldown: function(e) {
-          var chart = this;
+      // events: {
+      //   drilldown: function(e) {
+      //     var chart = this;
         
-          chart.addSingleSeriesAsDrilldown(e.point, {
-               name: "New",
-                color: "green",
-                data: drilldown[e.point.name].data
-          });
+      //     chart.addSingleSeriesAsDrilldown(e.point, {
+      //          name: "New",
+      //           color: "green",
+      //           data: drilldown[e.point.name].data
+      //     });
              
-          chart.applyDrilldown();
-        }
+      //     chart.applyDrilldown();
+      //   }
         
-      }
+      // }
 
     },
     plotOptions: {
@@ -97,16 +93,32 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
         cursor: 'pointer',
         dataLabels: {
           enabled: true,
-          format: '<div style="display:inline-block;font-size:6px;"><b>{point.name}</b>: {point.percentage:.1f} %</span>'
+          format: '<div style="display:inline-block;font-size:6px;"><b>{point.name}</b></span>'
         },
+        
         colors: ["rgba(124, 181, 236, 0.8)", "rgba(181 ,124, 236, 0.8)"]
       }
     },
     legend: {
       enabled: false
     },
+    tooltip: {
+      formatter() {   // Use a normal fn, not a fat arrow fn
+        // Access properties using `this`
+        // Return HTML string
+        const key = this.key;
+        let data = drilldown[key];
+        let s = '<div font-size:6px;"><b>Sources:<br></b>'
+        for(let i = 0; i < data.length; i ++){
+          s += data[i] + "<br>";
+        }
+        s+= '</div>';
+        return s;
+
+      },
+      shared: true
+    },
     title: null,
-    drilldown: {drilldown},
     series: [{
       name: "Count",
       data: columnData,
