@@ -55,7 +55,7 @@ const EditButton = props => {
         dispatch(Actions.setDropbox3(props.Entity.headers[props.Entity.measure0]));
         dispatch(Actions.setDropbox4(props.Entity.headers[props.Entity.measure1]));
         dispatch(Actions.setDropMultBox(getDimensions(props.Entity)));
-        dispatch(Actions.setDisplay(props.Entity));
+        dispatch(Actions.setUpState(props.Entity));
 
         axios.get(`api/readData/${props.Entity.name}`).then(res => {
           dispatch(

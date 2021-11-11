@@ -7,8 +7,6 @@ import * as Actions from './upload-reducer';
 import Map from './upmap';
 import axios from 'axios';
 
-// FIXME: no preselection on EDIT
-
 export const TablePagination = () => {
   const uploadState = useSelector((state: Actions.RootState) => state.uploadState);
   const displayInfo = useSelector((state: Actions.RootState) => state.displayInfo);
@@ -113,7 +111,9 @@ export const TablePagination = () => {
 
   const handleChange = () => {
     dispatch(Actions.setHasHeader());
-    dispatch(Actions.setBool());
+    dispatch(Actions.setBool(!uploadState.checkbox));
+    dispatch(Actions.boolResetDisplay());
+    dispatch(Actions.boolResetUpState());
   };
 
   const getCoordinates = () => {
@@ -198,16 +198,19 @@ export const TablePagination = () => {
   };
 
   // PRESELECTION OF LAT AND LON VALUES
-  if (uploadState.rend === false && uploadState.data.length !== 0 && uploadState.trimData.length !== 0) {
+  if (uploadState.rend === false && uploadState.editButton === false) {
     dispatch(Actions.setDropbox1(filterItems('lat', uploadState.data[0], uploadState.trimData)));
     dropdownLatLonChange(filterItems('lat', uploadState.data[0], uploadState.trimData), true);
     dispatch(Actions.setDropbox2(filterItems('lon', uploadState.data[0], uploadState.trimData)));
     dropdownLatLonChange(filterItems('lon', uploadState.data[0], uploadState.trimData), false);
-    displayInfo.hasHeader === false && dispatch(Actions.setBool());
-    dispatch(Actions.setRend());
   }
 
-  if (uploadState.rend === true) {
+  if (uploadState.rend === false) {
+    dispatch(Actions.setRend(true));
+    displayInfo.hasHeader === false && dispatch(Actions.setBool(true));
+  }
+
+  if (uploadState.rend === true && uploadState.trimData.length !== 0) {
     getCoordinates();
   }
 
@@ -224,9 +227,9 @@ export const TablePagination = () => {
                     dispatch(Actions.addData([]));
                     dispatch(Actions.setData([]));
                     dispatch(Actions.resetDropdowns());
+                    dispatch(Actions.resetDisplay());
                     dispatch(Actions.fetchEntitiesList());
                     dispatch(Actions.setEditbutton(false));
-                    uploadState.rend === true && dispatch(Actions.setRend());
                   }}
                 >
                   Back
@@ -236,7 +239,7 @@ export const TablePagination = () => {
             <Grid.Row>
               <Grid.Column>
                 <div className="table_over">
-                  <Table celled compact>
+                  <Table celled compact unstackable>
                     <Table.Header>
                       <Table.Row>
                         {uploadState.checkbox === false
@@ -258,12 +261,12 @@ export const TablePagination = () => {
               <Grid.Column width="5" textAlign="center">
                 <div className="menu-content">
                   <div className="dropdowns">
-                    <Form size="medium">
+                    <Form>
                       <Form.Field>
                         <Checkbox
                           className="checkbox"
                           slider
-                          label="File without header?"
+                          label="Headless File"
                           checked={uploadState.checkbox}
                           onChange={handleChange}
                         />
@@ -381,6 +384,7 @@ export const TablePagination = () => {
           </Grid>
         </>
       )}
+      {console.log(displayInfo)}
     </div>
   );
 };

@@ -29,12 +29,15 @@ export const ActionTypes = {
   EMPTY_DIMENSIONS: 'emptyDimensions',
   SET_OPTIONS: 'setOptions',
   SET_ACTIVEMENU: 'setActiveMenu',
+  SET_UPSTATE: 'setUpState',
   SET_DISPLAY: 'setDisplay',
   SET_XQUERY: 'setXQuery',
   SET_YQUERY: 'setYQuery',
   SET_NAME: 'name',
   SET_HASHEADER: 'hasheader',
   SET_ORIGINALFILE: 'setOriginalFile',
+  RESET_UPSTATE_ONBOOL: 'resetUpStateOnHeaderChange',
+  RESET_ONBOOL: 'resetDisplayOnHeaderChange',
   RESET_DROPDOWNS: 'resetDropdowns',
 };
 
@@ -91,9 +94,9 @@ const initialStato = {
 const uploadPageReducer = (state = uploadPageInitial, action) => {
   switch (action.type) {
     case ActionTypes.SET_BOOLEAN:
-      return { ...state, checkbox: !state.checkbox };
+      return { ...state, checkbox: action.payload };
     case ActionTypes.SET_REND:
-      return { ...state, rend: !state.rend };
+      return { ...state, rend: action.payload };
     case ActionTypes.SET_DROPBOX1:
       return { ...state, dropdown1: `${action.payload}` };
     case ActionTypes.SET_DROPBOX2:
@@ -117,6 +120,8 @@ const uploadPageReducer = (state = uploadPageInitial, action) => {
     case ActionTypes.SET_ORIGINALFILE:
       return { ...state, originalFile: action.payload };
     case ActionTypes.RESET_DROPDOWNS:
+      return { ...state, dropdown1: '', dropdown2: '', dropdown3: '', dropdown4: '', dropMultBox: [], rend: false, checkbox: false };
+    case ActionTypes.RESET_UPSTATE_ONBOOL:
       return { ...state, dropdown1: '', dropdown2: '', dropdown3: '', dropdown4: '', dropMultBox: [] };
     default:
       return state;
@@ -154,7 +159,7 @@ const displayReducer = (state: IDataset = initialState, action) => {
       return { ...state, queryXMax: action.payload.max, queryXMin: action.payload.min };
     case ActionTypes.SET_YQUERY:
       return { ...state, queryYMax: action.payload.max, queryYMin: action.payload.min };
-    case ActionTypes.SET_DISPLAY:
+    case ActionTypes.SET_UPSTATE:
       return {
         ...state,
         lat: action.payload.lat,
@@ -164,6 +169,51 @@ const displayReducer = (state: IDataset = initialState, action) => {
         dimensions: action.payload.dimensions,
         name: action.payload.name,
         hasHeader: action.payload.hasHeader,
+        queryXMin: action.payload.queryXMin,
+        queryXMax: action.payload.queryXMax,
+        queryYMin: action.payload.queryYMin,
+        queryYMax: action.payload.queryYMax,
+      };
+    case ActionTypes.SET_DISPLAY:
+      return {
+        id: null,
+        name: '',
+        type: null as DatasetType,
+        hasHeader: true,
+        measure0: null as number,
+        measure1: null as number,
+        lat: null as number,
+        lon: null as number,
+        dimensions: [] as number[],
+        xMin: -180,
+        xMax: 180,
+        yMin: -90,
+        yMax: 90,
+        queryXMin: null as number,
+        queryXMax: null as number,
+        queryYMin: null as number,
+        queryYMax: null as number,
+        objectCount: 1516029,
+      };
+    case ActionTypes.RESET_ONBOOL:
+      return {
+        ...state,
+        id: null,
+        type: null as DatasetType,
+        measure0: null as number,
+        measure1: null as number,
+        lat: null as number,
+        lon: null as number,
+        dimensions: [] as number[],
+        xMin: -180,
+        xMax: 180,
+        yMin: -90,
+        yMax: 90,
+        queryXMin: null as number,
+        queryXMax: null as number,
+        queryYMin: null as number,
+        queryYMax: null as number,
+        objectCount: 1516029,
       };
     default:
       return state;
@@ -280,9 +330,10 @@ export const setData = data => {
   };
 };
 
-export const setRend = () => {
+export const setRend = value => {
   return {
     type: ActionTypes.SET_REND,
+    payload: value,
   };
 };
 
@@ -300,9 +351,10 @@ export const setEditbutton = value => {
   };
 };
 
-export const setBool = () => {
+export const setBool = value => {
   return {
     type: ActionTypes.SET_BOOLEAN,
+    payload: value,
   };
 };
 
@@ -372,9 +424,21 @@ export const setLon = lonIndex => ({
   payload: lonIndex,
 });
 
-export const setDisplay = value => ({
-  type: ActionTypes.SET_DISPLAY,
+export const setUpState = value => ({
+  type: ActionTypes.SET_UPSTATE,
   payload: value,
+});
+
+export const resetDisplay = () => ({
+  type: ActionTypes.SET_DISPLAY,
+});
+
+export const boolResetDisplay = () => ({
+  type: ActionTypes.RESET_ONBOOL,
+});
+
+export const boolResetUpState = () => ({
+  type: ActionTypes.RESET_UPSTATE_ONBOOL,
 });
 
 export const setOptionsState = value => {
