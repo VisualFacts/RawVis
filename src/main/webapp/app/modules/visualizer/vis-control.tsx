@@ -74,11 +74,6 @@ export const VisControl = (props: IVisControlProps) => {
     <Label size='medium' color='blue'>
       {dataset.headers[dataset.lon]}
     </Label>
-    {/* <Header as='h5'>Show All</Header>
-    <Checkbox className="toggle"
-       checked = {props.showAll}
-       onChange={handleShowAllToggleChange}
-    /> */}
     <Header as='h5'>Merge Duplicates</Header>
     <Checkbox className="toggle" disabled={!props.allowDedup}
               checked={props.showDuplicates}

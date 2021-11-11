@@ -54,7 +54,7 @@ public class RawDataService {
         }
         Schema schema = new Schema(new File(applicationProperties.getWorkspacePath(), dataset.getName()).getAbsolutePath(), DELIMITER,
             dataset.getLon(), dataset.getLat(), measureCol0, measureCol1,
-            new Rectangle(Range.open(dataset.getxMin(), dataset.getxMax()), Range.open(dataset.getyMin(), dataset.getyMax())), dataset.getObjectCount(), -1);
+            new Rectangle(Range.open(dataset.getxMin(), dataset.getxMax()), Range.open(dataset.getyMin(), dataset.getyMax())), dataset.getObjectCount(), -1, dataset.getDataSource());
         List<CategoricalColumn> categoricalColumns = dataset.getDimensions().stream().map(field -> new CategoricalColumn(field)).collect(Collectors.toList());
         schema.setCategoricalColumns(categoricalColumns);
         schema.setHasHeader(dataset.getHasHeader());
