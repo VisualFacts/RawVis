@@ -33,6 +33,9 @@ const DatasetCellRowCreator = props => (
             </Button>
           </Link>
         </Table.Cell>
+        <Table.Cell collapsing>
+          <DeleteButton name={props.EntityRow.name} />
+        </Table.Cell>
       </Table.Row>
     )}
   </>
@@ -41,6 +44,22 @@ const DatasetCellRowCreator = props => (
 const getDimensions = entity => {
   const nameClear = entity.dimensions.map((dim, index) => `${entity.headers[dim]}`);
   return nameClear;
+};
+
+const DeleteButton = props => {
+  const dispatch = useDispatch();
+
+  return (
+    <Button
+      color="red"
+      compact
+      onClick={() => {
+        axios.delete(`api/datasets/${props.name}`).then(() => dispatch(Actions.fetchEntitiesList()));
+      }}
+    >
+      delete
+    </Button>
+  );
 };
 
 const EditButton = props => {
@@ -125,6 +144,7 @@ const DatasetsTable = () => {
                   <Table.HeaderCell>Longtitude</Table.HeaderCell>
                   <Table.HeaderCell>Measures</Table.HeaderCell>
                   <Table.HeaderCell>Dimensions</Table.HeaderCell>
+                  <Table.HeaderCell></Table.HeaderCell>
                   <Table.HeaderCell></Table.HeaderCell>
                   <Table.HeaderCell></Table.HeaderCell>
                 </Table.Row>

@@ -115,7 +115,15 @@ public class DataRepositoryImpl implements DatasetRepository {
   }
 
   @Override
-  public void deleteById(String id) {
-    throw new UnsupportedOperationException();
+  public String deleteById(String id) {
+    Path rootLocation = Paths.get(applicationProperties.getWorkspacePath());
+    File originalFile = new File(rootLocation.toString() + '/' + id);
+    File metaFile = new File(rootLocation.toString() + '/' + id.substring(0, id.indexOf(".")) + ".meta.json");
+    if (originalFile.delete() && metaFile.delete()) {
+      return "File Deletion Successful.";
+    } else {
+      return "Failed to delete the file.";
+    }
+    // TODO: close file on visualize page exit
   }
 }

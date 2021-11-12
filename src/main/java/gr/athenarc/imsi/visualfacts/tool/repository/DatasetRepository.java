@@ -22,5 +22,5 @@ public interface DatasetRepository {
 
   void saveFile(MultipartFile dataFile);
 
-  void deleteById(String id);
+  String deleteById(String id);
 }

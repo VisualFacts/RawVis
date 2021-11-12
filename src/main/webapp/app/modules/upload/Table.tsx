@@ -384,7 +384,6 @@ export const TablePagination = () => {
           </Grid>
         </>
       )}
-      {console.log(displayInfo)}
     </div>
   );
 };
