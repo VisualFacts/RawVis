@@ -27,7 +27,7 @@ const createColumnValueData = (columnValues) => {
   for (const colVal in columnValues) {
     if (colVal in columnValues){
       columnData.push({name: colVal, y: columnValues[colVal].length})
-      let data = [];
+      const data = [];
       const len = columnValues[colVal].length;
       for (let i = 0; i < len; i++){
         data.push(columnValues[colVal][i]);
