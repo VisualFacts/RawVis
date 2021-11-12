@@ -107,7 +107,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
         // Access properties using `this`
         // Return HTML string
         const key = this.key;
-        let data = drilldown[key];
+        const data = drilldown[key];
         let s = '<div font-size:6px;"><b>Sources:<br></b>'
         for(let i = 0; i < data.length; i ++){
           s += data[i] + "<br>";
