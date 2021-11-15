@@ -11,9 +11,11 @@ import { IDedupStats } from 'app/shared/model/rect-dedup-stats.model';
 import { IGroupedStats } from 'app/shared/model/grouped-stats.model';
 import { defaultValue, IIndexStatus } from 'app/shared/model/index-status.model';
 import { MIN_DEDUP_ZOOM_LEVEL } from 'app/config/constants';
+import { DatasetType } from 'app/shared/model/enumerations/dataset-type.model';
 
 export const ACTION_TYPES = {
   FETCH_DATASET: 'visualizer/FETCH_DATASET',
+  FETCH_DATASET_LIST: 'dataset/FETCH_DATASET_LIST',
   RESET: 'visualizer/RESET',
   UPDATE_MAP_BOUNDS: 'visualizer/UPDATE_MAP_BOUNDS',
   UPDATE_CLUSTERS: 'visualizer/UPDATE_CLUSTERS',
@@ -44,6 +46,7 @@ const initialState = {
   firstDupLoad: true,
   errorMessage: null,
   dataset: null,
+  datasets: null,
   zoom: 14,
   categoricalFilters: {},
   groupByCols: null,
@@ -103,6 +106,11 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         groupByCols: [action.payload.data.dimensions[0]],
         measureCol: action.payload.data.measure0 && action.payload.data.measure0,
       };
+    case SUCCESS(ACTION_TYPES.FETCH_DATASET_LIST):
+      return {
+        ...state,
+        datasets: action.payload.data,
+      };
     case SUCCESS(ACTION_TYPES.UPDATE_CLUSTERS):
       return {
         ...state,
@@ -115,6 +123,7 @@ export default (state: VisualizerState = initialState, action): VisualizerState 
         ...state,
         dedupStats: action.payload.dedupStats,
         duplicates: action.payload.duplicates,
+        selectedDedupClusterIndex: null,
       };
     case REQUEST(ACTION_TYPES.UPDATE_DUPLICATES):
       return {
@@ -248,6 +257,14 @@ export const getDataset = id => {
   };
 };
 
+export const getDatasets = () => {
+  const requestUrl = `api/datasets/`;
+  return {
+    type: ACTION_TYPES.FETCH_DATASET_LIST,
+    payload: axios.get<IDataset>(requestUrl),
+  };
+};
+
 export const getRow = (datasetId, rowId) => {
   const requestUrl = `api/datasets/${datasetId}/objects/${rowId}`;
   return {
@@ -309,7 +326,7 @@ const getDuplicateData = (data, dataset) => {
         }
       }
       return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumns];
-    }),
+    }).filter(d => d[2] < 8),
   };
   return duplicateData;
 };

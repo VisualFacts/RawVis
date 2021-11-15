@@ -10,6 +10,7 @@ export interface IDataset {
   measure1?: number;
   lat?: number;
   lon?: number;
+  dataSource?: number;
   dimensions?: number[];
   xMin?: number;
   xMax?: number;

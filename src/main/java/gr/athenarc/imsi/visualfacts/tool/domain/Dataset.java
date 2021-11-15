@@ -61,6 +61,8 @@ public class Dataset implements Serializable {
 
     private Integer lon;
 
+    private Integer dataSource;
+
     private LinkedHashSet<Integer> dimensions = new LinkedHashSet<>();
 
     private Set<Integer> dedupCols = new HashSet<>();
@@ -222,6 +224,14 @@ public class Dataset implements Serializable {
         this.lon = lon;
     }
 
+    public Integer getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(Integer dataSource) {
+        this.dataSource = dataSource;
+    }
+    
     public LinkedHashSet<Integer> getDimensions() {
         return dimensions;
     }
@@ -247,6 +257,7 @@ public class Dataset implements Serializable {
         this.blockingCols = blockingCols;
     }
 
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -285,6 +296,7 @@ public class Dataset implements Serializable {
             ", measure1=" + measure1 +
             ", lat=" + lat +
             ", lon=" + lon +
+            ", dataSource=" + dataSource +
             ", dimensions=" + dimensions +
             ", dedupCols=" + dedupCols +
             ", blockingCols=" + blockingCols +

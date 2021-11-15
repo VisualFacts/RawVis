@@ -2,22 +2,34 @@ import React, {useState} from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
 import {Dropdown, Label, Segment, Statistic} from "semantic-ui-react";
 import {IRectStats} from "app/shared/model/rect-stats.model";
-
+import {IDedupStats} from "app/shared/model/rect-dedup-stats.model";
+import './visualizer.scss';
 
 export interface IStatsPanelProps {
   dataset: IDataset,
   rectStats: IRectStats,
+  dedupStats: IDedupStats,
 }
 
 
 export const StatsPanel = (props: IStatsPanelProps) => {
-  const {dataset, rectStats} = props;
+  const {dataset, rectStats, dedupStats} = props;
   const [selectedMeasure, setSelectedMeasure] = useState(0);
 
-  const formatStat = (stat) => stat != null ? stat.toFixed(2) : 'N/A';
+  const formatStat = (stat) => stat !== null ? stat.toFixed(2) : 'N/A';
+  const formatStatPercent = (stat) => stat !== null ? (parseFloat(stat) * 100).toFixed(3) + ' %' : 'N/A';
+  let percentOfDups = 0;
+  if(dedupStats !== null)
+    percentOfDups = dedupStats.percentOfDups;
 
   return <Segment id='stats-panel' textAlign='left' raised padded>
     <Label attached='top' size='large'>Statistics for <i>{rectStats.count}</i> objects</Label>
+    {percentOfDups !== 0 && <Statistic.Group widths='one' className='field-stats'>
+      <Statistic className='dedup-stats'> 
+          <Statistic.Value>{formatStatPercent(percentOfDups)}</Statistic.Value>
+          <Statistic.Label>Duplicates</Statistic.Label>
+      </Statistic>
+     </Statistic.Group>}
     <h5>Statistics for field: <Label><Dropdown
       options={[{text: dataset.headers[dataset.measure0], value: 0}, {
         text: dataset.headers[dataset.measure1],

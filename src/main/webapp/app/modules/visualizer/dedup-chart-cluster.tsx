@@ -6,6 +6,9 @@ import {Header, Icon, Label, Segment, Dropdown} from 'semantic-ui-react'
 import './visualizer.scss';
 import {IDataset} from "app/shared/model/dataset.model";
 import {unselectDuplicateCluster, updateDedupColumn} from "app/modules/visualizer/visualizer.reducer";
+import { forIn } from 'lodash';
+
+
 
 export interface IDedupChartClusterProps {
   duplicateCluster: any,
@@ -16,25 +19,24 @@ export interface IDedupChartClusterProps {
   unselectDuplicateCluster: typeof unselectDuplicateCluster
 }
 
-// const createSimilarityData = (similarityMeasures, columns) => {
-//   const data = [];
-//   const cols = [];
-//   for (let i = 0; i < columns.length; i++) {
-//       if (similarityMeasures[i] > 0){
-//         cols.push(columns[i])
-//         data.push({y : similarityMeasures[i]})
-//     }
-//   }
-//   return [data, cols];
-// }
+
 
 const createColumnValueData = (columnValues) => {
-  const data = [];
+  const drilldown = {};
+  const columnData = []
   for (const colVal in columnValues) {
-    if (colVal in columnValues)
-      data.push({name: colVal, y: columnValues[colVal]});
+    if (colVal in columnValues){
+      columnData.push({name: colVal, y: columnValues[colVal].length})
+      const data = [];
+      const len = columnValues[colVal].length;
+      for (let i = 0; i < len; i++){
+        data.push(columnValues[colVal][i]);
+      }
+      drilldown[colVal] = data;
+      }
   }
-  return data;
+  
+  return {drilldown, columnData};
 }
 
 const createChartColumnData = (columns) => {
@@ -47,92 +49,19 @@ const createChartColumnData = (columns) => {
 
 export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   const {duplicateCluster, clusterIndex, dataset, dedupColumn} = props;
-  // let similarityMeasures = null;
-  // let similarities = [];
-  // let similarityData = {};
-  // let similariyColumns = [];
-  let columnData = {};
+
+  let colDic = {}
+  let drilldown = {};
+  let columnData = [];
   let chartColumnData = [];
-  // const [chart, setChart] = useState('clusterSimilarities');
-  // const [colId, setColId] = useState(0);
-  // similarityMeasures = duplicateCluster[4];
-  // similarities = createSimilarityData(similarityMeasures, dataset.headers);
-  // similarityData = similarities[0];
-  // similariyColumns = similarities[1];
+ 
   chartColumnData = createChartColumnData(dataset.headers);
-  columnData = (props.dedupColumn != null && duplicateCluster != null) && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
-  const changeChart = (id) => {
-    // setChart("clusterCol");
-    // setColId(id);
-  }
+  colDic = (props.dedupColumn != null && duplicateCluster != null) && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
+  columnData = colDic["columnData"];
+  drilldown = colDic["drilldown"];
   const handleDedupColumnChange = (e, value) => {
     props.updateDedupColumn(value);
   }
-
-  // const options = {
-  //   chart: {
-  //     type: 'bar',
-  //     height: '330px',
-  //     marginTop: 10,
-  //     paddingTop: 0,
-  //     marginBottom: 50,
-  //     paddingBottom: 40,
-  //     plotBorderWidth: 1,
-  //     scrollablePlotArea: {
-  //       minHeight: 200,
-  //       scrollPositionY: 0
-  //   }
-
-  //   },
-  //   xAxis: {
-  //     categories: similariyColumns,
-  //     title: {
-  //       text: null
-  //     },
-  //     labels: {
-  //       rotation: -45,
-  //       useHTML: true,
-  //       style: {
-  //         fontSize: '8px',
-  //         fontFamily: 'Verdana, sans-serif',
-  //         cursor: 'pointer'
-  //       },
-  //       events: {
-  //         click(e) {
-  //           const val = this.value.replace( /(<([^>]+)>)/ig, '')
-  //           const id = dataset.headers.indexOf(val)
-  //           changeChart(id);
-  //         }
-  //       },
-  //       formatter() {
-  //         return `<span class="text-center">${this.value}</span>`
-  //       }
-  //     },
-  //   },
-  //   yAxis: {
-  //     max: 1,
-  //     title: {
-  //       text: "Attribute Similarity",
-  //       x: -20
-  //     },
-  //   },
-  //   plotOptions: {
-  //     bar: {
-  //       dataLabels: {
-  //         enabled: false
-  //       }
-  //     }
-  //   },
-  //   legend: {
-  //     enabled: false
-  //   },
-  //   title: "Similarities",
-  //   series: [{
-  //     name: "Similarity",
-  //     data: similarityData
-  //   }]
-  // };
-
   const colOptions = {
     chart: {
       type: 'pie',
@@ -141,7 +70,21 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
       paddingTop: 0,
       marginBottom: 50,
       paddingBottom: 20,
-      plotBorderWidth: 1
+      plotBorderWidth: 1,
+      // events: {
+      //   drilldown: function(e) {
+      //     var chart = this;
+        
+      //     chart.addSingleSeriesAsDrilldown(e.point, {
+      //          name: "New",
+      //           color: "green",
+      //           data: drilldown[e.point.name].data
+      //     });
+             
+      //     chart.applyDrilldown();
+      //   }
+        
+      // }
 
     },
     plotOptions: {
@@ -150,18 +93,35 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
         cursor: 'pointer',
         dataLabels: {
           enabled: true,
-          format: '<div style="display:inline-block;font-size:6px;"><b>{point.name}</b>: {point.percentage:.1f} %</span>'
+          format: '<div style="display:inline-block;font-size:6px;"><b>{point.name}</b></span>'
         },
+        
         colors: ["rgba(124, 181, 236, 0.8)", "rgba(181 ,124, 236, 0.8)"]
       }
     },
     legend: {
       enabled: false
     },
+    tooltip: {
+      formatter() {   // Use a normal fn, not a fat arrow fn
+        // Access properties using `this`
+        // Return HTML string
+        const key = this.key;
+        const data = drilldown[key];
+        let s = '<div font-size:6px;"><b>Sources:<br></b>'
+        for(let i = 0; i < data.length; i ++){
+          s += data[i] + "<br>";
+        }
+        s+= '</div>';
+        return s;
+
+      },
+      shared: true
+    },
     title: null,
     series: [{
-      name: "count",
-      data: columnData
+      name: "Count",
+      data: columnData,
     }]
   };
 

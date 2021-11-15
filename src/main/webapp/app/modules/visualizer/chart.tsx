@@ -17,6 +17,8 @@ export interface IChartProps {
   groupByCols: number[],
   measureCol: number,
   aggType: AggregateFunctionType,
+  dataSource: number,
+  showDuplicates: boolean,
   updateGroupBy: typeof updateGroupBy,
   updateAggType: typeof updateAggType,
   updateMeasure: typeof updateMeasure
@@ -24,12 +26,13 @@ export interface IChartProps {
 
 
 export const Chart = (props: IChartProps) => {
-  const {dataset, series, aggType, groupByCols, measureCol} = props;
+  const {dataset, series, aggType, measureCol, dataSource, showDuplicates} = props;
+  let groupByCols = props.groupByCols;
   const dimensions = dataset.dimensions || [];
 
   const [chartType, setChartType] = useState('column');
 
-  const xAxisOptions = dimensions.map(dim => ({key: dim, value: dim, text: dataset.headers[dim]}));
+  let xAxisOptions = dimensions.map(dim => ({key: dim, value: dim, text: dataset.headers[dim]}));
   const aggTypeOptions = Object.values(AggregateFunctionType).map((type, index) => ({
     key: `agg-type-${index}`,
     value: type,
@@ -73,9 +76,12 @@ export const Chart = (props: IChartProps) => {
     }
     setChartType(newChartType);
   };
-
-
-  const xAxis = groupByCols && dataset.dimensions.find(d => d === groupByCols[0]);
+ 
+  if(showDuplicates){
+    groupByCols = groupByCols.filter(e => e !== dataSource);
+    xAxisOptions = xAxisOptions.filter(e => e.key !== dataSource);
+  }
+  const xAxis = groupByCols && groupByCols.length > 0 ?  dataset.dimensions.find(d => d === groupByCols[0]) :  dataset.dimensions.find(d => d === xAxisOptions[0].key);
 
   const yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d === groupByCols[1]) : null;
 
@@ -96,7 +102,7 @@ export const Chart = (props: IChartProps) => {
       options={chartType === 'heatmap' ? {
         chart: {
           type: 'heatmap',
-          height: '250px',
+          height: '300px',
           marginTop: 10,
           paddingTop: 0,
           marginBottom: 50,
@@ -140,10 +146,10 @@ export const Chart = (props: IChartProps) => {
         }],
         chart: {
           type: chartType,
-          height: '250px',
+          height: '300px',
           marginTop: 10,
           paddingTop: 0,
-          marginBottom: 50,
+          marginBottom: 100,
           plotBorderWidth: 1
         },
         xAxis: {
@@ -169,22 +175,24 @@ export const Chart = (props: IChartProps) => {
         },
       }}
     />
-    <Segment basic textAlign='center' compact style={{padding: 0}}>
+    <Segment basic textAlign='center' compact style={{ margin: "auto"}}>
       <Label.Group>
         {dataset.measure0 != null &&
-        <Label>Aggregate Function: <Dropdown options={aggTypeOptions} inline value={aggType}
+        <Label>Find <Dropdown options={aggTypeOptions} inline value={aggType}
                                              onChange={handleAggTypeChange}/></Label>}
 
         {dataset.measure0 != null &&
-        <Label>Measure: <Dropdown options={[{text: dataset.headers[dataset.measure0], value: dataset.measure0}, {
+        <Label>of <Dropdown 
+        scrolling = {true}
+        options={[{text: dataset.headers[dataset.measure0], value: dataset.measure0}, {
           text: dataset.headers[dataset.measure1],
           value: dataset.measure1
         }]} inline value={measure} onChange={handleMeasureChange}/></Label>}
 
-        <Label>xAxis: <Dropdown options={xAxisOptions} inline
+        <Label>per <Dropdown  scrolling = {true} options={xAxisOptions} inline
                                 value={xAxis && xAxis}
                                 onChange={handleXAxisChange}/></Label>
-        {chartType === 'heatmap' && <Label>yAxis: <Dropdown options={xAxisOptions} inline onChange={handleYAxisChange}
+        {chartType === 'heatmap' && <Label>and <Dropdown options={xAxisOptions} inline onChange={handleYAxisChange}
                                                             value={yAxis && yAxis}/></Label>}
       </Label.Group>
     </Segment>
