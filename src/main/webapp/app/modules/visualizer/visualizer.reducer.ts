@@ -326,8 +326,7 @@ const getDuplicateData = (data, dataset) => {
         }
       }
       return [lon, lat, d.VizData.length, d.groupedObj, d.clusterColumns];
-    }),
-    // }).filter(d => d[2] < 8),
+    }).filter(d => d[2] < 8),
   };
   return duplicateData;
 };
