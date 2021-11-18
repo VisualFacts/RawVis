@@ -3,7 +3,7 @@
   "name": "restaurants.csv",
   "type": "CSV",
   "hasHeader": true,
-  "objectCount": 350390,
+  "objectCount": 1000000,
   "xMin": -14.7,
   "xMax": 40.5,
   "yMin": 34.0,
@@ -16,7 +16,8 @@
   "measure1": 25,
   "lat": 7,
   "lon": 8,
-  "dimensions": [2, 38, 9, 18, 20, 21, 26],
+  "dataSource": 38,
+  "dimensions": [38, 3, 9, 15, 20, 21, 26],
   "blockingCols": [
     1,
     2,
@@ -54,8 +55,7 @@
     34,
     35,
     36,
-    37,
-    38
+    37
   ],
   "dedupCols": [
     1,
@@ -91,7 +91,6 @@
     31,
     32,
     36,
-    37,
-    38
+    37
   ]
 }
