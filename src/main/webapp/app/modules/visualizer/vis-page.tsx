@@ -1,11 +1,12 @@
-import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
-import {RouteComponentProps} from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { RouteComponentProps } from 'react-router-dom';
 
-import {IRootState} from 'app/shared/reducers';
+import { IRootState } from 'app/shared/reducers';
 import {
   getDataset,
-  getIndexStatus, getRow,
+  getIndexStatus,
+  getRow,
   reset,
   selectDuplicateCluster,
   toggleDuplicates,
@@ -17,19 +18,21 @@ import {
   updateGroupBy,
   updateMapBounds,
   updateMeasure,
-  updateDedupColumn, updateExpandedClusterIndex, getDatasets
+  updateDedupColumn,
+  updateExpandedClusterIndex,
+  getDatasets,
 } from './visualizer.reducer';
-import Map from "app/modules/visualizer/map";
+import Map from 'app/modules/visualizer/map';
 import './visualizer.scss';
-import DedupChartCluster from "app/modules/visualizer/dedup-chart-cluster";
-import StatsPanel from "app/modules/visualizer/stats-panel";
-import Chart from "app/modules/visualizer/chart";
-import VisControl from "app/modules/visualizer/vis-control";
-import {Header, Modal, Progress} from "semantic-ui-react";
-import QueryInfoPanel from "app/modules/visualizer/query-info-panel";
+import DedupChartCluster from 'app/modules/visualizer/dedup-chart-cluster';
+import StatsPanel from 'app/modules/visualizer/stats-panel';
+import Chart from 'app/modules/visualizer/chart';
+import VisControl from 'app/modules/visualizer/vis-control';
+import MapSearch from 'app/modules/visualizer/map-search';
+import { Header, Modal, Progress } from 'semantic-ui-react';
+import QueryInfoPanel from 'app/modules/visualizer/query-info-panel';
 
-export interface IVisPageProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {
-}
+export interface IVisPageProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const VisPage = (props: IVisPageProps) => {
   const {
@@ -50,9 +53,20 @@ export const VisPage = (props: IVisPageProps) => {
     aggType,
     measureCol,
     categoricalFilters,
-    facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
-    totalPointCount, zoom, totalTileCount, totalTime, executionTime,
-    showDuplicates, selectedDedupClusterIndex, row, dedupColumn
+    facets,
+    ioCount,
+    pointCount,
+    tileCount,
+    fullyContainedTileCount,
+    totalPointCount,
+    zoom,
+    totalTileCount,
+    totalTime,
+    executionTime,
+    showDuplicates,
+    selectedDedupClusterIndex,
+    row,
+    dedupColumn,
   } = props;
 
   useEffect(() => {
@@ -81,76 +95,128 @@ export const VisPage = (props: IVisPageProps) => {
       </Grid.Column>
 </Grid>;*/
 
-  return !loading && <div>
-    <VisControl dataset={dataset} datasets={datasets} groupByCols={groupByCols} categoricalFilters={categoricalFilters} facets={facets}
-                updateFilters={props.updateFilters} reset={props.reset} toggleDuplicates={props.toggleDuplicates}
-                showDuplicates={showDuplicates} allowDedup={props.allowDedup}/>
-    <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
-         showDuplicates={showDuplicates}
-         updateDrawnRect={props.updateDrawnRect} dataset={dataset}
-         duplicates={duplicates} viewRect={viewRect} zoom={zoom} selectedDedupClusterIndex={selectedDedupClusterIndex}
-         selectDuplicateCluster={props.selectDuplicateCluster} updateExpandedClusterIndex={props.updateExpandedClusterIndex}
-         unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}
-         expandedClusterIndex={props.expandedClusterIndex} />
-    <div className='bottom-panel-group'>
-      <QueryInfoPanel dataset={dataset}
-                      fullyContainedTileCount={fullyContainedTileCount}
-                      ioCount={ioCount}
-                      pointCount={pointCount} tileCount={tileCount} totalPointCount={totalPointCount}
-                      totalTileCount={totalTileCount} totalTime={totalTime} executionTime={executionTime}/>
-    </div>
-    <div className='right-panel-group'>
-      {rectStats && <>
-        {(dataset.measure0 != null && !showDuplicates) &&
-        <StatsPanel dataset={dataset} rectStats={rectStats} dedupStats = {null}/>}
-        {showDuplicates === false &&
-        <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
-               aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure} dataSource = {null} showDuplicates = {showDuplicates}/>}
-      </>}
-      {cleanedRectStats && <>
-        {(showDuplicates && selectedDedupClusterIndex !== null) &&
-        <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
-                           duplicateCluster={duplicates[selectedDedupClusterIndex]}
-                           dedupColumn={dedupColumn}
-                           unselectDuplicateCluster={props.unselectDuplicateCluster}
-                           updateDedupColumn = {props.updateDedupColumn}/>}
-        {(showDuplicates && selectedDedupClusterIndex === null) &&
-        <StatsPanel dataset={dataset} dedupStats = {dedupStats} rectStats={cleanedRectStats}/>
-        }
-        {(showDuplicates && selectedDedupClusterIndex === null) &&
-        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} 
-               groupByCols={groupByCols}
-               aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>}
-      </>}
-    </div>
-    <Modal
-      basic
-      open={!indexStatus.isInitialized}
-      size='small'>
-      <Header textAlign='center'>
-        Parsing and indexing dataset {dataset.name}
-      </Header>
-      <Modal.Content>
-        <Progress inverted value={indexStatus.objectsIndexed} total={dataset.objectCount} label={"Objects indexed: " + indexStatus.objectsIndexed} autoSuccess />
-      </Modal.Content>
-    </Modal>
-    <Modal
-      basic
-      open={loadingDups}
-      size='small'>
-      <Header textAlign='center'>
-        Deduplicating {dataset.name}
-      </Header>
-      {/* <Modal.Content>
+  return (
+    !loading && (
+      <div>
+        <VisControl
+          dataset={dataset}
+          datasets={datasets}
+          groupByCols={groupByCols}
+          categoricalFilters={categoricalFilters}
+          facets={facets}
+          updateFilters={props.updateFilters}
+          reset={props.reset}
+          toggleDuplicates={props.toggleDuplicates}
+          showDuplicates={showDuplicates}
+          allowDedup={props.allowDedup}
+        />
+        <Map
+          id={props.match.params.id}
+          clusters={clusters}
+          updateMapBounds={props.updateMapBounds}
+          showDuplicates={showDuplicates}
+          updateDrawnRect={props.updateDrawnRect}
+          dataset={dataset}
+          duplicates={duplicates}
+          viewRect={viewRect}
+          zoom={zoom}
+          selectedDedupClusterIndex={selectedDedupClusterIndex}
+          selectDuplicateCluster={props.selectDuplicateCluster}
+          updateExpandedClusterIndex={props.updateExpandedClusterIndex}
+          unselectDuplicateCluster={props.unselectDuplicateCluster}
+          row={row}
+          getRow={props.getRow}
+          expandedClusterIndex={props.expandedClusterIndex}
+        />
+        <div className="bottom-panel-group">
+          <QueryInfoPanel
+            dataset={dataset}
+            fullyContainedTileCount={fullyContainedTileCount}
+            ioCount={ioCount}
+            pointCount={pointCount}
+            tileCount={tileCount}
+            totalPointCount={totalPointCount}
+            totalTileCount={totalTileCount}
+            totalTime={totalTime}
+            executionTime={executionTime}
+          />
+        </div>
+        <div className="right-panel-group">
+          {rectStats && (
+            <>
+              {dataset.measure0 != null && !showDuplicates && <StatsPanel dataset={dataset} rectStats={rectStats} dedupStats={null} />}
+              {showDuplicates === false && (
+                <Chart
+                  dataset={dataset}
+                  series={series}
+                  updateGroupBy={props.updateGroupBy}
+                  groupByCols={groupByCols}
+                  aggType={aggType}
+                  measureCol={measureCol}
+                  updateAggType={props.updateAggType}
+                  updateMeasure={props.updateMeasure}
+                  dataSource={null}
+                  showDuplicates={showDuplicates}
+                />
+              )}
+            </>
+          )}
+          {cleanedRectStats && (
+            <>
+              {showDuplicates && selectedDedupClusterIndex !== null && (
+                <DedupChartCluster
+                  dataset={dataset}
+                  clusterIndex={selectedDedupClusterIndex}
+                  duplicateCluster={duplicates[selectedDedupClusterIndex]}
+                  dedupColumn={dedupColumn}
+                  unselectDuplicateCluster={props.unselectDuplicateCluster}
+                  updateDedupColumn={props.updateDedupColumn}
+                />
+              )}
+              {showDuplicates && selectedDedupClusterIndex === null && (
+                <StatsPanel dataset={dataset} dedupStats={dedupStats} rectStats={cleanedRectStats} />
+              )}
+              {showDuplicates && selectedDedupClusterIndex === null && (
+                <Chart
+                  dataset={dataset}
+                  series={cleanedSeries}
+                  updateGroupBy={props.updateGroupBy}
+                  groupByCols={groupByCols}
+                  aggType={aggType}
+                  measureCol={measureCol}
+                  updateAggType={props.updateAggType}
+                  updateMeasure={props.updateMeasure}
+                  dataSource={dataset.dataSource}
+                  showDuplicates={showDuplicates}
+                />
+              )}
+            </>
+          )}
+        </div>
+        <Modal basic open={!indexStatus.isInitialized} size="small">
+          <Header textAlign="center">Parsing and indexing dataset {dataset.name}</Header>
+          <Modal.Content>
+            <Progress
+              inverted
+              value={indexStatus.objectsIndexed}
+              total={dataset.objectCount}
+              label={'Objects indexed: ' + indexStatus.objectsIndexed}
+              autoSuccess
+            />
+          </Modal.Content>
+        </Modal>
+        <Modal basic open={loadingDups} size="small">
+          <Header textAlign="center">Deduplicating {dataset.name}</Header>
+          {/* <Modal.Content>
         <Progress progress='percent' value={indexStatus.objectsIndexed} total={dataset.objectCount} autoSuccess precision={2}/>
       </Modal.Content> */}
-    </Modal>
-  </div>;
+        </Modal>
+      </div>
+    )
+  );
 };
 
-const mapStateToProps = ({visualizer}: IRootState) => ({
+const mapStateToProps = ({ visualizer }: IRootState) => ({
   loading: visualizer.loading,
   loadingDups: visualizer.loadingDups,
   dataset: visualizer.dataset,
@@ -184,7 +250,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   row: visualizer.row,
   dedupColumn: visualizer.dedupColumn,
   expandedClusterIndex: visualizer.expandedClusterIndex,
-  cleanedRectStats: visualizer.cleanedRectStats
+  cleanedRectStats: visualizer.cleanedRectStats,
 });
 
 const mapDispatchToProps = {

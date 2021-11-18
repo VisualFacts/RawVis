@@ -14,7 +14,7 @@ const App = () => {
   const storeState = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   let jsx;
-
+  
   const papaparseOptions = {
     header: false,
     dynamicTyping: true,
@@ -71,35 +71,37 @@ const App = () => {
   return jsx;
 };
 
-const Upload = () => (
-  <div>
-    <Provider store={store}>
-      <Grid verticalAlign="middle" padded inverted stackable>
-        <Grid.Row columns="2" color="black">
-          <Grid.Column width="2">
-            <Link to={`/`}>
-              <Image src="/content/images/logo.png" size="small"></Image>
-            </Link>
-          </Grid.Column>
-          <Grid.Column textAlign="right" floated="right" verticalAlign="bottom">
-            <Header inverted color="grey" as="h5">
-              Online tool for importing editing and saving datasets
-            </Header>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-      <Grid centered padded>
-        <Grid.Row>
-          <LeftMenu />
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width="14" textAlign="center">
-            <App />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </Provider>
-  </div>
-);
+const Upload = () => {
+  return (
+    <div>
+      <Provider store={store}>
+        <Grid verticalAlign="middle" padded inverted stackable>
+          <Grid.Row columns="2" color="black">
+            <Grid.Column width="2">
+              <Link to={`/`}>
+                <Image src="/content/images/logo.png" size="small"></Image>
+              </Link>
+            </Grid.Column>
+            <Grid.Column textAlign="right" floated="right" verticalAlign="bottom">
+              <Header inverted color="grey" as="h5">
+                Online tool for importing editing and saving datasets
+              </Header>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+        <Grid centered padded>
+          <Grid.Row>
+            <LeftMenu />
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width="14" textAlign="center">
+              <App />
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Provider>
+    </div>
+  );
+};
 
 export default Upload;

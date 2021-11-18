@@ -233,3 +233,13 @@
   margin-top: 10px;
   text-align: center;
 }
+
+.search-bar-ui {
+  z-index: 999;
+  position: absolute;
+  top: -1vh;
+  left: 43%;
+  max-height: 50vh;
+  padding: 20px;
+  opacity: 0.9;
+}
