@@ -184,6 +184,13 @@
   }
 }
 
+.details-title {
+  border-bottom: solid black 1px;
+  padding-bottom: 1px;
+  font-weight: 600;
+  display: table;
+}
+
 .dup-item {
   color: green;
 }

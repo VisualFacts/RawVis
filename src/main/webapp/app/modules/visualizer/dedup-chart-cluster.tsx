@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official';
 import CustomEvents from 'highcharts-custom-events';
-import {Header, Icon, Label, Segment, Dropdown} from 'semantic-ui-react'
+import {Header, Icon, Label, Segment, Dropdown, LabelDetail} from 'semantic-ui-react'
 import './visualizer.scss';
 import {IDataset} from "app/shared/model/dataset.model";
 import {unselectDuplicateCluster, updateDedupColumn} from "app/modules/visualizer/visualizer.reducer";
@@ -39,6 +39,25 @@ const createColumnValueData = (columnValues) => {
   return {drilldown, columnData};
 }
 
+const createDetails = (columnValues, dataset) => {
+  const clean = [];
+  const dirty = [];
+  if(dataset.headers){
+    for (const h in dataset.headers){
+      let val = columnValues[h];
+      if (val == null) val = "";
+      if(val.includes("|")){
+        dirty.push([dataset.headers[h], val])
+      }
+      else{
+        clean.push([dataset.headers[h], val])
+      }
+    }
+  }
+  console.log({clean, dirty})
+  return {clean, dirty}
+}
+
 const createChartColumnData = (columns) => {
   const data = [];
   for (let i = 0; i < columns.length; i ++){
@@ -51,12 +70,15 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
   const {duplicateCluster, clusterIndex, dataset, dedupColumn} = props;
 
   let colDic = {}
+  let details = {}
   let drilldown = {};
   let columnData = [];
   let chartColumnData = [];
  
   chartColumnData = createChartColumnData(dataset.headers);
   colDic = (props.dedupColumn != null && duplicateCluster != null) && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
+  details = (duplicateCluster != null) && createDetails(duplicateCluster[3], dataset);
+
   columnData = colDic["columnData"];
   drilldown = colDic["drilldown"];
   const handleDedupColumnChange = (e, value) => {
@@ -130,21 +152,19 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
                                                                        style={{float: "right"}}
                                                                        onClick={() => props.unselectDuplicateCluster()}/></Label>
     <Segment textAlign='left' style={{border: "none"}}>
-      <Header as='h5' className="dedup-cluster-subtitle" >Details</Header>
+      <Header as='h5' className="dedup-cluster-subtitle" >Duplicates Cluster Analysis</Header>
       <div className="cluster-details">
-        {dataset.headers && dataset.headers.map((colName, colIndex) => {
-          let val = duplicateCluster[3][colIndex];
-          if (val == null) val = "";
-          return (
-            <div className={`dup-item ${val.includes("|") ? "active" : ""}`}
-                 key={`dup-item-${clusterIndex}-${colIndex} ${val.includes("|") ? "active" : ""}`}>
-                    <span>
-                    <b>{colName}: </b>{val}
-                    </span>
-              <br></br>
+            <div>
+              <div className = "details-title" >Different values in:<br></br></div>
+              
+              <div className = "dup-item active">{details["dirty"].map(val => {return <span ><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
+              
+              <div className = "details-title" >Same values in:</div>
+              <div className = "dup-item">{details["clean"].map(val => {return <span><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
+              
+
             </div>
-          )
-        })}
+          
       </div>
     </Segment>
     <Segment textAlign='left'>

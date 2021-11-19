@@ -3,7 +3,7 @@
   "name": "restaurants.csv",
   "type": "CSV",
   "hasHeader": true,
-  "objectCount": 1000000,
+  "objectCount": 600000,
   "xMin": -14.7,
   "xMax": 40.5,
   "yMin": 34.0,
