@@ -43,18 +43,17 @@ const createDetails = (columnValues, dataset) => {
   const clean = [];
   const dirty = [];
   if(dataset.headers){
-    for (const h in dataset.headers){
-      let val = columnValues[h];
+    for (let i=0; i < dataset.headers.length;  i++){
+      let val = columnValues[i];
       if (val == null) val = "";
       if(val.includes("|")){
-        dirty.push([dataset.headers[h], val])
+        dirty.push([dataset.headers[i], val])
       }
       else{
-        clean.push([dataset.headers[h], val])
+        clean.push([dataset.headers[i], val])
       }
     }
   }
-  console.log({clean, dirty})
   return {clean, dirty}
 }
 
@@ -157,10 +156,10 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
             <div>
               <div className = "details-title" >Different values in:<br></br></div>
               
-              <div className = "dup-item active">{details["dirty"].map(val => {return <span ><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
+              <div className = "dup-item active">{details["dirty"].map(val => {return <span key={val[0]}><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
               
               <div className = "details-title" >Same values in:</div>
-              <div className = "dup-item">{details["clean"].map(val => {return <span><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
+              <div className = "dup-item">{details["clean"].map(val => {return <span key={val[0]}><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
               
 
             </div>
