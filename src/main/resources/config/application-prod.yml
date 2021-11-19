@@ -59,6 +59,8 @@ server:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
     min-response-size: 1024
+  servlet:
+    context-path: /platform
 
 # ===================================================================
 # JHipster specific properties
