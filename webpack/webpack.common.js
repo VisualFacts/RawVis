@@ -116,7 +116,7 @@ module.exports = options => ({
       template: './src/main/webapp/index.html',
       chunksSortMode: 'auto',
       inject: 'body',
-      base: options.env === 'production' ? '/platform/' : '',
+      base: options.env === 'production' ? '/platform/' : '/',
     }),
   ]
 });
