@@ -76,7 +76,7 @@ export const Chart = (props: IChartProps) => {
     }
     setChartType(newChartType);
   };
- 
+
   if(showDuplicates){
     groupByCols = groupByCols.filter(e => e !== dataSource);
     xAxisOptions = xAxisOptions.filter(e => e.key !== dataSource);
@@ -178,22 +178,22 @@ export const Chart = (props: IChartProps) => {
     <Segment basic textAlign='center' compact style={{ margin: "auto"}}>
       <Label.Group>
         {dataset.measure0 != null &&
-        <Label>Find <Dropdown options={aggTypeOptions} inline value={aggType}
-                                             onChange={handleAggTypeChange}/></Label>}
+        <span>Find <Dropdown options={aggTypeOptions} inline value={aggType}
+                                             onChange={handleAggTypeChange}/></span>}
 
         {dataset.measure0 != null &&
-        <Label>of <Dropdown 
+        <span> of <Dropdown
         scrolling = {true}
         options={[{text: dataset.headers[dataset.measure0], value: dataset.measure0}, {
           text: dataset.headers[dataset.measure1],
           value: dataset.measure1
-        }]} inline value={measure} onChange={handleMeasureChange}/></Label>}
+        }]} inline value={measure} onChange={handleMeasureChange}/></span>}
 
-        <Label>per <Dropdown  scrolling = {true} options={xAxisOptions} inline
+        <span> per <Dropdown  scrolling = {true} options={xAxisOptions} inline
                                 value={xAxis && xAxis}
-                                onChange={handleXAxisChange}/></Label>
-        {chartType === 'heatmap' && <Label>and <Dropdown options={xAxisOptions} inline onChange={handleYAxisChange}
-                                                            value={yAxis && yAxis}/></Label>}
+                                onChange={handleXAxisChange}/></span>
+        {chartType === 'heatmap' && <span> and <Dropdown options={xAxisOptions} inline onChange={handleYAxisChange}
+                                                            value={yAxis && yAxis}/></span>}
       </Label.Group>
     </Segment>
   </Segment>
