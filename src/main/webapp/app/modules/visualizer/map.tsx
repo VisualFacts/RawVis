@@ -13,7 +13,11 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
 import {MAX_ZOOM} from "app/config/constants";
+import 'beautifymarker/leaflet-beautify-marker-icon.css';
+import 'beautifymarker/leaflet-beautify-marker-icon.js';
 
+// @ts-ignore
+const BeautifyIcon = L.BeautifyIcon;
 
 export interface IMapProps {
   id: any,
@@ -34,8 +38,28 @@ export interface IMapProps {
   expandedClusterIndex: number,
 }
 
+
 const fetchIcon = count => {
-  if (count === 1) return new L.Icon.Default();
+  // if (count === 1) return new L.Icon.Default();
+/*    if (count === 1) return L.icon({
+      iconUrl: './content/images/duplicate-marker.png',
+      iconSize:     [38, 38], // size of the icon
+    });*/
+
+/*  if (count === 1) return L.divIcon({
+    html: `<div><span></span></div>`,
+    className: `marker-cluster marker-cluster-single`,
+    iconSize: L.point(20, 20)
+  });*/
+
+   if (count === 1) return BeautifyIcon.icon({
+     iconShape: 'marker',
+     isAlphaNumericIcon: false,
+     borderColor: "#3283a7",
+     backgroundColor: "rgba(56,169,219)"
+   });
+
+
   const size =
     count < 100 ? 'small' :
       count < 1000 ? 'medium' : 'large';
@@ -48,21 +72,29 @@ const fetchIcon = count => {
 };
 
 const fetchDedupIcon = (count, isSelected) => {
-  const size =
+  /* const size =
     count < 10 ? 'small' :
-      count < 100 ? 'medium' : 'large';
+      count < 100 ? 'medium' : 'large';*/
 
-  return L.divIcon({
+/*  return L.divIcon({
     html: `<div><span>${count}</span></div>`,
     className: `marker-cluster marker-cluster-${size} marker-duplicate ${isSelected ? "marker-cluster-selected" : ""}`,
     iconSize: L.point(40, 40)
+  });*/
+  return BeautifyIcon.icon({
+    iconShape: 'marker',
+    isAlphaNumericIcon: true,
+    text: count,
+    textColor: "black",
+    backgroundColor: "rgba(212,62,42,0.7)",
+    borderColor: "#a66a61",
   });
 };
 
 const SinglePoint = (props: any) => {
   const {dataset, pointId, coordinates, row} = props;
   return (
-    <Marker position={[coordinates[1], coordinates[0]]}>
+    <Marker icon={fetchIcon(1)} position={[coordinates[1], coordinates[0]]}>
       <Popup onOpen={() => {
         props.getRow(dataset.id, pointId);
       }}>
