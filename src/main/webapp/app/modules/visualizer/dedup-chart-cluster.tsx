@@ -12,7 +12,6 @@ import { forIn } from 'lodash';
 
 export interface IDedupChartClusterProps {
   duplicateCluster: any,
-  clusterIndex: number,
   dataset: IDataset,
   dedupColumn: number,
   updateDedupColumn: typeof updateDedupColumn,
@@ -35,7 +34,7 @@ const createColumnValueData = (columnValues) => {
       drilldown[colVal] = data;
       }
   }
-  
+
   return {drilldown, columnData};
 }
 
@@ -66,14 +65,14 @@ const createChartColumnData = (columns) => {
 }
 
 export const DedupChartCluster = (props: IDedupChartClusterProps) => {
-  const {duplicateCluster, clusterIndex, dataset, dedupColumn} = props;
+  const {duplicateCluster, dataset, dedupColumn} = props;
 
   let colDic = {}
   let details = {}
   let drilldown = {};
   let columnData = [];
   let chartColumnData = [];
- 
+
   chartColumnData = createChartColumnData(dataset.headers);
   colDic = (props.dedupColumn != null && duplicateCluster != null) && createColumnValueData(duplicateCluster[4][props.dedupColumn]);
   details = (duplicateCluster != null) && createDetails(duplicateCluster[3], dataset);
@@ -95,16 +94,16 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
       // events: {
       //   drilldown: function(e) {
       //     var chart = this;
-        
+
       //     chart.addSingleSeriesAsDrilldown(e.point, {
       //          name: "New",
       //           color: "green",
       //           data: drilldown[e.point.name].data
       //     });
-             
+
       //     chart.applyDrilldown();
       //   }
-        
+
       // }
 
     },
@@ -116,7 +115,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
           enabled: true,
           format: '<div style="display:inline-block;font-size:6px;"><b>{point.name}</b></span>'
         },
-        
+
         colors: ["rgba(124, 181, 236, 0.8)", "rgba(181 ,124, 236, 0.8)"]
       }
     },
@@ -146,7 +145,7 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
     }]
   };
 
-  return <Segment.Group raised padded>
+  return <Segment.Group raised>
     <Label attached='top' size='large'><Icon name='close' size="mini"
                                                                        style={{float: "right"}}
                                                                        onClick={() => props.unselectDuplicateCluster()}/></Label>
@@ -155,15 +154,15 @@ export const DedupChartCluster = (props: IDedupChartClusterProps) => {
       <div className="cluster-details">
             <div>
               <div className = "details-title" >Different values in:<br></br></div>
-              
+
               <div className = "dup-item active">{details["dirty"].map(val => {return <span key={val[0]}><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
-              
+
               <div className = "details-title" >Same values in:</div>
               <div className = "dup-item">{details["clean"].map(val => {return <span key={val[0]}><b>{val[0]}</b>: {val[1]}<br></br></span>})}</div>
-              
+
 
             </div>
-          
+
       </div>
     </Segment>
     <Segment textAlign='left'>

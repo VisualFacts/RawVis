@@ -22,14 +22,13 @@ const BeautifyIcon = L.BeautifyIcon;
 export interface IMapProps {
   id: any,
   clusters: any,
-  duplicates: any,
   dataset: IDataset,
   showDuplicates: any,
   zoom: any,
   viewRect: any,
   updateMapBounds: typeof updateMapBounds,
   updateDrawnRect: typeof updateDrawnRect,
-  selectedDedupClusterIndex: number,
+  selectedDuplicate: any,
   selectDuplicateCluster: typeof selectDuplicateCluster,
   unselectDuplicateCluster: typeof unselectDuplicateCluster,
   updateExpandedClusterIndex: typeof updateExpandedClusterIndex,
@@ -41,23 +40,23 @@ export interface IMapProps {
 
 const fetchIcon = count => {
   // if (count === 1) return new L.Icon.Default();
-/*    if (count === 1) return L.icon({
-      iconUrl: './content/images/duplicate-marker.png',
-      iconSize:     [38, 38], // size of the icon
+  /*    if (count === 1) return L.icon({
+        iconUrl: './content/images/duplicate-marker.png',
+        iconSize:     [38, 38], // size of the icon
+      });*/
+
+  /*  if (count === 1) return L.divIcon({
+      html: `<div><span></span></div>`,
+      className: `marker-cluster marker-cluster-single`,
+      iconSize: L.point(20, 20)
     });*/
 
-/*  if (count === 1) return L.divIcon({
-    html: `<div><span></span></div>`,
-    className: `marker-cluster marker-cluster-single`,
-    iconSize: L.point(20, 20)
-  });*/
-
-   if (count === 1) return BeautifyIcon.icon({
-     iconShape: 'marker',
-     isAlphaNumericIcon: false,
-     borderColor: "#3283a7",
-     backgroundColor: "rgba(56,169,219)"
-   });
+  if (count === 1) return BeautifyIcon.icon({
+    iconShape: 'marker',
+    isAlphaNumericIcon: false,
+    borderColor: "#3283a7",
+    backgroundColor: "rgba(56,169,219)"
+  });
 
 
   const size =
@@ -72,31 +71,23 @@ const fetchIcon = count => {
 };
 
 const fetchDedupIcon = (count, isSelected) => {
-  /* const size =
-    count < 10 ? 'small' :
-      count < 100 ? 'medium' : 'large';*/
-
-/*  return L.divIcon({
-    html: `<div><span>${count}</span></div>`,
-    className: `marker-cluster marker-cluster-${size} marker-duplicate ${isSelected ? "marker-cluster-selected" : ""}`,
-    iconSize: L.point(40, 40)
-  });*/
   return BeautifyIcon.icon({
     iconShape: 'marker',
     isAlphaNumericIcon: true,
     text: count,
     textColor: "black",
-    backgroundColor: "rgba(212,62,42,0.7)",
+    backgroundColor: isSelected ? "#21ba45" : "rgba(212,62,42)",
     borderColor: "#a66a61",
+    iconSize: [30, 30]
   });
 };
 
 const SinglePoint = (props: any) => {
-  const {dataset, pointId, coordinates, row} = props;
-  return (
-    <Marker icon={fetchIcon(1)} position={[coordinates[1], coordinates[0]]}>
+  const {dataset, point, coordinates, row} = props;
+  return point[2] === 1 ?
+    <Marker key={point[2]} icon={fetchIcon(1)} position={[coordinates[1], coordinates[0]]}>
       <Popup onOpen={() => {
-        props.getRow(dataset.id, pointId);
+        props.getRow(dataset.id, point[3]);
       }}>
         <div style={{
           maxHeight: "200px",
@@ -115,7 +106,14 @@ const SinglePoint = (props: any) => {
           )
         })}</div>
       </Popup>
-    </Marker>);
+    </Marker> :
+    <Marker key={point[5]} icon={fetchDedupIcon(point[2], point === props.selectedDuplicate)}
+            position={[coordinates[1], coordinates[0]]}
+            eventHandlers={{
+              click(e) {
+                props.selectDuplicateCluster(point);
+              },
+            }}/>;
 };
 
 
@@ -127,10 +125,11 @@ const SpiderfyCluster = (props: any) => {
       const angle = i * angleStep;
       const newCoords = [coordinates[0] + legLength * Math.cos(angle), coordinates[1] + legLength * Math.sin(angle)];
       return <>
-        <SinglePoint key={point[3]} dataset={dataset}
-                     pointId={point[3]} row={row}
+        <SinglePoint dataset={dataset}
+                     point={point} row={row}
                      getRow={props.getRow}
-                     coordinates={newCoords}/>
+                     coordinates={newCoords} selectDuplicateCluster={props.selectDuplicateCluster}
+                     selectedDuplicate={props.selectedDuplicate}/>
         <Polyline pathOptions={{color: 'gray'}}
                   positions={[[coordinates[1], coordinates[0]], [newCoords[1], newCoords[0]]]}/>
       </>;
@@ -140,7 +139,7 @@ const SpiderfyCluster = (props: any) => {
 
 export const Map = (props: IMapProps) => {
 
-  const {clusters, dataset, duplicates, showDuplicates, selectedDedupClusterIndex, row, expandedClusterIndex} = props;
+  const {clusters, dataset, showDuplicates, selectedDuplicate, row, expandedClusterIndex} = props;
 
   const [map, setMap] = useState(null);
 
@@ -205,23 +204,25 @@ export const Map = (props: IMapProps) => {
       const {
         totalCount, points
       } = cluster.properties;
-      return (
-        totalCount === 1 ?
-          <SinglePoint key={points[0][3]} dataset={dataset} pointId={points[0][3]} row={row} getRow={props.getRow}
-                       coordinates={cluster.geometry.coordinates}/> :
-          expandedClusterIndex === index ?
-            <SpiderfyCluster dataset={dataset} points={points} coordinates={cluster.geometry.coordinates} row={row}
-                             getRow={props.getRow}/> :
-            <Marker key={"cluster" + points[0][3]}
-                    position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
-                    icon={fetchIcon(totalCount)}
-                    eventHandlers={{
-                      click(e) {
-                        map.getZoom() === MAX_ZOOM && props.updateExpandedClusterIndex(index);
-                        e.originalEvent.stopPropagation();
-                      },
-                    }}>
-            </Marker>);
+      if (totalCount === 1) {
+        return <SinglePoint dataset={dataset} point={points[0]} row={row} getRow={props.getRow}
+                            coordinates={cluster.geometry.coordinates}
+                            selectDuplicateCluster={props.selectDuplicateCluster}
+                            selectedDuplicate={props.selectedDuplicate}/>
+      } else if (expandedClusterIndex === index) {
+        return <SpiderfyCluster dataset={dataset} points={points} coordinates={cluster.geometry.coordinates} row={row}
+                                getRow={props.getRow} selectDuplicateCluster={props.selectDuplicateCluster}
+                                selectedDuplicate={props.selectedDuplicate}/>
+      }
+      return <Marker key={"cluster" + index}
+                     position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
+                     icon={fetchIcon(totalCount)}
+                     eventHandlers={{
+                       click(e) {
+                         map.getZoom() === MAX_ZOOM && props.updateExpandedClusterIndex(index);
+                         e.originalEvent.stopPropagation();
+                       },
+                     }}> </Marker>;
     })}
 
     <Marker position={[40.75795780927519, -73.98551938996594]}
@@ -230,7 +231,7 @@ export const Map = (props: IMapProps) => {
               className: `marker`,
               iconSize: L.point(50, 50)
             })}/>
-    {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
+    {/*    {showDuplicates && duplicates && duplicates.map((duplicate, index) => {
       return (
         <Marker key={`marker-${index}`}
                 position={[duplicate[1], duplicate[0]]}
@@ -242,7 +243,7 @@ export const Map = (props: IMapProps) => {
 
                 }}
         />);
-    })}
+    })}*/}
     <ZoomControl position="topright"/>
   </MapContainer>;
 

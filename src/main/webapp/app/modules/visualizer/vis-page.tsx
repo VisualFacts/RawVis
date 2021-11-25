@@ -52,7 +52,7 @@ export const VisPage = (props: IVisPageProps) => {
     categoricalFilters,
     facets, ioCount, pointCount, tileCount, fullyContainedTileCount,
     totalPointCount, zoom, totalTileCount, totalTime, executionTime,
-    showDuplicates, selectedDedupClusterIndex, row, dedupColumn
+    showDuplicates, selectedDuplicate, row, dedupColumn
   } = props;
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export const VisPage = (props: IVisPageProps) => {
     <Map id={props.match.params.id} clusters={clusters} updateMapBounds={props.updateMapBounds}
          showDuplicates={showDuplicates}
          updateDrawnRect={props.updateDrawnRect} dataset={dataset}
-         duplicates={duplicates} viewRect={viewRect} zoom={zoom} selectedDedupClusterIndex={selectedDedupClusterIndex}
+         viewRect={viewRect} zoom={zoom} selectedDuplicate={selectedDuplicate}
          selectDuplicateCluster={props.selectDuplicateCluster} updateExpandedClusterIndex={props.updateExpandedClusterIndex}
          unselectDuplicateCluster={props.unselectDuplicateCluster} row={row} getRow={props.getRow}
          expandedClusterIndex={props.expandedClusterIndex} />
@@ -109,17 +109,17 @@ export const VisPage = (props: IVisPageProps) => {
                updateMeasure={props.updateMeasure} dataSource = {null} showDuplicates = {showDuplicates}/>}
       </>}
       {cleanedRectStats && <>
-        {(showDuplicates && selectedDedupClusterIndex !== null) &&
-        <DedupChartCluster dataset={dataset} clusterIndex={selectedDedupClusterIndex}
-                           duplicateCluster={duplicates[selectedDedupClusterIndex]}
+        {(showDuplicates && selectedDuplicate !== null) &&
+        <DedupChartCluster dataset={dataset}
+                           duplicateCluster={selectedDuplicate}
                            dedupColumn={dedupColumn}
                            unselectDuplicateCluster={props.unselectDuplicateCluster}
                            updateDedupColumn = {props.updateDedupColumn}/>}
-        {(showDuplicates && selectedDedupClusterIndex === null) &&
+        {(showDuplicates && selectedDuplicate === null) &&
         <StatsPanel dataset={dataset} dedupStats = {dedupStats} rectStats={cleanedRectStats}/>
         }
-        {(showDuplicates && selectedDedupClusterIndex === null) &&
-        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy} 
+        {(showDuplicates && selectedDuplicate === null) &&
+        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy}
                groupByCols={groupByCols}
                aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
                updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>}
@@ -180,7 +180,7 @@ const mapStateToProps = ({visualizer}: IRootState) => ({
   executionTime: visualizer.executionTime,
   showDuplicates: visualizer.showDuplicates,
   allowDedup: visualizer.allowDedup,
-  selectedDedupClusterIndex: visualizer.selectedDedupClusterIndex,
+  selectedDuplicate: visualizer.selectedDuplicate,
   row: visualizer.row,
   dedupColumn: visualizer.dedupColumn,
   expandedClusterIndex: visualizer.expandedClusterIndex,
