@@ -166,6 +166,11 @@ export const Chart = (props: IChartProps) => {
           reversed: false,
           categories: null
         },
+        tooltip: {
+          formatter() {
+            return  this.point.value != null ? this.point.value.toFixed(2) : this.point.y.toFixed(2);
+          }
+        },
         colorAxis: null,
         legend: {
           enabled: false
