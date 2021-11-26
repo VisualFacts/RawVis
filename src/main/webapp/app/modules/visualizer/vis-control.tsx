@@ -53,7 +53,7 @@ export const VisControl = (props: IVisControlProps) => {
           /></div>)}</div>;
 
   return datasets && <Segment id='vis-control' padded='very' raised>
-    <Image href='/' src='./content/images/logo.png' style={{width: 100}}/>
+    <Image href='/' src='./content/images/vf_logo.png' style={{width: 300}}/>
     <h5>
       Dataset <Popup content='Reinitialize Dataset Index' trigger={<Button circular compact icon='refresh' size='mini'
                                                                            onClick={() => props.reset(dataset.id)}/>}/>

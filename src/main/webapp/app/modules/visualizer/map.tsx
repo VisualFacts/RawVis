@@ -13,11 +13,8 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import {IDataset} from "app/shared/model/dataset.model";
 import {MAX_ZOOM} from "app/config/constants";
-import 'beautifymarker/leaflet-beautify-marker-icon.css';
-import 'beautifymarker/leaflet-beautify-marker-icon.js';
+import {BeautifyIcon} from "app/modules/visualizer/beautify-marker/leaflet-beautify-marker-icon";
 
-// @ts-ignore
-const BeautifyIcon = L.BeautifyIcon;
 
 export interface IMapProps {
   id: any,
@@ -52,16 +49,17 @@ const fetchIcon = count => {
     });*/
 
   if (count === 1) return BeautifyIcon.icon({
-    iconShape: 'marker',
+    iconShape: 'doughnut',
     isAlphaNumericIcon: false,
-    borderColor: "#3283a7",
-    backgroundColor: "rgba(56,169,219)"
+    backgroundColor: "rgba(212,62,42)",
+    borderColor: "#ffffff",
+    borderWidth: 2,
+    iconSize: [18, 18],
+    hasBadge: false,
   });
 
-
-  const size =
-    count < 100 ? 'small' :
-      count < 1000 ? 'medium' : 'large';
+  const size = count < 100 ? 'small' :
+    count < 1000 ? 'medium' : 'large';
 
   return L.divIcon({
     html: `<div><span>${count}</span></div>`,
@@ -72,13 +70,15 @@ const fetchIcon = count => {
 
 const fetchDedupIcon = (count, isSelected) => {
   return BeautifyIcon.icon({
-    iconShape: 'marker',
-    isAlphaNumericIcon: true,
-    text: count,
+    iconShape: 'doughnut',
+    isAlphaNumericIcon: false,
     textColor: "black",
     backgroundColor: isSelected ? "#21ba45" : "rgba(212,62,42)",
-    borderColor: "#a66a61",
-    iconSize: [30, 30]
+    borderColor: "#ffffff",
+    borderWidth: 2,
+    iconSize: [18, 18],
+    hasBadge: true,
+    badgeText: count,
   });
 };
 
