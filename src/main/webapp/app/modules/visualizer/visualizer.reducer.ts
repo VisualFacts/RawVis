@@ -276,7 +276,7 @@ export const getRow = (datasetId, rowId) => {
 const prepareSupercluster = points => {
   const geoJsonPoints = points.map(point => ({
     type: 'Feature',
-    properties: {totalCount: 1, points: [point]},
+    properties: {totalCount: 1, unmergedCount: point[2], points: [point]},
     geometry: {
       type: 'Point',
       coordinates: [point[1], point[0]],
@@ -287,8 +287,10 @@ const prepareSupercluster = points => {
     radius: 60,
     extent: 256,
     maxZoom: MAX_ZOOM,
+    minPoints: 3,
     reduce(accumulated, props) {
       accumulated.totalCount += props.totalCount;
+      accumulated.unmergedCount += props.unmergedCount;
       accumulated.points = accumulated.points.concat(props.points);
     },
   });
