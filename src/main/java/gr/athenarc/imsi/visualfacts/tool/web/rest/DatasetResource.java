@@ -4,6 +4,8 @@ import static gr.athenarc.imsi.visualfacts.config.IndexConfig.DELIMITER;
 
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+
+import gr.athenarc.imsi.visualfacts.Veti;
 import gr.athenarc.imsi.visualfacts.tool.domain.Dataset;
 import gr.athenarc.imsi.visualfacts.tool.domain.VisQuery;
 import gr.athenarc.imsi.visualfacts.tool.domain.VisQueryResults;
@@ -166,8 +168,17 @@ public class DatasetResource {
    * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
    */
   @DeleteMapping("/datasets/{id}")
-  public ResponseEntity<Void> deleteDataset(@PathVariable String id) {
+  public ResponseEntity<Void> deleteDataset(@PathVariable String id) throws IOException {
     log.debug("REST request to delete Dataset : {}", id);
+    String result = id.substring(0, id.indexOf("."));
+    System.out.println(result);
+    datasetRepository.findById(result).ifPresent(dataset -> {
+      try {
+        rawDataService.destroyIndex(dataset);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
     datasetRepository.deleteById(id);
     return ResponseEntity
       .noContent()

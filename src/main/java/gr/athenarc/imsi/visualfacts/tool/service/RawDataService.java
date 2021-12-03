@@ -38,6 +38,13 @@ public class RawDataService {
     public void removeIndex(Dataset dataset) {
         indexes.remove(dataset.getId());
     }
+    
+    public void destroyIndex(Dataset dataset) throws IOException {
+        if(indexes.containsKey(dataset.getId())){
+        Veti veti = indexes.get(dataset.getId());
+        veti.destroy();
+        }
+    }
 
     private synchronized Veti getIndex(Dataset dataset) throws IOException {
         Veti veti = indexes.get(dataset.getId());

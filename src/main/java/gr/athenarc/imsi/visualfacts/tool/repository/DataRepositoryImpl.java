@@ -124,6 +124,5 @@ public class DataRepositoryImpl implements DatasetRepository {
     } else {
       return "Failed to delete the file.";
     }
-    // TODO: close file on visualize page exit
   }
 }

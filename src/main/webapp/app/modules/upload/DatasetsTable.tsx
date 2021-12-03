@@ -48,7 +48,6 @@ const getDimensions = entity => {
 
 const DeleteButton = props => {
   const dispatch = useDispatch();
-
   return (
     <Button
       color="red"
