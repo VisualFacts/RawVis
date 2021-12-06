@@ -1,6 +1,6 @@
 import React from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
-import {Button, Checkbox, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
+import {Button, Checkbox, Divider, Dropdown, DropdownDivider, DropdownItem, Header, Icon, Image, Label, Popup, Segment } from "semantic-ui-react";
 import {reset, toggleDuplicates, updateFilters} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
 
@@ -63,6 +63,8 @@ export const VisControl = (props: IVisControlProps) => {
         <Dropdown.Menu>
           {datasets.map((d, index) => <Dropdown.Item key={index} as={Link} to={`/visualize/${d.id}`}
                                                      text={d.name}/>)}
+        <DropdownDivider /> 
+        <DropdownItem key="addNew" as={Link} to={'/upload'} text="New Dataset" icon="plus" />
         </Dropdown.Menu>
       </Dropdown>
     </Label>
