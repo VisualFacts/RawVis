@@ -3,7 +3,7 @@ import {IDataset} from "app/shared/model/dataset.model";
 import {Button, Checkbox, Divider, Dropdown, Header, Icon, Image, Label, Popup, Segment} from "semantic-ui-react";
 import {reset, toggleDuplicates, updateFilters} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
-
+import _ from 'lodash';
 
 export interface IVisControlProps {
   dataset: IDataset,
@@ -35,11 +35,19 @@ export const VisControl = (props: IVisControlProps) => {
   const filterDropdowns = facets &&
     <div>
       <Divider section horizontal>
-        <Header as='h4'>
-          <Icon name='filter'/>
-          Filtering
-        </Header>
       </Divider>
+      <Header as='h3' floated='left'>
+        Filtering
+      </Header>
+      {!_.isEmpty(categoricalFilters) &&
+      <Popup content='Clear All Filters' trigger={<Button floated='right' compact icon size='mini'
+                                                                   onClick={() => props.updateFilters(dataset.id, {})}><Icon.Group
+        size='large'>
+        <Icon name='filter'/>
+        <Icon corner name='close' style={{textShadow: 'none'}}/>
+      </Icon.Group></Button>}/>
+      }
+      <Divider clearing/>
       {dataset.dimensions.map((dim, i) => facets[dim] &&
         <div key={i} className="dimension-filter">
           <h5>
