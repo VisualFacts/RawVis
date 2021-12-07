@@ -99,7 +99,7 @@ export const VisPage = (props: IVisPageProps) => {
                       pointCount={pointCount} tileCount={tileCount} totalPointCount={totalPointCount}
                       totalTileCount={totalTileCount} totalTime={totalTime} executionTime={executionTime}/>
     </div>
-    {/*<div className='right-panel-group'>*/}
+    {/* <div className='right-panel-group'>*/}
     {/*  {rectStats && <>*/}
     {/*    {(dataset.measure0 != null && !showDuplicates) &&*/}
     {/*    <StatsPanel dataset={dataset} rectStats={rectStats} dedupStats = {null}/>}*/}
@@ -123,8 +123,8 @@ export const VisPage = (props: IVisPageProps) => {
     {/*           groupByCols={groupByCols}*/}
     {/*           aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}*/}
     {/*           updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>}*/}
-    {/*  </>}*/}
-    {/*</div>*/}
+    {/*  </>}*/ }
+    {/* </div> */ }
 
     <div className='right-panel-group'>
       {rectStats && (selectedDuplicate === null)  && <>

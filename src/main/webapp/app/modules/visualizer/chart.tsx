@@ -30,13 +30,13 @@ export interface IChartProps {
 
 export const Chart = (props: IChartProps) => {
   const {dataset, series, aggType, measureCol, dataSource, cleanedSeries, showDuplicates} = props;
-  let usedSeries = cleanedSeries === null ? series : cleanedSeries;
-  let groupByCols = props.groupByCols;
+  const usedSeries = cleanedSeries === null ? series : cleanedSeries;
+  const groupByCols = props.groupByCols;
   const dimensions = dataset.dimensions || [];
 
   const [chartType, setChartType] = useState('column');
 
-  let xAxisOptions = dimensions.map(dim => ({key: dim, value: dim, text: dataset.headers[dim]}));
+  const xAxisOptions = dimensions.map(dim => ({key: dim, value: dim, text: dataset.headers[dim]}));
   const aggTypeOptions = Object.values(AggregateFunctionType).map((type, index) => ({
     key: `agg-type-${index}`,
     value: type,
@@ -82,9 +82,9 @@ export const Chart = (props: IChartProps) => {
   };
 
   let xAxis = groupByCols && groupByCols.length > 0 ?  dataset.dimensions.find(d => d === groupByCols[0]) : dataset.dimensions.find(d => d === xAxisOptions[0].key);
-  xAxis = (showDuplicates && xAxis == dataset.dimensions.find(d => d === dataSource)) ? dataset.dimensions.find(d => d === xAxisOptions[1].key) : xAxis;
+  xAxis = (showDuplicates && xAxis === dataset.dimensions.find(d => d === dataSource)) ? dataset.dimensions.find(d => d === xAxisOptions[1].key) : xAxis;
   let yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d === groupByCols[1]) : dataset.dimensions.find(d => d === xAxisOptions[1].key);
-  yAxis = (showDuplicates && yAxis == dataset.dimensions.find(d => d === xAxisOptions[1].key)) ? dataset.dimensions.find(d => d === xAxisOptions[2].key) : yAxis;
+  yAxis = (showDuplicates && yAxis === dataset.dimensions.find(d => d === xAxisOptions[1].key)) ? dataset.dimensions.find(d => d === xAxisOptions[2].key) : yAxis;
 
   const measure = dataset.measure0 == null ? null : dataset.measure0 === measureCol ? dataset.measure0 : dataset.measure1;
   return <Segment id='chart-container' raised textAlign='center'>

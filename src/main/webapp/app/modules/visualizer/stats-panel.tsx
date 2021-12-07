@@ -24,7 +24,7 @@ export const StatsPanel = (props: IStatsPanelProps) => {
   if(showDuplicates && dedupStats !== null)
     percentOfDups = dedupStats.percentOfDups;
 
-  let usedStats = cleanedRectStats === null ? rectStats : cleanedRectStats;
+  const usedStats = cleanedRectStats === null ? rectStats : cleanedRectStats;
   return <Segment id='stats-panel' textAlign='left' raised padded>
     <Label attached='top' size='large'>Statistics for <i>{usedStats.count}</i> objects</Label>
     {percentOfDups !== 0 && <Statistic.Group widths='one' className='field-stats'>
