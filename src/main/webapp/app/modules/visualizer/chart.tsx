@@ -3,17 +3,20 @@ import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official';
 import Heatmap from 'highcharts/modules/heatmap.js';
 import {IDataset} from "app/shared/model/dataset.model";
-import {Button, Dropdown, Label, Segment} from "semantic-ui-react";
+import {Button,Popup, Dropdown, Label, Segment} from "semantic-ui-react";
 import {updateAggType, updateGroupBy, updateMeasure} from './visualizer.reducer';
 import {AggregateFunctionType} from "app/shared/model/enumerations/aggregate-function-type.model";
 import {IGroupedStats} from "app/shared/model/grouped-stats.model";
-import _ from 'lodash';
+import _, {groupBy} from 'lodash';
+import {doc} from "prettier";
+import group = doc.builders.group;
 
 Heatmap(Highcharts);
 
 export interface IChartProps {
   dataset: IDataset,
   series: IGroupedStats[],
+  cleanedSeries: IGroupedStats[],
   groupByCols: number[],
   measureCol: number,
   aggType: AggregateFunctionType,
@@ -26,7 +29,8 @@ export interface IChartProps {
 
 
 export const Chart = (props: IChartProps) => {
-  const {dataset, series, aggType, measureCol, dataSource, showDuplicates} = props;
+  const {dataset, series, aggType, measureCol, dataSource, cleanedSeries, showDuplicates} = props;
+  let usedSeries = cleanedSeries === null ? series : cleanedSeries;
   let groupByCols = props.groupByCols;
   const dimensions = dataset.dimensions || [];
 
@@ -42,11 +46,11 @@ export const Chart = (props: IChartProps) => {
   let seriesData, xCategories, yCategories;
 
   if (chartType === 'heatmap') {
-    xCategories = _(series).map(groupedStat => groupedStat.group[0]).uniq().sortBy().value();
-    yCategories = _(series).map(groupedStat => groupedStat.group[1]).uniq().sortBy().value();
-    seriesData = series.map(groupedStat => ([xCategories.findIndex(c => c === groupedStat.group[0]), yCategories.findIndex(c => c === groupedStat.group[1]), groupedStat.value]));
+    xCategories = _(usedSeries).map(groupedStat => groupedStat.group[0]).uniq().sortBy().value();
+    yCategories = _(usedSeries).map(groupedStat => groupedStat.group[1]).uniq().sortBy().value();
+    seriesData = usedSeries.map(groupedStat => ([xCategories.findIndex(c => c === groupedStat.group[0]), yCategories.findIndex(c => c === groupedStat.group[1]), groupedStat.value]));
   } else {
-    seriesData = series.map(groupedStat => ({
+    seriesData = usedSeries.map(groupedStat => ({
       name: groupedStat.group[0],
       y: groupedStat.value,
       color: '#2185d0'
@@ -77,21 +81,26 @@ export const Chart = (props: IChartProps) => {
     setChartType(newChartType);
   };
 
-  if(showDuplicates){
-    groupByCols = groupByCols.filter(e => e !== dataSource);
-    xAxisOptions = xAxisOptions.filter(e => e.key !== dataSource);
-  }
-  const xAxis = groupByCols && groupByCols.length > 0 ?  dataset.dimensions.find(d => d === groupByCols[0]) :  dataset.dimensions.find(d => d === xAxisOptions[0].key);
-
-  const yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d === groupByCols[1]) : null;
+  let xAxis = groupByCols && groupByCols.length > 0 ?  dataset.dimensions.find(d => d === groupByCols[0]) : dataset.dimensions.find(d => d === xAxisOptions[0].key);
+  xAxis = (showDuplicates && xAxis == dataset.dimensions.find(d => d === dataSource)) ? dataset.dimensions.find(d => d === xAxisOptions[1].key) : xAxis;
+  let yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d === groupByCols[1]) : dataset.dimensions.find(d => d === xAxisOptions[1].key);
+  yAxis = (showDuplicates && yAxis == dataset.dimensions.find(d => d === xAxisOptions[1].key)) ? dataset.dimensions.find(d => d === xAxisOptions[2].key) : yAxis;
 
   const measure = dataset.measure0 == null ? null : dataset.measure0 === measureCol ? dataset.measure0 : dataset.measure1;
   return <Segment id='chart-container' raised textAlign='center'>
     <Button.Group floated='right' basic size='mini'>
-      <Button icon='chart bar outline' active={chartType === 'column'} onClick={handleChartTypeChange('column')}/>
+      <Popup content="Bar Chart" trigger={
+        <Button icon='chart bar outline' active={chartType === 'column'} onClick={handleChartTypeChange('column')}/>
+      }/>
+      <Popup content="Line Chart" trigger={
       <Button icon='chart line' active={chartType === 'line'} onClick={handleChartTypeChange('line')}/>
+      }/>
+      <Popup content="Area Chart" trigger={
       <Button icon='area chart' active={chartType === 'area'} onClick={handleChartTypeChange('area')}/>
+      }/>
+      <Popup content="Heatmap" trigger={
       <Button icon='th' active={chartType === 'heatmap'} onClick={handleChartTypeChange('heatmap')}/>
+      }/>
     </Button.Group>
     <br/><br/><br/>
     <HighchartsReact
@@ -110,13 +119,20 @@ export const Chart = (props: IChartProps) => {
         },
         xAxis: {
           title: {
-            text: dataset.headers[xAxis]
+            text: dataset.headers[xAxis],
+            style: {
+              fontSize: "1.1em"
+            },
           },
+
           categories: xCategories
         },
         yAxis: {
           title: {
-            text: dataset.headers[yAxis]
+            text: dataset.headers[yAxis],
+            style: {
+              fontSize: "1.1em"
+            }
           },
           categories: yCategories,
           reversed: true

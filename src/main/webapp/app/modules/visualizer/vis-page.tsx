@@ -99,31 +99,48 @@ export const VisPage = (props: IVisPageProps) => {
                       pointCount={pointCount} tileCount={tileCount} totalPointCount={totalPointCount}
                       totalTileCount={totalTileCount} totalTime={totalTime} executionTime={executionTime}/>
     </div>
+    {/*<div className='right-panel-group'>*/}
+    {/*  {rectStats && <>*/}
+    {/*    {(dataset.measure0 != null && !showDuplicates) &&*/}
+    {/*    <StatsPanel dataset={dataset} rectStats={rectStats} dedupStats = {null}/>}*/}
+    {/*    {showDuplicates === false &&*/}
+    {/*    <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}*/}
+    {/*           aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}*/}
+    {/*           updateMeasure={props.updateMeasure} dataSource = {null} showDuplicates = {showDuplicates}/>}*/}
+    {/*  </>}*/}
+    {/*  {cleanedRectStats && <>*/}
+    {/*    {(showDuplicates && selectedDuplicate !== null) &&*/}
+    {/*    <DedupChartCluster dataset={dataset}*/}
+    {/*                       duplicateCluster={selectedDuplicate}*/}
+    {/*                       dedupColumn={dedupColumn}*/}
+    {/*                       unselectDuplicateCluster={props.unselectDuplicateCluster}*/}
+    {/*                       updateDedupColumn = {props.updateDedupColumn}/>}*/}
+    {/*    {(showDuplicates && selectedDuplicate === null) &&*/}
+    {/*    <StatsPanel dataset={dataset} dedupStats = {dedupStats} rectStats={cleanedRectStats}/>*/}
+    {/*    }*/}
+    {/*    {(showDuplicates && selectedDuplicate === null) &&*/}
+    {/*    <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy}*/}
+    {/*           groupByCols={groupByCols}*/}
+    {/*           aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}*/}
+    {/*           updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>}*/}
+    {/*  </>}*/}
+    {/*</div>*/}
+
     <div className='right-panel-group'>
-      {rectStats && <>
-        {(dataset.measure0 != null && !showDuplicates) &&
-        <StatsPanel dataset={dataset} rectStats={rectStats} dedupStats = {null}/>}
-        {showDuplicates === false &&
-        <Chart dataset={dataset} series={series} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
-               aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure} dataSource = {null} showDuplicates = {showDuplicates}/>}
+      {rectStats && (selectedDuplicate === null)  && <>
+        {(dataset.measure0 != null ) &&
+          <StatsPanel dataset={dataset} rectStats={rectStats}  showDuplicates={showDuplicates}
+                      cleanedRectStats = {cleanedRectStats} dedupStats = {dedupStats}/>}
+          <Chart dataset={dataset} series={series} cleanedSeries = {cleanedSeries} updateGroupBy={props.updateGroupBy} groupByCols={groupByCols}
+                 aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
+                 updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>
       </>}
-      {cleanedRectStats && <>
         {(showDuplicates && selectedDuplicate !== null) &&
-        <DedupChartCluster dataset={dataset}
-                           duplicateCluster={selectedDuplicate}
-                           dedupColumn={dedupColumn}
-                           unselectDuplicateCluster={props.unselectDuplicateCluster}
-                           updateDedupColumn = {props.updateDedupColumn}/>}
-        {(showDuplicates && selectedDuplicate === null) &&
-        <StatsPanel dataset={dataset} dedupStats = {dedupStats} rectStats={cleanedRectStats}/>
-        }
-        {(showDuplicates && selectedDuplicate === null) &&
-        <Chart dataset={dataset} series={cleanedSeries} updateGroupBy={props.updateGroupBy}
-               groupByCols={groupByCols}
-               aggType={aggType} measureCol={measureCol} updateAggType={props.updateAggType}
-               updateMeasure={props.updateMeasure} dataSource = {dataset.dataSource} showDuplicates = {showDuplicates}/>}
-      </>}
+          <DedupChartCluster dataset={dataset}
+                             duplicateCluster={selectedDuplicate}
+                             dedupColumn={dedupColumn}
+                             unselectDuplicateCluster={props.unselectDuplicateCluster}
+                             updateDedupColumn = {props.updateDedupColumn}/>}
     </div>
     <Modal
       basic
