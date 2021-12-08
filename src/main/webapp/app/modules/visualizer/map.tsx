@@ -35,7 +35,7 @@ export interface IMapProps {
 }
 
 
-const fetchIcon = (count, unmergedCount) => {
+const fetchIcon = (count, unmergedCount, clickable) => {
   // if (count === 1) return new L.Icon.Default();
   /*    if (count === 1) return L.icon({
         iconUrl: './content/images/duplicate-marker.png',
@@ -56,6 +56,7 @@ const fetchIcon = (count, unmergedCount) => {
     borderWidth: 2,
     iconSize: [18, 18],
     hasBadge: false,
+    iconStyle: clickable && 'cursor: pointer',
   });
 
   const backgroundColor = count < 100 ? 'rgba(102, 194, 164, 0.8)' :
@@ -76,6 +77,7 @@ const fetchIcon = (count, unmergedCount) => {
     borderColor,
     borderWidth: 5,
     iconSize: [40, 40],
+    iconStyle: clickable && 'cursor: pointer',
   });
 };
 
@@ -90,13 +92,14 @@ const fetchDedupIcon = (count, isSelected) => {
     iconSize: [18, 18],
     hasBadge: true,
     badgeText: count,
+    iconStyle: 'cursor: pointer',
   });
 };
 
 const SinglePoint = (props: any) => {
   const {dataset, point, coordinates, row} = props;
   return point[2] === 1 ?
-    <Marker key={point[2]} icon={fetchIcon(1, 1)} position={[coordinates[1], coordinates[0]]}>
+    <Marker key={point[2]} icon={fetchIcon(1, 1, true)} position={[coordinates[1], coordinates[0]]}>
       <Popup onOpen={() => {
         props.getRow(dataset.id, point[3]);
       }}>
@@ -227,7 +230,7 @@ export const Map = (props: IMapProps) => {
       }
       return <Marker key={"cluster" + index}
                      position={[cluster.geometry.coordinates[1], cluster.geometry.coordinates[0]]}
-                     icon={fetchIcon(totalCount, unmergedCount)}
+                     icon={fetchIcon(totalCount, unmergedCount, map.getZoom() === MAX_ZOOM)}
                      eventHandlers={{
                        click(e) {
                          map.getZoom() === MAX_ZOOM && props.updateExpandedClusterIndex(index);
