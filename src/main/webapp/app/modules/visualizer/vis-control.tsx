@@ -83,10 +83,13 @@ export const VisControl = (props: IVisControlProps) => {
       {dataset.headers[dataset.lon]}
     </Label>
     <Header as='h5'>Merge Duplicates</Header>
-    <Checkbox className="toggle" disabled={!props.allowDedup}
-              checked={props.showDuplicates}
-              onChange={handleDuplicateToggleChange}
-    />
+    <Popup disabled={props.allowDedup} content="You have to zoom in to be able to merge duplicates" trigger={
+      <Checkbox className="toggle" disabled={!props.allowDedup}
+                checked={props.showDuplicates}
+                onChange={handleDuplicateToggleChange}
+      />
+    }/>
+
 
     <br/>
     {
