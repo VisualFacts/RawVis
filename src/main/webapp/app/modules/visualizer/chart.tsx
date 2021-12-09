@@ -3,13 +3,11 @@ import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official';
 import Heatmap from 'highcharts/modules/heatmap.js';
 import {IDataset} from "app/shared/model/dataset.model";
-import {Button,Popup, Dropdown, Label, Segment} from "semantic-ui-react";
+import {Button, Dropdown, Label, Popup, Segment} from "semantic-ui-react";
 import {updateAggType, updateGroupBy, updateMeasure} from './visualizer.reducer';
 import {AggregateFunctionType} from "app/shared/model/enumerations/aggregate-function-type.model";
 import {IGroupedStats} from "app/shared/model/grouped-stats.model";
-import _, {groupBy} from 'lodash';
-import {doc} from "prettier";
-import group = doc.builders.group;
+import _ from 'lodash';
 
 Heatmap(Highcharts);
 
@@ -81,7 +79,7 @@ export const Chart = (props: IChartProps) => {
     setChartType(newChartType);
   };
 
-  let xAxis = groupByCols && groupByCols.length > 0 ?  dataset.dimensions.find(d => d === groupByCols[0]) : dataset.dimensions.find(d => d === xAxisOptions[0].key);
+  let xAxis = groupByCols && groupByCols.length > 0 ? dataset.dimensions.find(d => d === groupByCols[0]) : dataset.dimensions.find(d => d === xAxisOptions[0].key);
   xAxis = (showDuplicates && xAxis === dataset.dimensions.find(d => d === dataSource)) ? dataset.dimensions.find(d => d === xAxisOptions[1].key) : xAxis;
   let yAxis = groupByCols && groupByCols.length > 1 ? dataset.dimensions.find(d => d === groupByCols[1]) : dataset.dimensions.find(d => d === xAxisOptions[1].key);
   yAxis = (showDuplicates && yAxis === dataset.dimensions.find(d => d === xAxisOptions[1].key)) ? dataset.dimensions.find(d => d === xAxisOptions[2].key) : yAxis;
@@ -93,13 +91,13 @@ export const Chart = (props: IChartProps) => {
         <Button icon='chart bar outline' active={chartType === 'column'} onClick={handleChartTypeChange('column')}/>
       }/>
       <Popup content="Line Chart" trigger={
-      <Button icon='chart line' active={chartType === 'line'} onClick={handleChartTypeChange('line')}/>
+        <Button icon='chart line' active={chartType === 'line'} onClick={handleChartTypeChange('line')}/>
       }/>
       <Popup content="Area Chart" trigger={
-      <Button icon='area chart' active={chartType === 'area'} onClick={handleChartTypeChange('area')}/>
+        <Button icon='area chart' active={chartType === 'area'} onClick={handleChartTypeChange('area')}/>
       }/>
       <Popup content="Heatmap" trigger={
-      <Button icon='th' active={chartType === 'heatmap'} onClick={handleChartTypeChange('heatmap')}/>
+        <Button icon='th' active={chartType === 'heatmap'} onClick={handleChartTypeChange('heatmap')}/>
       }/>
     </Button.Group>
     <br/><br/><br/>
@@ -177,14 +175,14 @@ export const Chart = (props: IChartProps) => {
         },
         yAxis: {
           title: {
-            text: `${aggType}(${measure == null ? '' : dataset.headers[measure]})`
+            text: `${aggType}${measure == null || aggType === AggregateFunctionType.COUNT ? '' : '(' + dataset.headers[measure] + ')'}`
           },
           reversed: false,
           categories: null
         },
         tooltip: {
           formatter() {
-            return  this.point.value != null ? this.point.value.toFixed(2) : this.point.y.toFixed(2);
+            return this.point.value != null ? this.point.value.toFixed(2) : this.point.y.toFixed(2);
           }
         },
         colorAxis: null,
@@ -196,25 +194,25 @@ export const Chart = (props: IChartProps) => {
         },
       }}
     />
-    <Segment basic textAlign='center' compact style={{ margin: "auto"}}>
+    <Segment basic textAlign='center' compact style={{margin: "auto"}}>
       <Label.Group>
         {dataset.measure0 != null &&
         <span>Find <Dropdown options={aggTypeOptions} inline value={aggType}
-                                             onChange={handleAggTypeChange}/></span>}
+                             onChange={handleAggTypeChange}/></span>}
 
-        {dataset.measure0 != null &&
+        {dataset.measure0 != null && aggType !== AggregateFunctionType.COUNT &&
         <span> of <Dropdown
-        scrolling = {true}
-        options={[{text: dataset.headers[dataset.measure0], value: dataset.measure0}, {
-          text: dataset.headers[dataset.measure1],
-          value: dataset.measure1
-        }]} inline value={measure} onChange={handleMeasureChange}/></span>}
+          scrolling={true}
+          options={[{text: dataset.headers[dataset.measure0], value: dataset.measure0}, {
+            text: dataset.headers[dataset.measure1],
+            value: dataset.measure1
+          }]} inline value={measure} onChange={handleMeasureChange}/></span>}
 
-        <span> per <Dropdown  scrolling = {true} options={xAxisOptions} inline
-                                value={xAxis && xAxis}
-                                onChange={handleXAxisChange}/></span>
+        <span> per <Dropdown scrolling={true} options={xAxisOptions} inline
+                             value={xAxis && xAxis}
+                             onChange={handleXAxisChange}/></span>
         {chartType === 'heatmap' && <span> and <Dropdown options={xAxisOptions} inline onChange={handleYAxisChange}
-                                                            value={yAxis && yAxis}/></span>}
+                                                         value={yAxis && yAxis}/></span>}
       </Label.Group>
     </Segment>
   </Segment>
