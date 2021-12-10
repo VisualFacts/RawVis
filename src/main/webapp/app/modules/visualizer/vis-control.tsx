@@ -1,18 +1,6 @@
 import React, {useState} from 'react';
 import {IDataset} from "app/shared/model/dataset.model";
-import {
-  Accordion,
-  Button,
-  Checkbox,
-  Dropdown,
-  Header,
-  Icon,
-  Image,
-  Label,
-  List,
-  Popup,
-  Segment
-} from "semantic-ui-react";
+import {Accordion, Checkbox, Divider, Dropdown, Icon, Image, List, Message, Popup, Segment} from "semantic-ui-react";
 import {reset, toggleDuplicates, updateFilters} from "app/modules/visualizer/visualizer.reducer";
 import {NavLink as Link} from 'react-router-dom';
 import _ from 'lodash';
@@ -90,9 +78,9 @@ export const VisControl = (props: IVisControlProps) => {
 
   const filterDropdowns = facets &&
     <div className='filters'>
-      <Dropdown scrolling
-                className='icon primary left' text='Select one or more filters'
-                icon='filter'
+      <Dropdown scrolling style={{padding: '10px', marginTop: '0'}}
+                className='icon left' text='Select one or more filters'
+                icon='filter' fluid
                 floating
                 labeled
                 button>
@@ -147,40 +135,55 @@ export const VisControl = (props: IVisControlProps) => {
     </div>;
 
   return datasets && <Segment id='vis-control' padded='very' raised>
-    <Image href='/' src='./content/images/vf_logo.png' style={{width: 300}}/>
-    <h5>
-      Dataset <Popup content='Reinitialize Dataset Index' trigger={<Button circular compact icon='refresh' size='mini'
-                                                                           onClick={() => props.reset(dataset.id)}/>}/>
-    </h5>
-    <Label size='medium' color='blue'>
-      <Dropdown text={dataset.name}>
-        <Dropdown.Menu>
-          {datasets.map((d, index) => <Dropdown.Item key={index} as={Link} to={`/visualize/${d.id}`}
-                                                     text={d.name}/>)}
-        </Dropdown.Menu>
-      </Dropdown>
-    </Label>
-    <Header as='h5'>Latitude</Header>
+    <Image href='/' src='./content/images/vf_logo.png' style={{width: 300, paddingBottom: "10px"}}/>
+    <h4>
+      Dataset
+    </h4>
+    <Dropdown scrolling style={{padding: '10px', marginBottom: '20px'}}
+              className='icon left' text={dataset.name}
+              fluid
+              floating
+              labeled
+              button>
+      <Dropdown.Menu>
+        {datasets.map((d, index) => <Dropdown.Item key={index} as={Link} to={`/visualize/${d.id}`}
+                                                   text={d.name}/>)}
+      </Dropdown.Menu>
+    </Dropdown>
+
+    {/*
+        <Label size='large' color='blue'>
+
+        </Label> <Popup content='Reinitialize Dataset Index' trigger={<Button circular compact icon='refresh' size='mini'
+                                                                           onClick={() => props.reset(dataset.id)}/>}/>*/}
+
+
+    {/*    <Header as='h5'>Latitude Column</Header>
     <Label size='medium' color='blue'>
       {dataset.headers[dataset.lat]}
     </Label>
-    <Header as='h5'>Longitude</Header>
+    <Header as='h5'>Longitude Column</Header>
     <Label size='medium' color='blue'>
       {dataset.headers[dataset.lon]}
-    </Label>
-    <Header as='h5'>Merge Duplicates</Header>
+    </Label>*/}
+    <h4>
+      Filtering
+    </h4>
+    {filterDropdowns}
+    {removeFilters}
     <Popup disabled={props.allowDedup} content="You have to zoom in to be able to merge duplicates" trigger={
-      <Checkbox className="toggle" disabled={!props.allowDedup}
+      <Checkbox className="toggle" disabled={!props.allowDedup} label={<label>Merge Duplicates</label>} style={{padding: "15px 7px", marginBottom: "0px"}}
                 checked={props.showDuplicates}
                 onChange={handleDuplicateToggleChange}
       />
     }/>
-
-
-    <br/>
-    {filterDropdowns}
-    {removeFilters}
-    <br/>
+    <Divider />
+    <p style={{fontSize: '12px', textAlign: 'justify'}}>
+      The use case presents information of ~180K hotels in US gathered from multiple travel agencies. Multiple records
+      for a hotel may be included in the data. The origin of the dataset is from https://www.factual.com/; for demo
+      reasons, we have further amended, resized and generated duplicate records with different values for various
+      attributes (e.g., name of the hotel, price, location, etc) for records coming from different sources.
+    </p>
   </Segment>
 };
 

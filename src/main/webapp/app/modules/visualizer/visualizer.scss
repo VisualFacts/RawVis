@@ -26,7 +26,7 @@
 #vis-control {
   z-index: 999;
   position: absolute;
-  width: 300px;
+  width: 280px;
   top: 10px;
   left: 10px;
   max-height: calc(100vh - 20px);
@@ -63,7 +63,7 @@
 }
 
 .filters {
-  margin-top: 25px;
+  margin-top: 0px;
 }
 
 .dimension-filter {
@@ -108,9 +108,14 @@
   }
 }
 
+#vis-control i {
+  font-size: 1rem;
+}
+
 .remove-filters {
-  margin-top: 15px;
-  padding-left: 5px;
+  margin-top: 20px;
+  padding-left: 10px;
+  margin-bottom: 20px;
 }
 
 .remove-filter-dim-label {
