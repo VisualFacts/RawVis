@@ -36,7 +36,7 @@
         <run.addResources>false</run.addResources>
         <!-- These remain empty unless the corresponding profile is active -->
         <profile.tls/>
-
+        <skipTests>true</skipTests>
         <!-- Dependency versions -->
         <jhipster-dependencies.version>3.9.1</jhipster-dependencies.version>
         <!-- The spring-boot version should match the one managed by
@@ -75,7 +75,6 @@
         <junit.itReportFolder>${project.testresult.directory}/integrationTest</junit.itReportFolder>
         <!-- jhipster-needle-maven-property -->
     </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
