@@ -58,14 +58,20 @@ Then navigate to [http://localhost:8080](http://localhost:8080) in your browser.
 
 </br>
 
+ 
 
 ## Publications
 
+* Maroulis S., Bikakis N., Papastefanatos G., Vassiliadis P., Vassiliou Y.: Resource-Aware Adaptive Indexing for In-situ Visual Exploration and Analytics, VLDB Journal 2023 
+[[pdf]](https://www.nbikakis.com/papers/Resource_Aware_Adaptive_Indexing_for_In_situ_Visual_Exploration_and_Analytics_VLDBJ_2022.pdf)
+
+* Maroulis S., Bikakis N., Papastefanatos G., Vassiliadis P., Vassiliou Y.: RawVis: A System for Efficient In-situ Visual Analytics, intl. conf. on Management of Data (ACM SIGMOD/PODS '21)  [[pdf]](https://www.nbikakis.com/papers/RawVis_A_System_for_Efficient_In-situ_Visual_Analytics_SIGMOD2021.pdf)
 
 * Bikakis N., Maroulis S., Papastefanatos G., Vassiliadis P.: In-Situ Visual Exploration over Big Raw Data, Information Systems, Elsevier, 2021  [[pdf]](https://www.nbikakis.com/papers/in_situ_big_data_visual_analytics_indexing_IS_2020.pdf)
- 
-* Maroulis S., Bikakis N., Papastefanatos G., Vassiliadis P., Vassiliou Y.: RawVis: A System for Efficient In-situ Visual Analytics, intl. conf. on Management of Data (ACM SIGMOD/PODS '21)  [[pdf]](https://www.nbikakis.com/papers/RawVis_A_System_for_Efficient_In-situ_Visual_Analytics_SIGMOD2021.pdf)
- 
+
+* Papastefanatos G., Alexiou G., Bikakis N., Maroulis S., Stamatopoulos V.: VisualFacts: A Platform for In-Situ Visual Exploration and Real-time Entity Resolution, intl. workshop on big data visual exploration & analytics (BigVis '22)
+[[pdf]]([https://www.nbikakis.com/papers/Resource_Aware_Adaptive_Indexing_for_In_situ_Visual_Exploration_and_Analytics_VLDBJ_2022.pdf](https://www.nbikakis.com/papers/in-situ_visual_exploration_and_real-time_entity_resolution.pdf))
+
 * Maroulis S., Bikakis N., Papastefanatos G., Vassiliadis P., Vasiliou Y.: Adaptive Indexing for In-situ Visual Exploration and Analytics, 23rd intl. Workshop on Design, Optimization, Languages and Analytical Processing of Big Data (DOLAP '21)    [[pdf]](https://www.nbikakis.com/papers/RawVis_Adaptive_Indexing_for_In-situ_Visual_Exploration_and_Analytics_DOLAP2021.pdf)
  
 * Bikakis N., Maroulis S., Papastefanatos G., Vassiliadis P.: RawVis: Visual Exploration over Raw Data, 22nd european conf. on advances in databases & information systems (ADBIS 2018)    [[pdf]](http://www.nbikakis.com/papers/RawVis.Visual.Exploration.over.Big.Raw.Data.pdf)
